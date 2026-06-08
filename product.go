@@ -295,21 +295,21 @@ func (s *ProductService) GetItemExtraInfo(itemIDs []int64) (*GetItemExtraInfoRes
 }
 
 type AddItemParams struct {
-	CategoryID     int64          `json:"category_id"`
-	ItemName       string         `json:"item_name"`
-	Description    string         `json:"description"`
-	ItemSKU        string         `json:"item_sku,omitempty"`
-	Price          float64        `json:"price"`
-	Stock          int            `json:"stock"`
-	LogisticInfo   []LogisticInfo `json:"logistic_info,omitempty"`
-	Weight         string         `json:"weight,omitempty"`
-	Dimension      *Dimension     `json:"dimension,omitempty"`
-	Image          *ImageInfo     `json:"image,omitempty"`
-	Brand          *BrandInfo     `json:"brand,omitempty"`
+	CategoryID     int64           `json:"category_id"`
+	ItemName       string          `json:"item_name"`
+	Description    string          `json:"description"`
+	ItemSKU        string          `json:"item_sku,omitempty"`
+	Price          float64         `json:"price"`
+	Stock          int             `json:"stock"`
+	LogisticInfo   []LogisticInfo  `json:"logistic_info,omitempty"`
+	Weight         float64         `json:"weight,omitempty"`
+	Dimension      *Dimension      `json:"dimension,omitempty"`
+	Image          *ImageInfo      `json:"image,omitempty"`
+	Brand          *BrandInfo      `json:"brand,omitempty"`
 	TierVariation  []TierVariation `json:"tier_variation,omitempty"`
-	Condition      string         `json:"condition,omitempty"`
-	VideoInfo      []VideoInfo    `json:"video_info,omitempty"`
-	ItemStatus     ItemStatus     `json:"item_status,omitempty"`
+	Condition      string          `json:"condition,omitempty"`
+	VideoInfo      []VideoInfo     `json:"video_info,omitempty"`
+	ItemStatus     ItemStatus      `json:"item_status,omitempty"`
 }
 
 type AddItemResponse struct {
