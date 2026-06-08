@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/meta001/shopee-sdk"
+	"github.com/QuoVadis86/shopee-sdk"
 )
 
 func main() {

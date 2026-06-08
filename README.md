@@ -1,6 +1,6 @@
 # Shopee Open Platform Go SDK
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/meta001/shopee-sdk.svg)](https://pkg.go.dev/github.com/meta001/shopee-sdk)
+[![Go Reference](https://pkg.go.dev/badge/github.com/QuoVadis86/shopee-sdk.svg)](https://pkg.go.dev/github.com/QuoVadis86/shopee-sdk)
 [![Go Version](https://img.shields.io/github/go-mod/go-version/meta001/shopee-sdk)](https://golang.org/dl/)
 [![License](https://img.shields.io/github/license/meta001/shopee-sdk)](LICENSE)
 
@@ -19,7 +19,7 @@ A comprehensive Go SDK for the [Shopee Open Platform v2 API](https://open.shopee
 ## Installation
 
 ```bash
-go get github.com/meta001/shopee-sdk
+go get github.com/QuoVadis86/shopee-sdk
 ```
 
 ## Quick Start
@@ -31,7 +31,7 @@ import (
     "fmt"
     "log"
 
-    "github.com/meta001/shopee-sdk"
+    "github.com/QuoVadis86/shopee-sdk"
 )
 
 func main() {
@@ -159,7 +159,7 @@ partner_id + api_path + timestamp + [access_token] + [shop_id]
 ## Development
 
 ```bash
-git clone https://github.com/meta001/shopee-sdk.git
+git clone https://github.com/QuoVadis86/shopee-sdk.git
 cd shopee-sdk
 go vet ./...
 go build ./...
