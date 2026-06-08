@@ -58,7 +58,7 @@ func TestGenerateSignatureNoAccessToken(t *testing.T) {
 func TestGenerateSignatureNoShopID(t *testing.T) {
 	partnerKey := "test-key"
 	partnerID := int64(12345)
-	apiPath := "/api/v2/auth/get_access_token"
+	apiPath := "/api/v2/auth/token/get"
 	timestamp := int64(1700000000)
 	accessToken := "test-token"
 
