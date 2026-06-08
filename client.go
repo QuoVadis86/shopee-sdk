@@ -163,6 +163,10 @@ func (c *Client) DoPost(apiPath string, bodyPayload any, result any) error {
 	if err != nil {
 		return fmt.Errorf("read response: %w", err)
 	}
+	// Debug: log raw response for troubleshooting
+	if len(respBody) < 500 {
+		fmt.Printf("[ShopeeSDK-DEBUG] %s status=%d body=%s\n", apiPath, resp.StatusCode, string(respBody))
+	}
 	if err := json.Unmarshal(respBody, result); err != nil {
 		return fmt.Errorf("unmarshal: %w (body: %s)", err, truncate(string(respBody), 500))
 	}
