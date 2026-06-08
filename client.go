@@ -74,7 +74,9 @@ func (c *Client) baseQuery(timestamp int64) url.Values {
 	q := url.Values{}
 	q.Set("partner_id", strconv.FormatInt(c.PartnerID, 10))
 	q.Set("timestamp", strconv.FormatInt(timestamp, 10))
-	q.Set("access_token", c.AccessToken)
+	if c.AccessToken != "" {
+		q.Set("access_token", c.AccessToken)
+	}
 	if c.ShopID > 0 {
 		q.Set("shop_id", strconv.FormatInt(c.ShopID, 10))
 	}
