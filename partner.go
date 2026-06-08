@@ -61,12 +61,12 @@ type GetAccessTokenParams struct {
 
 type GetAccessTokenResponse struct {
 	BaseResponse
-	Response *struct {
-		AccessToken  string `json:"access_token"`
-		ExpireIn     int64  `json:"expire_in"`
-		ShopID       int64  `json:"shop_id"`
-		RefreshToken string `json:"refresh_token,omitempty"`
-	} `json:"response,omitempty"`
+	AccessToken    string        `json:"access_token"`
+	RefreshToken   string        `json:"refresh_token"`
+	ExpireIn       int64         `json:"expire_in"`
+	MerchantIDList []int64       `json:"merchant_id_list"`
+	ShopIDList     []int64       `json:"shop_id_list"`
+	UserIDList     []int64       `json:"user_id_list"`
 }
 
 func (s *PartnerService) GetAccessToken(params *GetAccessTokenParams) (*GetAccessTokenResponse, error) {
