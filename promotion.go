@@ -1,0 +1,987 @@
+package shopee
+
+import "strconv"
+
+type PromotionService struct {
+	client *Client
+}
+
+func NewPromotionService(client *Client) *PromotionService {
+	return &PromotionService{client: client}
+}
+
+type DiscountInfo struct {
+	DiscountID  int64  `json:"discount_id"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	StartTime   int64  `json:"start_time"`
+	EndTime     int64  `json:"end_time"`
+	Status      string `json:"status,omitempty"`
+}
+
+type AddDiscountParams struct {
+	Name        string  `json:"name"`
+	Description string  `json:"description,omitempty"`
+	StartTime   int64   `json:"start_time"`
+	EndTime     int64   `json:"end_time"`
+	Type        string  `json:"type"`
+	Value       float64 `json:"value"`
+	ItemList    []struct {
+		ItemID  int64 `json:"item_id"`
+		ModelID int64 `json:"model_id,omitempty"`
+	} `json:"item_list"`
+}
+
+type AddDiscountResponse struct {
+	BaseResponse
+	Response struct {
+		DiscountID int64 `json:"discount_id"`
+	} `json:"response,omitempty"`
+}
+
+func (s *PromotionService) AddDiscount(params *AddDiscountParams) (*AddDiscountResponse, error) {
+	result := &AddDiscountResponse{}
+	if err := s.client.DoPost(PathPromotionAddDiscount, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type AddDiscountItemParams struct {
+	DiscountID int64 `json:"discount_id"`
+	ItemList   []struct {
+		ItemID  int64 `json:"item_id"`
+		ModelID int64 `json:"model_id,omitempty"`
+	} `json:"item_list"`
+}
+
+func (s *PromotionService) AddDiscountItem(params *AddDiscountItemParams) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionAddDiscountItem, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteDiscount(discountID int64) (*BaseResponse, error) {
+	payload := map[string]any{"discount_id": discountID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteDiscount, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteDiscountItem(params *AddDiscountItemParams) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteDiscountItem, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type GetDiscountResponse struct {
+	BaseResponse
+	Response *DiscountInfo `json:"response,omitempty"`
+}
+
+func (s *PromotionService) GetDiscount(discountID int64) (*GetDiscountResponse, error) {
+	q := map[string]string{"discount_id": strconv.FormatInt(discountID, 10)}
+	result := &GetDiscountResponse{}
+	if err := s.client.DoGet(PathPromotionGetDiscount, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type GetDiscountListResponse struct {
+	BaseResponse
+	Response struct {
+		DiscountList []DiscountInfo `json:"discount_list"`
+		Total        int            `json:"total"`
+	} `json:"response"`
+}
+
+func (s *PromotionService) GetDiscountList(pageSize, pageNumber int, status string) (*GetDiscountListResponse, error) {
+	q := map[string]string{
+		"page_size":   strconv.Itoa(pageSize),
+		"page_number": strconv.Itoa(pageNumber),
+	}
+	if status != "" {
+		q["status"] = status
+	}
+	result := &GetDiscountListResponse{}
+	if err := s.client.DoGet(PathPromotionGetDiscountList, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateDiscount(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateDiscount, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateDiscountItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateDiscountItem, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetSIPDiscounts(discountID int64) (*BaseResponse, error) {
+	q := map[string]string{"discount_id": strconv.FormatInt(discountID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetSIPDiscounts, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) SetSIPDiscount(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionSetSIPDiscount, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteSIPDiscount(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteSIPDiscount, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type BundleDealInfo struct {
+	BundleDealID int64  `json:"bundle_deal_id"`
+	Name         string `json:"name"`
+	StartTime    int64  `json:"start_time"`
+	EndTime      int64  `json:"end_time"`
+	Status       string `json:"status,omitempty"`
+}
+
+type AddBundleDealResponse struct {
+	BaseResponse
+	Response struct {
+		BundleDealID int64 `json:"bundle_deal_id"`
+	} `json:"response,omitempty"`
+}
+
+func (s *PromotionService) AddBundleDeal(params any) (*AddBundleDealResponse, error) {
+	result := &AddBundleDealResponse{}
+	if err := s.client.DoPost(PathPromotionAddBundleDeal, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) AddBundleDealItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionAddBundleDealItem, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type GetBundleDealListResponse struct {
+	BaseResponse
+	Response struct {
+		BundleDealList []BundleDealInfo `json:"bundle_deal_list"`
+		Total          int              `json:"total"`
+	} `json:"response"`
+}
+
+func (s *PromotionService) GetBundleDealList(pageSize, pageNumber int, status string) (*GetBundleDealListResponse, error) {
+	q := map[string]string{
+		"page_size":   strconv.Itoa(pageSize),
+		"page_number": strconv.Itoa(pageNumber),
+	}
+	if status != "" {
+		q["status"] = status
+	}
+	result := &GetBundleDealListResponse{}
+	if err := s.client.DoGet(PathPromotionGetBundleDealList, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetBundleDeal(bundleDealID int64) (*BaseResponse, error) {
+	q := map[string]string{"bundle_deal_id": strconv.FormatInt(bundleDealID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetBundleDeal, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetBundleDealItem(bundleDealID int64) (*BaseResponse, error) {
+	q := map[string]string{"bundle_deal_id": strconv.FormatInt(bundleDealID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetBundleDealItem, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateBundleDeal(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateBundleDeal, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateBundleDealItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateBundleDealItem, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteBundleDeal(bundleDealID int64) (*BaseResponse, error) {
+	payload := map[string]any{"bundle_deal_id": bundleDealID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteBundleDeal, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteBundleDealItem(bundleDealID int64) (*BaseResponse, error) {
+	payload := map[string]any{"bundle_deal_id": bundleDealID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteBundleDealItem, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type AddOnDealInfo struct {
+	AddOnDealID int64  `json:"add_on_deal_id"`
+	Name        string `json:"name"`
+	StartTime   int64  `json:"start_time"`
+	EndTime     int64  `json:"end_time"`
+	Status      string `json:"status,omitempty"`
+}
+
+type AddAddOnDealResponse struct {
+	BaseResponse
+	Response struct {
+		AddOnDealID int64 `json:"add_on_deal_id"`
+	} `json:"response,omitempty"`
+}
+
+func (s *PromotionService) AddAddOnDeal(params any) (*AddAddOnDealResponse, error) {
+	result := &AddAddOnDealResponse{}
+	if err := s.client.DoPost(PathPromotionAddAddOnDeal, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) AddAddOnDealMainItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionAddAddOnDealMainItem, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) AddAddOnDealSubItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionAddAddOnDealSubItem, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteAddOnDeal(addOnDealID int64) (*BaseResponse, error) {
+	payload := map[string]any{"add_on_deal_id": addOnDealID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteAddOnDeal, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteAddOnDealMainItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteAddOnDealMain, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteAddOnDealSubItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteAddOnDealSub, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type GetAddOnDealListResponse struct {
+	BaseResponse
+	Response struct {
+		AddOnDealList []AddOnDealInfo `json:"add_on_deal_list"`
+		Total         int             `json:"total"`
+	} `json:"response"`
+}
+
+func (s *PromotionService) GetAddOnDealList(pageSize, pageNumber int, status string) (*GetAddOnDealListResponse, error) {
+	q := map[string]string{
+		"page_size":   strconv.Itoa(pageSize),
+		"page_number": strconv.Itoa(pageNumber),
+	}
+	if status != "" {
+		q["status"] = status
+	}
+	result := &GetAddOnDealListResponse{}
+	if err := s.client.DoGet(PathPromotionGetAddOnDealList, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetAddOnDeal(addOnDealID int64) (*BaseResponse, error) {
+	q := map[string]string{"add_on_deal_id": strconv.FormatInt(addOnDealID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetAddOnDeal, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetAddOnDealMainItem(addOnDealID int64) (*BaseResponse, error) {
+	q := map[string]string{"add_on_deal_id": strconv.FormatInt(addOnDealID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetAddOnDealMainItem, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetAddOnDealSubItem(addOnDealID int64) (*BaseResponse, error) {
+	q := map[string]string{"add_on_deal_id": strconv.FormatInt(addOnDealID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetAddOnDealSubItem, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateAddOnDeal(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateAddOnDeal, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateAddOnDealMainItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateAddOnDealMain, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateAddOnDealSubItem(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateAddOnDealSub, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) EndAddOnDeal(addOnDealID int64) (*BaseResponse, error) {
+	payload := map[string]any{"add_on_deal_id": addOnDealID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionEndAddOnDeal, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type AddVoucherParams struct {
+	Name       string  `json:"name"`
+	Type       string  `json:"type"`
+	Value      float64 `json:"value"`
+	StartTime  int64   `json:"start_time"`
+	EndTime    int64   `json:"end_time"`
+	UsageLimit int     `json:"usage_limit,omitempty"`
+}
+
+type AddVoucherResponse struct {
+	BaseResponse
+	Response struct {
+		VoucherID int64 `json:"voucher_id"`
+	} `json:"response,omitempty"`
+}
+
+func (s *PromotionService) AddVoucher(params *AddVoucherParams) (*AddVoucherResponse, error) {
+	result := &AddVoucherResponse{}
+	if err := s.client.DoPost(PathPromotionAddVoucher, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteVoucher(voucherID int64) (*BaseResponse, error) {
+	payload := map[string]any{"voucher_id": voucherID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteVoucher, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateVoucher(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateVoucher, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type VoucherInfo struct {
+	VoucherID  int64  `json:"voucher_id"`
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	Value      float64 `json:"value"`
+	StartTime  int64   `json:"start_time"`
+	EndTime    int64   `json:"end_time"`
+	UsageLimit int     `json:"usage_limit,omitempty"`
+	Status     string  `json:"status,omitempty"`
+}
+
+type GetVoucherResponse struct {
+	BaseResponse
+	Response *VoucherInfo `json:"response,omitempty"`
+}
+
+func (s *PromotionService) GetVoucher(voucherID int64) (*GetVoucherResponse, error) {
+	q := map[string]string{"voucher_id": strconv.FormatInt(voucherID, 10)}
+	result := &GetVoucherResponse{}
+	if err := s.client.DoGet(PathPromotionGetVoucher, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type GetVoucherListResponse struct {
+	BaseResponse
+	Response struct {
+		VoucherList []VoucherInfo `json:"voucher_list"`
+		Total       int           `json:"total"`
+	} `json:"response"`
+}
+
+func (s *PromotionService) GetVoucherList(pageSize, pageNumber int, status string) (*GetVoucherListResponse, error) {
+	q := map[string]string{
+		"page_size":   strconv.Itoa(pageSize),
+		"page_number": strconv.Itoa(pageNumber),
+	}
+	if status != "" {
+		q["status"] = status
+	}
+	result := &GetVoucherListResponse{}
+	if err := s.client.DoGet(PathPromotionGetVoucherList, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetTimeSlotID(voucherID int64) (*BaseResponse, error) {
+	q := map[string]string{"voucher_id": strconv.FormatInt(voucherID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetTimeSlotID, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type FlashSaleInfo struct {
+	FlashSaleID int64  `json:"flash_sale_id"`
+	Name        string `json:"name"`
+	StartTime   int64  `json:"start_time"`
+	EndTime     int64  `json:"end_time"`
+	Status      string `json:"status,omitempty"`
+}
+
+type CreateFlashSaleResponse struct {
+	BaseResponse
+	Response struct {
+		FlashSaleID int64 `json:"flash_sale_id"`
+	} `json:"response,omitempty"`
+}
+
+func (s *PromotionService) CreateShopFlashSale(params any) (*CreateFlashSaleResponse, error) {
+	result := &CreateFlashSaleResponse{}
+	if err := s.client.DoPost(PathPromotionCreateFlashSale, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetItemCriteria(flashSaleID int64) (*BaseResponse, error) {
+	q := map[string]string{"flash_sale_id": strconv.FormatInt(flashSaleID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetItemCriteria, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) AddShopFlashSaleItems(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionAddFlashSaleItems, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type GetFlashSaleListResponse struct {
+	BaseResponse
+	Response struct {
+		FlashSaleList []FlashSaleInfo `json:"flash_sale_list"`
+		Total         int             `json:"total"`
+	} `json:"response"`
+}
+
+func (s *PromotionService) GetShopFlashSaleList(status string, pageSize, pageNumber int) (*GetFlashSaleListResponse, error) {
+	q := map[string]string{
+		"page_size":   strconv.Itoa(pageSize),
+		"page_number": strconv.Itoa(pageNumber),
+	}
+	if status != "" {
+		q["status"] = status
+	}
+	result := &GetFlashSaleListResponse{}
+	if err := s.client.DoGet(PathPromotionGetFlashSaleList, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetShopFlashSale(flashSaleID int64) (*BaseResponse, error) {
+	q := map[string]string{"flash_sale_id": strconv.FormatInt(flashSaleID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetFlashSale, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetShopFlashSaleItems(flashSaleID int64) (*BaseResponse, error) {
+	q := map[string]string{"flash_sale_id": strconv.FormatInt(flashSaleID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetFlashSaleItems, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateShopFlashSale(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateFlashSale, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateShopFlashSaleItems(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateFlashSaleItems, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteShopFlashSale(flashSaleID int64) (*BaseResponse, error) {
+	payload := map[string]any{"flash_sale_id": flashSaleID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteFlashSale, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteShopFlashSaleItems(flashSaleID int64) (*BaseResponse, error) {
+	payload := map[string]any{"flash_sale_id": flashSaleID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteFlashSaleItems, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) AddFollowPrize(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionAddFollowPrize, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteFollowPrize(followPrizeID int64) (*BaseResponse, error) {
+	payload := map[string]any{"follow_prize_id": followPrizeID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteFollowPrize, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateFollowPrize(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateFollowPrize, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetFollowPrizeDetail(followPrizeID int64) (*BaseResponse, error) {
+	q := map[string]string{"follow_prize_id": strconv.FormatInt(followPrizeID, 10)}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetFollowPrizeDetail, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetFollowPrizeList(status string, pageSize, pageNumber int) (*BaseResponse, error) {
+	q := map[string]string{
+		"page_size":   strconv.Itoa(pageSize),
+		"page_number": strconv.Itoa(pageNumber),
+	}
+	if status != "" {
+		q["status"] = status
+	}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetFollowPrizeList, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetTopPicksList() (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetTopPicksList, map[string]string{}, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) AddTopPicks(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionAddTopPicks, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateTopPicks(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateTopPicks, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteTopPicks(topPicksID int64) (*BaseResponse, error) {
+	payload := map[string]any{"top_picks_id": topPicksID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteTopPicks, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type ShopCategoryInfo struct {
+	CategoryID int64  `json:"category_id"`
+	Name       string `json:"name"`
+	SortOrder  int    `json:"sort_order"`
+}
+
+type AddShopCategoryResponse struct {
+	BaseResponse
+	Response struct {
+		CategoryID int64 `json:"category_id"`
+	} `json:"response,omitempty"`
+}
+
+func (s *PromotionService) AddShopCategory(params any) (*AddShopCategoryResponse, error) {
+	result := &AddShopCategoryResponse{}
+	if err := s.client.DoPost(PathPromotionAddShopCategory, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+type GetShopCategoryListResponse struct {
+	BaseResponse
+	Response struct {
+		CategoryList []ShopCategoryInfo `json:"category_list"`
+	} `json:"response"`
+}
+
+func (s *PromotionService) GetShopCategoryList() (*GetShopCategoryListResponse, error) {
+	result := &GetShopCategoryListResponse{}
+	if err := s.client.DoGet(PathPromotionGetShopCategoryList, map[string]string{}, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteShopCategory(categoryID int64) (*BaseResponse, error) {
+	payload := map[string]any{"category_id": categoryID}
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteShopCategory, payload, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) UpdateShopCategory(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionUpdateShopCategory, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) AddShopCategoryItemList(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionAddShopCategoryItemList, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) GetShopCategoryItemList(categoryID int64, pageSize, pageNumber int) (*BaseResponse, error) {
+	q := map[string]string{
+		"category_id": strconv.FormatInt(categoryID, 10),
+		"page_size":   strconv.Itoa(pageSize),
+		"page_number": strconv.Itoa(pageNumber),
+	}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(PathPromotionGetShopCategoryItemList, q, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *PromotionService) DeleteShopCategoryItemList(params any) (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoPost(PathPromotionDeleteShopCategoryItemList, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
