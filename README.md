@@ -118,7 +118,21 @@ sdk.SetAccessToken("new-token")
 1. **Get authorization URL:** Use the pre-defined `AuthURLs` map by region
 2. **User authorizes** in browser, Shopee redirects with a `code`
 3. **Exchange code for token:** `sdk.Partner.GetAccessToken(&shopee.GetAccessTokenParams{...})`
-4. **Use the token:** Pass it to `NewSDK` or update via `SetAccessToken`
+4. **Refresh before expiration:**
+
+```go
+token, err := sdk.Partner.RefreshAccessToken(&shopee.RefreshAccessTokenParams{
+    RefreshToken: currentRefreshToken,
+    PartnerID:    partnerID,
+    ShopID:       shopID,
+})
+if err != nil {
+    return err
+}
+sdk.SetAccessToken(token.AccessToken)
+```
+
+5. **Persist both returned tokens:** Shopee rotates the access token and may rotate the refresh token.
 
 ## Error Handling
 

@@ -20,10 +20,10 @@ type PartnerShopInfo struct {
 type GetShopsByPartnerResponse struct {
 	BaseResponse
 	Response struct {
-		ShopList  []PartnerShopInfo `json:"shop_list"`
-		Total     int               `json:"total"`
-		PageNum   int               `json:"page_num"`
-		PageSize  int               `json:"page_size"`
+		ShopList []PartnerShopInfo `json:"shop_list"`
+		Total    int               `json:"total"`
+		PageNum  int               `json:"page_num"`
+		PageSize int               `json:"page_size"`
 	} `json:"response"`
 }
 
@@ -61,12 +61,12 @@ type GetAccessTokenParams struct {
 
 type GetAccessTokenResponse struct {
 	BaseResponse
-	AccessToken    string        `json:"access_token"`
-	RefreshToken   string        `json:"refresh_token"`
-	ExpireIn       int64         `json:"expire_in"`
-	MerchantIDList []int64       `json:"merchant_id_list"`
-	ShopIDList     []int64       `json:"shop_id_list"`
-	UserIDList     []int64       `json:"user_id_list"`
+	AccessToken    string  `json:"access_token"`
+	RefreshToken   string  `json:"refresh_token"`
+	ExpireIn       int64   `json:"expire_in"`
+	MerchantIDList []int64 `json:"merchant_id_list"`
+	ShopIDList     []int64 `json:"shop_id_list"`
+	UserIDList     []int64 `json:"user_id_list"`
 }
 
 func (s *PartnerService) GetAccessToken(params *GetAccessTokenParams) (*GetAccessTokenResponse, error) {
@@ -78,6 +78,60 @@ func (s *PartnerService) GetAccessToken(params *GetAccessTokenParams) (*GetAcces
 		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
 	}
 	return result, nil
+}
+
+type RefreshAccessTokenParams struct {
+	RefreshToken string `json:"refresh_token"`
+	PartnerID    int64  `json:"partner_id"`
+	ShopID       int64  `json:"shop_id,omitempty"`
+	MerchantID   int64  `json:"merchant_id,omitempty"`
+}
+
+type RefreshAccessTokenResponse struct {
+	BaseResponse
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	ExpireIn     int64  `json:"expire_in"`
+	ShopID       int64  `json:"shop_id"`
+	MerchantID   int64  `json:"merchant_id"`
+}
+
+type refreshAccessTokenEnvelope struct {
+	BaseResponse
+	AccessToken  string                      `json:"access_token"`
+	RefreshToken string                      `json:"refresh_token"`
+	ExpireIn     int64                       `json:"expire_in"`
+	ShopID       int64                       `json:"shop_id"`
+	MerchantID   int64                       `json:"merchant_id"`
+	Response     *RefreshAccessTokenResponse `json:"response"`
+}
+
+// RefreshAccessToken exchanges a refresh token for a new access token.
+// The auth endpoint uses a public signature, so the client's current access
+// token and shop ID are intentionally excluded from the request query.
+func (s *PartnerService) RefreshAccessToken(params *RefreshAccessTokenParams) (*RefreshAccessTokenResponse, error) {
+	publicClient := *s.client
+	publicClient.AccessToken = ""
+	publicClient.ShopID = 0
+
+	result := &refreshAccessTokenEnvelope{}
+	if err := publicClient.DoPost(PathPartnerRefreshAccessToken, params, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	if result.Response != nil {
+		return result.Response, nil
+	}
+	return &RefreshAccessTokenResponse{
+		BaseResponse: result.BaseResponse,
+		AccessToken:  result.AccessToken,
+		RefreshToken: result.RefreshToken,
+		ExpireIn:     result.ExpireIn,
+		ShopID:       result.ShopID,
+		MerchantID:   result.MerchantID,
+	}, nil
 }
 
 func (s *PartnerService) GetTokenByResendCode(params any) (*BaseResponse, error) {
