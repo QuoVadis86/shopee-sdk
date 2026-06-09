@@ -60,11 +60,11 @@ func main() {
 		log.Printf("Addresses: %d", len(addresses.Response.AddressList))
 	}
 
-	amsProducts, err := sdk.AMS.GetOpenCampaignAddedProduct(1, 10, "")
+	amsProducts, err := sdk.AMS.GetOpenCampaignAddedProduct(shopee.GetOpenCampaignAddedProductRequest{PageSize: 10})
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "GetOpenCampaignAddedProduct error: %v\n", err)
 	} else if amsProducts.Response != nil {
-		log.Printf("AMS products: %d total", amsProducts.Response.Total)
+		log.Printf("AMS products: %d total", amsProducts.Response.TotalCount)
 	}
 
 	paymentMethods, err := sdk.Payment.GetPaymentMethodList()

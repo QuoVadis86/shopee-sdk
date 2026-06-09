@@ -11,10 +11,88 @@ func NewPaymentService(client *Client) *PaymentService {
 }
 
 type EscrowDetail struct {
-	OrderSN    string  `json:"order_sn"`
-	Amount     float64 `json:"amount"`
-	Status     string  `json:"status"`
-	CreateTime int64   `json:"create_time"`
+	OrderSN           string            `json:"order_sn"`
+	BuyerUserName     string            `json:"buyer_user_name"`
+	ReturnOrderSNList []string          `json:"return_order_sn_list"`
+	OrderIncome       EscrowOrderIncome `json:"order_income"`
+	BuyerPaymentInfo  BuyerPaymentInfo  `json:"buyer_payment_info"`
+}
+
+type EscrowOrderItem struct {
+	ItemID                    int64   `json:"item_id"`
+	ItemName                  string  `json:"item_name"`
+	ItemSKU                   string  `json:"item_sku"`
+	ModelID                   int64   `json:"model_id"`
+	ModelName                 string  `json:"model_name"`
+	ModelSKU                  string  `json:"model_sku"`
+	OriginalPrice             float64 `json:"original_price"`
+	SellingPrice              float64 `json:"selling_price"`
+	DiscountedPrice           float64 `json:"discounted_price"`
+	SellerDiscount            float64 `json:"seller_discount"`
+	ShopeeDiscount            float64 `json:"shopee_discount"`
+	DiscountFromCoin          float64 `json:"discount_from_coin"`
+	DiscountFromVoucherShopee float64 `json:"discount_from_voucher_shopee"`
+	DiscountFromVoucherSeller float64 `json:"discount_from_voucher_seller"`
+	ActivityType              string  `json:"activity_type"`
+	ActivityID                int64   `json:"activity_id"`
+	QuantityPurchased         int64   `json:"quantity_purchased"`
+	AMSCommissionFee          float64 `json:"ams_commission_fee"`
+}
+
+type EscrowOrderIncome struct {
+	EscrowAmount                        float64           `json:"escrow_amount"`
+	BuyerTotalAmount                    float64           `json:"buyer_total_amount"`
+	OrderOriginalPrice                  float64           `json:"order_original_price"`
+	OriginalPrice                       float64           `json:"original_price"`
+	OrderDiscountedPrice                float64           `json:"order_discounted_price"`
+	OrderSellingPrice                   float64           `json:"order_selling_price"`
+	OrderSellerDiscount                 float64           `json:"order_seller_discount"`
+	SellerDiscount                      float64           `json:"seller_discount"`
+	ShopeeDiscount                      float64           `json:"shopee_discount"`
+	VoucherFromSeller                   float64           `json:"voucher_from_seller"`
+	VoucherFromShopee                   float64           `json:"voucher_from_shopee"`
+	Coins                               float64           `json:"coins"`
+	BuyerPaidShippingFee                float64           `json:"buyer_paid_shipping_fee"`
+	BuyerTransactionFee                 float64           `json:"buyer_transaction_fee"`
+	CrossBorderTax                      float64           `json:"cross_border_tax"`
+	PaymentPromotion                    float64           `json:"payment_promotion"`
+	CommissionFee                       float64           `json:"commission_fee"`
+	ServiceFee                          float64           `json:"service_fee"`
+	SellerTransactionFee                float64           `json:"seller_transaction_fee"`
+	SellerLostCompensation              float64           `json:"seller_lost_compensation"`
+	SellerCoinCashBack                  float64           `json:"seller_coin_cash_back"`
+	EscrowTax                           float64           `json:"escrow_tax"`
+	EstimatedShippingFee                float64           `json:"estimated_shipping_fee"`
+	FinalShippingFee                    float64           `json:"final_shipping_fee"`
+	ActualShippingFee                   float64           `json:"actual_shipping_fee"`
+	ShopeeShippingRebate                float64           `json:"shopee_shipping_rebate"`
+	ShippingFeeDiscountFrom3PL          float64           `json:"shipping_fee_discount_from_3pl"`
+	SellerShippingDiscount              float64           `json:"seller_shipping_discount"`
+	DRCAdjustableRefund                 float64           `json:"drc_adjustable_refund"`
+	CostOfGoodsSold                     float64           `json:"cost_of_goods_sold"`
+	OriginalCostOfGoodsSold             float64           `json:"original_cost_of_goods_sold"`
+	OriginalShopeeDiscount              float64           `json:"original_shopee_discount"`
+	SellerReturnRefund                  float64           `json:"seller_return_refund"`
+	CampaignFee                         float64           `json:"campaign_fee"`
+	OrderAMSCommissionFee               float64           `json:"order_ams_commission_fee"`
+	SellerOrderProcessingFee            float64           `json:"seller_order_processing_fee"`
+	FBSFee                              float64           `json:"fbs_fee"`
+	NetCommissionFee                    float64           `json:"net_commission_fee"`
+	NetServiceFee                       float64           `json:"net_service_fee"`
+	AdsEscrowTopUpOrTechnicalSupportFee float64           `json:"ads_escrow_top_up_fee_or_technical_support_fee"`
+	Items                               []EscrowOrderItem `json:"items"`
+}
+
+type BuyerPaymentInfo struct {
+	BuyerPaymentMethod  string  `json:"buyer_payment_method"`
+	BuyerServiceFee     float64 `json:"buyer_service_fee"`
+	BuyerTaxAmount      float64 `json:"buyer_tax_amount"`
+	BuyerTotalAmount    float64 `json:"buyer_total_amount"`
+	MerchantSubtotal    float64 `json:"merchant_subtotal"`
+	SellerVoucher       float64 `json:"seller_voucher"`
+	ShippingFee         float64 `json:"shipping_fee"`
+	ShopeeVoucher       float64 `json:"shopee_voucher"`
+	ShopeeCoinsRedeemed float64 `json:"shopee_coins_redeemed"`
 }
 
 type GetEscrowDetailResponse struct {
@@ -185,9 +263,9 @@ type EscrowListItem struct {
 type GetEscrowListResponse struct {
 	BaseResponse
 	Response struct {
-		EscrowList  []EscrowListItem `json:"escrow_list"`
-		More        bool             `json:"more"`
-		NextCursor  string           `json:"next_cursor"`
+		EscrowList []EscrowListItem `json:"escrow_list"`
+		More       bool             `json:"more"`
+		NextCursor string           `json:"next_cursor"`
 	} `json:"response"`
 }
 
@@ -236,9 +314,18 @@ func (s *PaymentService) GetBillingTransactionInfo(transactionID string) (*BaseR
 	return result, nil
 }
 
-func (s *PaymentService) GetEscrowDetailBatch(orderSNs []string) (*BaseResponse, error) {
+type EscrowDetailBatchItem struct {
+	EscrowDetail EscrowDetail `json:"escrow_detail"`
+}
+
+type GetEscrowDetailBatchResponse struct {
+	BaseResponse
+	Response []EscrowDetailBatchItem `json:"response"`
+}
+
+func (s *PaymentService) GetEscrowDetailBatch(orderSNs []string) (*GetEscrowDetailBatchResponse, error) {
 	payload := map[string]any{"order_sn_list": orderSNs}
-	result := &BaseResponse{}
+	result := &GetEscrowDetailBatchResponse{}
 	if err := s.client.DoPost(PathPaymentGetEscrowDetailBatch, payload, result); err != nil {
 		return nil, err
 	}
@@ -341,9 +428,9 @@ type IncomeDetail struct {
 type GetIncomeDetailResponse struct {
 	BaseResponse
 	Response struct {
-		IncomeList  []IncomeDetail `json:"income_list"`
-		More        bool           `json:"more"`
-		NextCursor  string         `json:"next_cursor"`
+		IncomeList []IncomeDetail `json:"income_list"`
+		More       bool           `json:"more"`
+		NextCursor string         `json:"next_cursor"`
 	} `json:"response"`
 }
 

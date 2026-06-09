@@ -22,22 +22,68 @@ type AMSItem struct {
 type AMSPaginatedResponse struct {
 	BaseResponse
 	Response *struct {
-		ItemList  []AMSItem `json:"item_list"`
-		Total     int       `json:"total"`
-		PageNum   int       `json:"page_num"`
-		PageSize  int       `json:"page_size"`
+		ItemList []AMSItem `json:"item_list"`
+		Total    int       `json:"total"`
+		PageNum  int       `json:"page_num"`
+		PageSize int       `json:"page_size"`
 	} `json:"response,omitempty"`
 }
 
-func (s *AMSService) GetOpenCampaignAddedProduct(pageNum, pageSize int, keyword string) (*AMSPaginatedResponse, error) {
+type GetOpenCampaignAddedProductRequest struct {
+	PageSize      int
+	Cursor        string
+	SortBy        string
+	SearchType    string
+	SearchContent string
+}
+
+type CommissionProtection struct {
+	CommissionRate          float64 `json:"commission_rate"`
+	ProtectionPeriodEndTime int64   `json:"protection_period_end_time"`
+}
+
+type OpenCampaignAddedProduct struct {
+	ItemID                      int64                  `json:"item_id"`
+	ItemName                    string                 `json:"item_name"`
+	CampaignID                  int64                  `json:"campaign_id"`
+	CampaignStatus              string                 `json:"campaign_status"`
+	CommissionRate              float64                `json:"commission_rate"`
+	PeriodStartTime             int64                  `json:"period_start_time"`
+	PeriodEndTime               int64                  `json:"period_end_time"`
+	PendingTerminatedTime       int64                  `json:"pending_terminated_time"`
+	CommissionProtectionList    []CommissionProtection `json:"commission_protection_list"`
+	MaxCommissionRateCurrentDay float64                `json:"max_commission_rate_current_day"`
+}
+
+type GetOpenCampaignAddedProductResponse struct {
+	BaseResponse
+	Response *struct {
+		ItemList   []OpenCampaignAddedProduct `json:"item_list"`
+		TotalCount int                        `json:"total_count"`
+		Cursor     string                     `json:"cursor"`
+		HasMore    bool                       `json:"has_more"`
+	} `json:"response,omitempty"`
+}
+
+func (s *AMSService) GetOpenCampaignAddedProduct(
+	request GetOpenCampaignAddedProductRequest,
+) (*GetOpenCampaignAddedProductResponse, error) {
 	q := map[string]string{
-		"page_num":  strconv.Itoa(pageNum),
-		"page_size": strconv.Itoa(pageSize),
+		"page_size": strconv.Itoa(request.PageSize),
 	}
-	if keyword != "" {
-		q["keyword"] = keyword
+	if request.Cursor != "" {
+		q["cursor"] = request.Cursor
 	}
-	result := &AMSPaginatedResponse{}
+	if request.SortBy != "" {
+		q["sort_by"] = request.SortBy
+	}
+	if request.SearchType != "" {
+		q["search_type"] = request.SearchType
+	}
+	if request.SearchContent != "" {
+		q["search_content"] = request.SearchContent
+	}
+	result := &GetOpenCampaignAddedProductResponse{}
 	if err := s.client.DoGet(PathAMSGetOpenCampaignAddedProduct, q, result); err != nil {
 		return nil, err
 	}
@@ -392,14 +438,14 @@ type AMSDateRangeParams struct {
 }
 
 type AMSShopPerformanceData struct {
-	Impression  int64   `json:"impression"`
-	Click       int64   `json:"click"`
-	Spend       float64 `json:"spend"`
-	Sales       float64 `json:"sales"`
-	ROI         float64 `json:"roi"`
-	CTR         float64 `json:"ctr"`
-	CPC         float64 `json:"cpc"`
-	Conversion  float64 `json:"conversion"`
+	Impression int64   `json:"impression"`
+	Click      int64   `json:"click"`
+	Spend      float64 `json:"spend"`
+	Sales      float64 `json:"sales"`
+	ROI        float64 `json:"roi"`
+	CTR        float64 `json:"ctr"`
+	CPC        float64 `json:"cpc"`
+	Conversion float64 `json:"conversion"`
 }
 
 type GetAMSShopPerformanceResponse struct {
@@ -423,14 +469,14 @@ func (s *AMSService) GetShopPerformance(dateFrom, dateTo int64) (*GetAMSShopPerf
 }
 
 type ProductPerformance struct {
-	ItemID      int64   `json:"item_id"`
-	ItemName    string  `json:"item_name"`
-	Impression  int64   `json:"impression"`
-	Click       int64   `json:"click"`
-	Spend       float64 `json:"spend"`
-	Sales       float64 `json:"sales"`
-	ROI         float64 `json:"roi"`
-	Conversion  float64 `json:"conversion"`
+	ItemID     int64   `json:"item_id"`
+	ItemName   string  `json:"item_name"`
+	Impression int64   `json:"impression"`
+	Click      int64   `json:"click"`
+	Spend      float64 `json:"spend"`
+	Sales      float64 `json:"sales"`
+	ROI        float64 `json:"roi"`
+	Conversion float64 `json:"conversion"`
 }
 
 type GetProductPerformanceResponse struct {
