@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type ReturnsService struct {
 	client *Client
@@ -45,7 +48,7 @@ func (s *ReturnsService) GetReturnList(pageSize int, cursor string, createTimeFr
 		q["status"] = status
 	}
 	result := &GetReturnListResponse{}
-	if err := s.client.DoGet(PathReturnGetList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathReturnGetList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -79,7 +82,7 @@ type GetReturnDetailResponse struct {
 func (s *ReturnsService) GetReturnDetail(returnID int64) (*GetReturnDetailResponse, error) {
 	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
 	result := &GetReturnDetailResponse{}
-	if err := s.client.DoGet(PathReturnGetDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathReturnGetDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -104,7 +107,7 @@ type GetAvailableSolutionsResponse struct {
 func (s *ReturnsService) GetAvailableSolutions(returnID int64) (*GetAvailableSolutionsResponse, error) {
 	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
 	result := &GetAvailableSolutionsResponse{}
-	if err := s.client.DoGet(PathReturnGetAvailableSolutions, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathReturnGetAvailableSolutions, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -116,7 +119,7 @@ func (s *ReturnsService) GetAvailableSolutions(returnID int64) (*GetAvailableSol
 func (s *ReturnsService) QueryProof(returnID int64) (*BaseResponse, error) {
 	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathReturnQueryProof, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathReturnQueryProof, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -140,7 +143,7 @@ type GetReturnDisputeReasonResponse struct {
 func (s *ReturnsService) GetReturnDisputeReason(returnID int64) (*GetReturnDisputeReasonResponse, error) {
 	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
 	result := &GetReturnDisputeReasonResponse{}
-	if err := s.client.DoGet(PathReturnGetDisputeReason, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathReturnGetDisputeReason, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -152,7 +155,7 @@ func (s *ReturnsService) GetReturnDisputeReason(returnID int64) (*GetReturnDispu
 func (s *ReturnsService) CancelDispute(returnID int64) (*BaseResponse, error) {
 	payload := map[string]any{"return_id": returnID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathReturnCancelDispute, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathReturnCancelDispute, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -175,7 +178,7 @@ type GetShippingCarrierResponse struct {
 
 func (s *ReturnsService) GetShippingCarrier() (*GetShippingCarrierResponse, error) {
 	result := &GetShippingCarrierResponse{}
-	if err := s.client.DoGet(PathReturnGetShippingCarrier, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathReturnGetShippingCarrier, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -199,7 +202,7 @@ type GetReverseTrackingInfoResponse struct {
 func (s *ReturnsService) GetReverseTrackingInfo(returnID int64) (*GetReverseTrackingInfoResponse, error) {
 	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
 	result := &GetReverseTrackingInfoResponse{}
-	if err := s.client.DoGet(PathReturnGetReverseTracking, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathReturnGetReverseTracking, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type PaymentService struct {
 	client *Client
@@ -25,7 +28,7 @@ type GetEscrowDetailResponse struct {
 func (s *PaymentService) GetEscrowDetail(orderSN string) (*GetEscrowDetailResponse, error) {
 	q := map[string]string{"order_sn": orderSN}
 	result := &GetEscrowDetailResponse{}
-	if err := s.client.DoGet(PathPaymentGetEscrowDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetEscrowDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -41,7 +44,7 @@ type InstallmentStatus struct {
 func (s *PaymentService) SetShopInstallmentStatus(enabled bool) (*BaseResponse, error) {
 	payload := map[string]any{"installment_status": enabled}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPaymentSetShopInstallment, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPaymentSetShopInstallment, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -57,7 +60,7 @@ type GetInstallmentStatusResponse struct {
 
 func (s *PaymentService) GetShopInstallmentStatus() (*GetInstallmentStatusResponse, error) {
 	result := &GetInstallmentStatusResponse{}
-	if err := s.client.DoGet(PathPaymentGetShopInstallment, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetShopInstallment, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -81,7 +84,7 @@ type GetPayoutDetailResponse struct {
 func (s *PaymentService) GetPayoutDetail(payoutID int64) (*GetPayoutDetailResponse, error) {
 	q := map[string]string{"payout_id": strconv.FormatInt(payoutID, 10)}
 	result := &GetPayoutDetailResponse{}
-	if err := s.client.DoGet(PathPaymentGetPayoutDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetPayoutDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -92,7 +95,7 @@ func (s *PaymentService) GetPayoutDetail(payoutID int64) (*GetPayoutDetailRespon
 
 func (s *PaymentService) SetItemInstallmentStatus(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPaymentSetItemInstallment, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPaymentSetItemInstallment, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -104,7 +107,7 @@ func (s *PaymentService) SetItemInstallmentStatus(params any) (*BaseResponse, er
 func (s *PaymentService) GetItemInstallmentStatus(itemID int64) (*BaseResponse, error) {
 	q := map[string]string{"item_id": strconv.FormatInt(itemID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPaymentGetItemInstallment, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetItemInstallment, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -128,7 +131,7 @@ type GetPaymentMethodListResponse struct {
 
 func (s *PaymentService) GetPaymentMethodList() (*GetPaymentMethodListResponse, error) {
 	result := &GetPaymentMethodListResponse{}
-	if err := s.client.DoGet(PathPaymentGetPaymentMethodList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetPaymentMethodList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -166,7 +169,7 @@ func (s *PaymentService) GetWalletTransactionList(pageSize int, cursor string, t
 		q["time_to"] = strconv.FormatInt(timeTo, 10)
 	}
 	result := &GetWalletTransactionListResponse{}
-	if err := s.client.DoGet(PathPaymentGetWalletTransactionList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetWalletTransactionList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -203,7 +206,7 @@ func (s *PaymentService) GetEscrowList(pageSize int, cursor string, timeFrom, ti
 		q["time_to"] = strconv.FormatInt(timeTo, 10)
 	}
 	result := &GetEscrowListResponse{}
-	if err := s.client.DoGet(PathPaymentGetEscrowList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetEscrowList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -215,7 +218,7 @@ func (s *PaymentService) GetEscrowList(pageSize int, cursor string, timeFrom, ti
 func (s *PaymentService) GetPayoutInfo(payoutID int64) (*BaseResponse, error) {
 	q := map[string]string{"payout_id": strconv.FormatInt(payoutID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPaymentGetPayoutInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetPayoutInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -227,7 +230,7 @@ func (s *PaymentService) GetPayoutInfo(payoutID int64) (*BaseResponse, error) {
 func (s *PaymentService) GetBillingTransactionInfo(transactionID string) (*BaseResponse, error) {
 	q := map[string]string{"transaction_id": transactionID}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPaymentGetBillingTransaction, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetBillingTransaction, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -239,7 +242,7 @@ func (s *PaymentService) GetBillingTransactionInfo(transactionID string) (*BaseR
 func (s *PaymentService) GetEscrowDetailBatch(orderSNs []string) (*BaseResponse, error) {
 	payload := map[string]any{"order_sn_list": orderSNs}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPaymentGetEscrowDetailBatch, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPaymentGetEscrowDetailBatch, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -275,7 +278,7 @@ func (s *PaymentService) GetIncomeStatement(dateFrom, dateTo int64, pageSize int
 		q["cursor"] = cursor
 	}
 	result := &GetIncomeStatementResponse{}
-	if err := s.client.DoGet(PathPaymentGetIncomeStatement, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetIncomeStatement, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -294,7 +297,7 @@ func (s *PaymentService) GetIncomeReport(dateFrom, dateTo int64, pageSize int, c
 		q["cursor"] = cursor
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPaymentGetIncomeReport, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetIncomeReport, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -320,7 +323,7 @@ func (s *PaymentService) GetIncomeOverview(dateFrom, dateTo int64) (*GetIncomeOv
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &GetIncomeOverviewResponse{}
-	if err := s.client.DoGet(PathPaymentGetIncomeOverview, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetIncomeOverview, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -357,7 +360,7 @@ func (s *PaymentService) GetIncomeDetail(dateFrom, dateTo int64, pageSize int, c
 		q["cursor"] = cursor
 	}
 	result := &GetIncomeDetailResponse{}
-	if err := s.client.DoGet(PathPaymentGetIncomeDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPaymentGetIncomeDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

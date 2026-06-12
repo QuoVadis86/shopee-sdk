@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type PromotionService struct {
 	client *Client
@@ -41,7 +44,7 @@ type AddDiscountResponse struct {
 
 func (s *PromotionService) AddDiscount(params *AddDiscountParams) (*AddDiscountResponse, error) {
 	result := &AddDiscountResponse{}
-	if err := s.client.DoPost(PathPromotionAddDiscount, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddDiscount, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -60,7 +63,7 @@ type AddDiscountItemParams struct {
 
 func (s *PromotionService) AddDiscountItem(params *AddDiscountItemParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionAddDiscountItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddDiscountItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -72,7 +75,7 @@ func (s *PromotionService) AddDiscountItem(params *AddDiscountItemParams) (*Base
 func (s *PromotionService) DeleteDiscount(discountID int64) (*BaseResponse, error) {
 	payload := map[string]any{"discount_id": discountID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteDiscount, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteDiscount, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -83,7 +86,7 @@ func (s *PromotionService) DeleteDiscount(discountID int64) (*BaseResponse, erro
 
 func (s *PromotionService) DeleteDiscountItem(params *AddDiscountItemParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteDiscountItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteDiscountItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -100,7 +103,7 @@ type GetDiscountResponse struct {
 func (s *PromotionService) GetDiscount(discountID int64) (*GetDiscountResponse, error) {
 	q := map[string]string{"discount_id": strconv.FormatInt(discountID, 10)}
 	result := &GetDiscountResponse{}
-	if err := s.client.DoGet(PathPromotionGetDiscount, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetDiscount, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -126,7 +129,7 @@ func (s *PromotionService) GetDiscountList(pageSize, pageNumber int, status stri
 		q["status"] = status
 	}
 	result := &GetDiscountListResponse{}
-	if err := s.client.DoGet(PathPromotionGetDiscountList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetDiscountList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -137,7 +140,7 @@ func (s *PromotionService) GetDiscountList(pageSize, pageNumber int, status stri
 
 func (s *PromotionService) UpdateDiscount(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateDiscount, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateDiscount, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -148,7 +151,7 @@ func (s *PromotionService) UpdateDiscount(params any) (*BaseResponse, error) {
 
 func (s *PromotionService) UpdateDiscountItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateDiscountItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateDiscountItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -160,7 +163,7 @@ func (s *PromotionService) UpdateDiscountItem(params any) (*BaseResponse, error)
 func (s *PromotionService) GetSIPDiscounts(discountID int64) (*BaseResponse, error) {
 	q := map[string]string{"discount_id": strconv.FormatInt(discountID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetSIPDiscounts, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetSIPDiscounts, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -171,7 +174,7 @@ func (s *PromotionService) GetSIPDiscounts(discountID int64) (*BaseResponse, err
 
 func (s *PromotionService) SetSIPDiscount(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionSetSIPDiscount, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionSetSIPDiscount, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -182,7 +185,7 @@ func (s *PromotionService) SetSIPDiscount(params any) (*BaseResponse, error) {
 
 func (s *PromotionService) DeleteSIPDiscount(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteSIPDiscount, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteSIPDiscount, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -208,7 +211,7 @@ type AddBundleDealResponse struct {
 
 func (s *PromotionService) AddBundleDeal(params any) (*AddBundleDealResponse, error) {
 	result := &AddBundleDealResponse{}
-	if err := s.client.DoPost(PathPromotionAddBundleDeal, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddBundleDeal, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -219,7 +222,7 @@ func (s *PromotionService) AddBundleDeal(params any) (*AddBundleDealResponse, er
 
 func (s *PromotionService) AddBundleDealItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionAddBundleDealItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddBundleDealItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -245,7 +248,7 @@ func (s *PromotionService) GetBundleDealList(pageSize, pageNumber int, status st
 		q["status"] = status
 	}
 	result := &GetBundleDealListResponse{}
-	if err := s.client.DoGet(PathPromotionGetBundleDealList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetBundleDealList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -257,7 +260,7 @@ func (s *PromotionService) GetBundleDealList(pageSize, pageNumber int, status st
 func (s *PromotionService) GetBundleDeal(bundleDealID int64) (*BaseResponse, error) {
 	q := map[string]string{"bundle_deal_id": strconv.FormatInt(bundleDealID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetBundleDeal, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetBundleDeal, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -269,7 +272,7 @@ func (s *PromotionService) GetBundleDeal(bundleDealID int64) (*BaseResponse, err
 func (s *PromotionService) GetBundleDealItem(bundleDealID int64) (*BaseResponse, error) {
 	q := map[string]string{"bundle_deal_id": strconv.FormatInt(bundleDealID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetBundleDealItem, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetBundleDealItem, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -280,7 +283,7 @@ func (s *PromotionService) GetBundleDealItem(bundleDealID int64) (*BaseResponse,
 
 func (s *PromotionService) UpdateBundleDeal(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateBundleDeal, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateBundleDeal, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -291,7 +294,7 @@ func (s *PromotionService) UpdateBundleDeal(params any) (*BaseResponse, error) {
 
 func (s *PromotionService) UpdateBundleDealItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateBundleDealItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateBundleDealItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -303,7 +306,7 @@ func (s *PromotionService) UpdateBundleDealItem(params any) (*BaseResponse, erro
 func (s *PromotionService) DeleteBundleDeal(bundleDealID int64) (*BaseResponse, error) {
 	payload := map[string]any{"bundle_deal_id": bundleDealID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteBundleDeal, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteBundleDeal, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -315,7 +318,7 @@ func (s *PromotionService) DeleteBundleDeal(bundleDealID int64) (*BaseResponse, 
 func (s *PromotionService) DeleteBundleDealItem(bundleDealID int64) (*BaseResponse, error) {
 	payload := map[string]any{"bundle_deal_id": bundleDealID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteBundleDealItem, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteBundleDealItem, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -341,7 +344,7 @@ type AddAddOnDealResponse struct {
 
 func (s *PromotionService) AddAddOnDeal(params any) (*AddAddOnDealResponse, error) {
 	result := &AddAddOnDealResponse{}
-	if err := s.client.DoPost(PathPromotionAddAddOnDeal, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddAddOnDeal, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -352,7 +355,7 @@ func (s *PromotionService) AddAddOnDeal(params any) (*AddAddOnDealResponse, erro
 
 func (s *PromotionService) AddAddOnDealMainItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionAddAddOnDealMainItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddAddOnDealMainItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -363,7 +366,7 @@ func (s *PromotionService) AddAddOnDealMainItem(params any) (*BaseResponse, erro
 
 func (s *PromotionService) AddAddOnDealSubItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionAddAddOnDealSubItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddAddOnDealSubItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -375,7 +378,7 @@ func (s *PromotionService) AddAddOnDealSubItem(params any) (*BaseResponse, error
 func (s *PromotionService) DeleteAddOnDeal(addOnDealID int64) (*BaseResponse, error) {
 	payload := map[string]any{"add_on_deal_id": addOnDealID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteAddOnDeal, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteAddOnDeal, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -386,7 +389,7 @@ func (s *PromotionService) DeleteAddOnDeal(addOnDealID int64) (*BaseResponse, er
 
 func (s *PromotionService) DeleteAddOnDealMainItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteAddOnDealMain, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteAddOnDealMain, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -397,7 +400,7 @@ func (s *PromotionService) DeleteAddOnDealMainItem(params any) (*BaseResponse, e
 
 func (s *PromotionService) DeleteAddOnDealSubItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteAddOnDealSub, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteAddOnDealSub, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -423,7 +426,7 @@ func (s *PromotionService) GetAddOnDealList(pageSize, pageNumber int, status str
 		q["status"] = status
 	}
 	result := &GetAddOnDealListResponse{}
-	if err := s.client.DoGet(PathPromotionGetAddOnDealList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetAddOnDealList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -435,7 +438,7 @@ func (s *PromotionService) GetAddOnDealList(pageSize, pageNumber int, status str
 func (s *PromotionService) GetAddOnDeal(addOnDealID int64) (*BaseResponse, error) {
 	q := map[string]string{"add_on_deal_id": strconv.FormatInt(addOnDealID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetAddOnDeal, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetAddOnDeal, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -447,7 +450,7 @@ func (s *PromotionService) GetAddOnDeal(addOnDealID int64) (*BaseResponse, error
 func (s *PromotionService) GetAddOnDealMainItem(addOnDealID int64) (*BaseResponse, error) {
 	q := map[string]string{"add_on_deal_id": strconv.FormatInt(addOnDealID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetAddOnDealMainItem, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetAddOnDealMainItem, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -459,7 +462,7 @@ func (s *PromotionService) GetAddOnDealMainItem(addOnDealID int64) (*BaseRespons
 func (s *PromotionService) GetAddOnDealSubItem(addOnDealID int64) (*BaseResponse, error) {
 	q := map[string]string{"add_on_deal_id": strconv.FormatInt(addOnDealID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetAddOnDealSubItem, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetAddOnDealSubItem, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -470,7 +473,7 @@ func (s *PromotionService) GetAddOnDealSubItem(addOnDealID int64) (*BaseResponse
 
 func (s *PromotionService) UpdateAddOnDeal(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateAddOnDeal, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateAddOnDeal, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -481,7 +484,7 @@ func (s *PromotionService) UpdateAddOnDeal(params any) (*BaseResponse, error) {
 
 func (s *PromotionService) UpdateAddOnDealMainItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateAddOnDealMain, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateAddOnDealMain, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -492,7 +495,7 @@ func (s *PromotionService) UpdateAddOnDealMainItem(params any) (*BaseResponse, e
 
 func (s *PromotionService) UpdateAddOnDealSubItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateAddOnDealSub, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateAddOnDealSub, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -504,7 +507,7 @@ func (s *PromotionService) UpdateAddOnDealSubItem(params any) (*BaseResponse, er
 func (s *PromotionService) EndAddOnDeal(addOnDealID int64) (*BaseResponse, error) {
 	payload := map[string]any{"add_on_deal_id": addOnDealID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionEndAddOnDeal, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionEndAddOnDeal, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -531,7 +534,7 @@ type AddVoucherResponse struct {
 
 func (s *PromotionService) AddVoucher(params *AddVoucherParams) (*AddVoucherResponse, error) {
 	result := &AddVoucherResponse{}
-	if err := s.client.DoPost(PathPromotionAddVoucher, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddVoucher, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -543,7 +546,7 @@ func (s *PromotionService) AddVoucher(params *AddVoucherParams) (*AddVoucherResp
 func (s *PromotionService) DeleteVoucher(voucherID int64) (*BaseResponse, error) {
 	payload := map[string]any{"voucher_id": voucherID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteVoucher, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteVoucher, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -554,7 +557,7 @@ func (s *PromotionService) DeleteVoucher(voucherID int64) (*BaseResponse, error)
 
 func (s *PromotionService) UpdateVoucher(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateVoucher, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateVoucher, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -582,7 +585,7 @@ type GetVoucherResponse struct {
 func (s *PromotionService) GetVoucher(voucherID int64) (*GetVoucherResponse, error) {
 	q := map[string]string{"voucher_id": strconv.FormatInt(voucherID, 10)}
 	result := &GetVoucherResponse{}
-	if err := s.client.DoGet(PathPromotionGetVoucher, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetVoucher, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -608,7 +611,7 @@ func (s *PromotionService) GetVoucherList(pageSize, pageNumber int, status strin
 		q["status"] = status
 	}
 	result := &GetVoucherListResponse{}
-	if err := s.client.DoGet(PathPromotionGetVoucherList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetVoucherList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -620,7 +623,7 @@ func (s *PromotionService) GetVoucherList(pageSize, pageNumber int, status strin
 func (s *PromotionService) GetTimeSlotID(voucherID int64) (*BaseResponse, error) {
 	q := map[string]string{"voucher_id": strconv.FormatInt(voucherID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetTimeSlotID, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetTimeSlotID, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -646,7 +649,7 @@ type CreateFlashSaleResponse struct {
 
 func (s *PromotionService) CreateShopFlashSale(params any) (*CreateFlashSaleResponse, error) {
 	result := &CreateFlashSaleResponse{}
-	if err := s.client.DoPost(PathPromotionCreateFlashSale, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionCreateFlashSale, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -658,7 +661,7 @@ func (s *PromotionService) CreateShopFlashSale(params any) (*CreateFlashSaleResp
 func (s *PromotionService) GetItemCriteria(flashSaleID int64) (*BaseResponse, error) {
 	q := map[string]string{"flash_sale_id": strconv.FormatInt(flashSaleID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetItemCriteria, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetItemCriteria, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -669,7 +672,7 @@ func (s *PromotionService) GetItemCriteria(flashSaleID int64) (*BaseResponse, er
 
 func (s *PromotionService) AddShopFlashSaleItems(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionAddFlashSaleItems, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddFlashSaleItems, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -695,7 +698,7 @@ func (s *PromotionService) GetShopFlashSaleList(status string, pageSize, pageNum
 		q["status"] = status
 	}
 	result := &GetFlashSaleListResponse{}
-	if err := s.client.DoGet(PathPromotionGetFlashSaleList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetFlashSaleList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -707,7 +710,7 @@ func (s *PromotionService) GetShopFlashSaleList(status string, pageSize, pageNum
 func (s *PromotionService) GetShopFlashSale(flashSaleID int64) (*BaseResponse, error) {
 	q := map[string]string{"flash_sale_id": strconv.FormatInt(flashSaleID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetFlashSale, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetFlashSale, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -719,7 +722,7 @@ func (s *PromotionService) GetShopFlashSale(flashSaleID int64) (*BaseResponse, e
 func (s *PromotionService) GetShopFlashSaleItems(flashSaleID int64) (*BaseResponse, error) {
 	q := map[string]string{"flash_sale_id": strconv.FormatInt(flashSaleID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetFlashSaleItems, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetFlashSaleItems, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -730,7 +733,7 @@ func (s *PromotionService) GetShopFlashSaleItems(flashSaleID int64) (*BaseRespon
 
 func (s *PromotionService) UpdateShopFlashSale(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateFlashSale, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateFlashSale, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -741,7 +744,7 @@ func (s *PromotionService) UpdateShopFlashSale(params any) (*BaseResponse, error
 
 func (s *PromotionService) UpdateShopFlashSaleItems(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateFlashSaleItems, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateFlashSaleItems, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -753,7 +756,7 @@ func (s *PromotionService) UpdateShopFlashSaleItems(params any) (*BaseResponse, 
 func (s *PromotionService) DeleteShopFlashSale(flashSaleID int64) (*BaseResponse, error) {
 	payload := map[string]any{"flash_sale_id": flashSaleID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteFlashSale, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteFlashSale, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -765,7 +768,7 @@ func (s *PromotionService) DeleteShopFlashSale(flashSaleID int64) (*BaseResponse
 func (s *PromotionService) DeleteShopFlashSaleItems(flashSaleID int64) (*BaseResponse, error) {
 	payload := map[string]any{"flash_sale_id": flashSaleID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteFlashSaleItems, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteFlashSaleItems, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -776,7 +779,7 @@ func (s *PromotionService) DeleteShopFlashSaleItems(flashSaleID int64) (*BaseRes
 
 func (s *PromotionService) AddFollowPrize(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionAddFollowPrize, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddFollowPrize, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -788,7 +791,7 @@ func (s *PromotionService) AddFollowPrize(params any) (*BaseResponse, error) {
 func (s *PromotionService) DeleteFollowPrize(followPrizeID int64) (*BaseResponse, error) {
 	payload := map[string]any{"follow_prize_id": followPrizeID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteFollowPrize, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteFollowPrize, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -799,7 +802,7 @@ func (s *PromotionService) DeleteFollowPrize(followPrizeID int64) (*BaseResponse
 
 func (s *PromotionService) UpdateFollowPrize(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateFollowPrize, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateFollowPrize, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -811,7 +814,7 @@ func (s *PromotionService) UpdateFollowPrize(params any) (*BaseResponse, error) 
 func (s *PromotionService) GetFollowPrizeDetail(followPrizeID int64) (*BaseResponse, error) {
 	q := map[string]string{"follow_prize_id": strconv.FormatInt(followPrizeID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetFollowPrizeDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetFollowPrizeDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -829,7 +832,7 @@ func (s *PromotionService) GetFollowPrizeList(status string, pageSize, pageNumbe
 		q["status"] = status
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetFollowPrizeList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetFollowPrizeList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -840,7 +843,7 @@ func (s *PromotionService) GetFollowPrizeList(status string, pageSize, pageNumbe
 
 func (s *PromotionService) GetTopPicksList() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetTopPicksList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetTopPicksList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -851,7 +854,7 @@ func (s *PromotionService) GetTopPicksList() (*BaseResponse, error) {
 
 func (s *PromotionService) AddTopPicks(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionAddTopPicks, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddTopPicks, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -862,7 +865,7 @@ func (s *PromotionService) AddTopPicks(params any) (*BaseResponse, error) {
 
 func (s *PromotionService) UpdateTopPicks(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateTopPicks, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateTopPicks, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -874,7 +877,7 @@ func (s *PromotionService) UpdateTopPicks(params any) (*BaseResponse, error) {
 func (s *PromotionService) DeleteTopPicks(topPicksID int64) (*BaseResponse, error) {
 	payload := map[string]any{"top_picks_id": topPicksID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteTopPicks, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteTopPicks, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -898,7 +901,7 @@ type AddShopCategoryResponse struct {
 
 func (s *PromotionService) AddShopCategory(params any) (*AddShopCategoryResponse, error) {
 	result := &AddShopCategoryResponse{}
-	if err := s.client.DoPost(PathPromotionAddShopCategory, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddShopCategory, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -916,7 +919,7 @@ type GetShopCategoryListResponse struct {
 
 func (s *PromotionService) GetShopCategoryList() (*GetShopCategoryListResponse, error) {
 	result := &GetShopCategoryListResponse{}
-	if err := s.client.DoGet(PathPromotionGetShopCategoryList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetShopCategoryList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -928,7 +931,7 @@ func (s *PromotionService) GetShopCategoryList() (*GetShopCategoryListResponse, 
 func (s *PromotionService) DeleteShopCategory(categoryID int64) (*BaseResponse, error) {
 	payload := map[string]any{"category_id": categoryID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteShopCategory, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteShopCategory, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -939,7 +942,7 @@ func (s *PromotionService) DeleteShopCategory(categoryID int64) (*BaseResponse, 
 
 func (s *PromotionService) UpdateShopCategory(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionUpdateShopCategory, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionUpdateShopCategory, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -950,7 +953,7 @@ func (s *PromotionService) UpdateShopCategory(params any) (*BaseResponse, error)
 
 func (s *PromotionService) AddShopCategoryItemList(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionAddShopCategoryItemList, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionAddShopCategoryItemList, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -966,7 +969,7 @@ func (s *PromotionService) GetShopCategoryItemList(categoryID int64, pageSize, p
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathPromotionGetShopCategoryItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetShopCategoryItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -977,7 +980,7 @@ func (s *PromotionService) GetShopCategoryItemList(categoryID int64, pageSize, p
 
 func (s *PromotionService) DeleteShopCategoryItemList(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathPromotionDeleteShopCategoryItemList, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathPromotionDeleteShopCategoryItemList, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

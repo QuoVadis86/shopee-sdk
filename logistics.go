@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type LogisticsService struct {
 	client *Client
@@ -47,7 +50,7 @@ func (s *LogisticsService) GetShippingParameter(orderSN, packageNumber string) (
 		q["package_number"] = packageNumber
 	}
 	result := &ShippingParameterResponse{}
-	if err := s.client.DoGet(PathLogisticsGetShippingParam, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetShippingParam, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -59,7 +62,7 @@ func (s *LogisticsService) GetShippingParameter(orderSN, packageNumber string) (
 func (s *LogisticsService) GetMassShippingParameter(orderList []string) (*BaseResponse, error) {
 	payload := map[string]any{"order_list": orderList}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsGetMassShippingParam, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsGetMassShippingParam, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -93,7 +96,7 @@ type ShipOrderParams struct {
 
 func (s *LogisticsService) ShipOrder(params *ShipOrderParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsShipOrder, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsShipOrder, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -104,7 +107,7 @@ func (s *LogisticsService) ShipOrder(params *ShipOrderParams) (*BaseResponse, er
 
 func (s *LogisticsService) MassShipOrder(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsMassShipOrder, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsMassShipOrder, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -115,7 +118,7 @@ func (s *LogisticsService) MassShipOrder(params any) (*BaseResponse, error) {
 
 func (s *LogisticsService) UpdateShippingOrder(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsUpdateShippingOrder, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsUpdateShippingOrder, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -140,7 +143,7 @@ func (s *LogisticsService) GetTrackingNumber(orderSN, packageNumber string) (*Ge
 		q["package_number"] = packageNumber
 	}
 	result := &GetTrackingNumberResponse{}
-	if err := s.client.DoGet(PathLogisticsGetTrackingNumber, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetTrackingNumber, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -152,7 +155,7 @@ func (s *LogisticsService) GetTrackingNumber(orderSN, packageNumber string) (*Ge
 func (s *LogisticsService) GetMassTrackingNumber(orderSNs []string) (*BaseResponse, error) {
 	payload := map[string]any{"order_sn_list": orderSNs}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsGetMassTrackingNumber, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsGetMassTrackingNumber, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -179,7 +182,7 @@ func (s *LogisticsService) GetShippingDocumentParameter(orderSNs []string) (*Get
 		list[i] = orderSNItem{OrderSN: sn}
 	}
 	result := &GetShippingDocParamResponse{}
-	if err := s.client.DoPost(PathLogisticsGetShippingDocParam, map[string]any{"order_list": list}, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsGetShippingDocParam, map[string]any{"order_list": list}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -198,7 +201,7 @@ func (s *LogisticsService) CreateShippingDocument(orderSNs []string, docType str
 		"shipping_document_type": docType,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsCreateShippingDoc, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsCreateShippingDoc, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -213,7 +216,7 @@ func (s *LogisticsService) GetShippingDocumentResult(orderListJSON, docType stri
 		"shipping_document_type": docType,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetShippingDocResult, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetShippingDocResult, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -225,7 +228,7 @@ func (s *LogisticsService) GetShippingDocumentResult(orderListJSON, docType stri
 func (s *LogisticsService) GetShippingDocumentDataInfo(resultID string) (*BaseResponse, error) {
 	q := map[string]string{"shipping_document_result_id": resultID}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetShippingDocDataInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetShippingDocDataInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -256,7 +259,7 @@ func (s *LogisticsService) GetTrackingInfo(orderSN, packageNumber string) (*GetT
 		q["package_number"] = packageNumber
 	}
 	result := &GetTrackingInfoResponse{}
-	if err := s.client.DoGet(PathLogisticsGetTrackingInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetTrackingInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -284,7 +287,7 @@ type GetAddressListResponse struct {
 
 func (s *LogisticsService) GetAddressList() (*GetAddressListResponse, error) {
 	result := &GetAddressListResponse{}
-	if err := s.client.DoGet(PathLogisticsGetAddressList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetAddressList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -295,7 +298,7 @@ func (s *LogisticsService) GetAddressList() (*GetAddressListResponse, error) {
 
 func (s *LogisticsService) SetAddressConfig(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsSetAddressConfig, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsSetAddressConfig, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -306,7 +309,7 @@ func (s *LogisticsService) SetAddressConfig(params any) (*BaseResponse, error) {
 
 func (s *LogisticsService) UpdateAddress(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsUpdateAddress, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsUpdateAddress, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -318,7 +321,7 @@ func (s *LogisticsService) UpdateAddress(params any) (*BaseResponse, error) {
 func (s *LogisticsService) DeleteAddress(addressID int64) (*BaseResponse, error) {
 	payload := map[string]any{"address_id": addressID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsDeleteAddress, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsDeleteAddress, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -344,7 +347,7 @@ type GetChannelListResponse struct {
 
 func (s *LogisticsService) GetChannelList() (*GetChannelListResponse, error) {
 	result := &GetChannelListResponse{}
-	if err := s.client.DoGet(PathLogisticsGetChannelList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetChannelList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -355,7 +358,7 @@ func (s *LogisticsService) GetChannelList() (*GetChannelListResponse, error) {
 
 func (s *LogisticsService) UpdateChannel(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsUpdateChannel, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsUpdateChannel, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -370,7 +373,7 @@ func (s *LogisticsService) GetOperatingHours(addressID int64, date string) (*Bas
 		"date":       date,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetOperatingHours, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetOperatingHours, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -381,7 +384,7 @@ func (s *LogisticsService) GetOperatingHours(addressID int64, date string) (*Bas
 
 func (s *LogisticsService) GetOperatingHourRestrictions() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetOpHoursRestrictions, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetOpHoursRestrictions, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -392,7 +395,7 @@ func (s *LogisticsService) GetOperatingHourRestrictions() (*BaseResponse, error)
 
 func (s *LogisticsService) UpdateOperatingHours(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsUpdateOperatingHours, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsUpdateOperatingHours, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -403,7 +406,7 @@ func (s *LogisticsService) UpdateOperatingHours(params any) (*BaseResponse, erro
 
 func (s *LogisticsService) DeleteSpecialOperatingHour(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsDeleteSpecialOpHour, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsDeleteSpecialOpHour, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -414,7 +417,7 @@ func (s *LogisticsService) DeleteSpecialOperatingHour(params any) (*BaseResponse
 
 func (s *LogisticsService) BatchUpdateTPFWarehouseTrackingStatus(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsBatchUpdateTPFTracking, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsBatchUpdateTPFTracking, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -425,7 +428,7 @@ func (s *LogisticsService) BatchUpdateTPFWarehouseTrackingStatus(params any) (*B
 
 func (s *LogisticsService) BatchShipOrder(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsBatchShipOrder, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsBatchShipOrder, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -436,7 +439,7 @@ func (s *LogisticsService) BatchShipOrder(params any) (*BaseResponse, error) {
 
 func (s *LogisticsService) UpdateTrackingStatus(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsUpdateTrackingStatus, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsUpdateTrackingStatus, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -448,7 +451,7 @@ func (s *LogisticsService) UpdateTrackingStatus(params any) (*BaseResponse, erro
 func (s *LogisticsService) GetBookingShippingParameter(bookingID int64) (*BaseResponse, error) {
 	q := map[string]string{"booking_id": strconv.FormatInt(bookingID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetBookingShippingParam, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetBookingShippingParam, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -459,7 +462,7 @@ func (s *LogisticsService) GetBookingShippingParameter(bookingID int64) (*BaseRe
 
 func (s *LogisticsService) ShipBooking(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsShipBooking, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsShipBooking, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -471,7 +474,7 @@ func (s *LogisticsService) ShipBooking(params any) (*BaseResponse, error) {
 func (s *LogisticsService) GetBookingTrackingNumber(bookingID int64) (*BaseResponse, error) {
 	q := map[string]string{"booking_id": strconv.FormatInt(bookingID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetBookingTrackingNum, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetBookingTrackingNum, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -483,7 +486,7 @@ func (s *LogisticsService) GetBookingTrackingNumber(bookingID int64) (*BaseRespo
 func (s *LogisticsService) GetBookingShippingDocumentParameter(bookingID int64) (*BaseResponse, error) {
 	q := map[string]string{"booking_id": strconv.FormatInt(bookingID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetBookingShipDocParam, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetBookingShipDocParam, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -494,7 +497,7 @@ func (s *LogisticsService) GetBookingShippingDocumentParameter(bookingID int64) 
 
 func (s *LogisticsService) CreateBookingShippingDocument(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsCreateBookingShipDoc, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsCreateBookingShipDoc, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -506,7 +509,7 @@ func (s *LogisticsService) CreateBookingShippingDocument(params any) (*BaseRespo
 func (s *LogisticsService) GetBookingShippingDocumentResult(bookingID int64) (*BaseResponse, error) {
 	q := map[string]string{"booking_id": strconv.FormatInt(bookingID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetBookingShipDocResult, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetBookingShipDocResult, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -518,7 +521,7 @@ func (s *LogisticsService) GetBookingShippingDocumentResult(bookingID int64) (*B
 func (s *LogisticsService) GetBookingShippingDocumentDataInfo(resultID string) (*BaseResponse, error) {
 	q := map[string]string{"shipping_document_result_id": resultID}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetBookingShipDocData, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetBookingShipDocData, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -530,7 +533,7 @@ func (s *LogisticsService) GetBookingShippingDocumentDataInfo(resultID string) (
 func (s *LogisticsService) GetBookingTrackingInfo(bookingID int64) (*BaseResponse, error) {
 	q := map[string]string{"booking_id": strconv.FormatInt(bookingID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetBookingTrackingInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetBookingTrackingInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -541,7 +544,7 @@ func (s *LogisticsService) GetBookingTrackingInfo(bookingID int64) (*BaseRespons
 
 func (s *LogisticsService) CreateShippingDocumentJob(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsCreateShipDocJob, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsCreateShipDocJob, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -553,7 +556,7 @@ func (s *LogisticsService) CreateShippingDocumentJob(params any) (*BaseResponse,
 func (s *LogisticsService) GetShippingDocumentJobStatus(jobID string) (*BaseResponse, error) {
 	q := map[string]string{"job_id": jobID}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetShipDocJobStatus, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetShipDocJobStatus, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -564,7 +567,7 @@ func (s *LogisticsService) GetShippingDocumentJobStatus(jobID string) (*BaseResp
 
 func (s *LogisticsService) UpdateSelfCollectionOrderLogistics(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsUpdateSelfCollectOrder, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsUpdateSelfCollectOrder, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -576,7 +579,7 @@ func (s *LogisticsService) UpdateSelfCollectionOrderLogistics(params any) (*Base
 func (s *LogisticsService) GetMartPackagingInfo(martItemID int64) (*BaseResponse, error) {
 	q := map[string]string{"mart_item_id": strconv.FormatInt(martItemID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetMartPackagingInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetMartPackagingInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -587,7 +590,7 @@ func (s *LogisticsService) GetMartPackagingInfo(martItemID int64) (*BaseResponse
 
 func (s *LogisticsService) SetMartPackagingInfo(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsSetMartPackagingInfo, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsSetMartPackagingInfo, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -599,7 +602,7 @@ func (s *LogisticsService) SetMartPackagingInfo(params any) (*BaseResponse, erro
 func (s *LogisticsService) CheckPolygonUpdateStatus(polygonVersion string) (*BaseResponse, error) {
 	q := map[string]string{"polygon_version": polygonVersion}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsCheckPolygonUpdate, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsCheckPolygonUpdate, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -621,7 +624,7 @@ type GetPauseStatusResponse struct {
 
 func (s *LogisticsService) GetPauseStatus() (*GetPauseStatusResponse, error) {
 	result := &GetPauseStatusResponse{}
-	if err := s.client.DoGet(PathLogisticsGetPauseStatus, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetPauseStatus, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -632,7 +635,7 @@ func (s *LogisticsService) GetPauseStatus() (*GetPauseStatusResponse, error) {
 
 func (s *LogisticsService) SetPauseStatus(params *PauseStatus) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLogisticsSetPauseStatus, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLogisticsSetPauseStatus, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -644,7 +647,7 @@ func (s *LogisticsService) SetPauseStatus(params *PauseStatus) (*BaseResponse, e
 func (s *LogisticsService) GetUnbindOrderList(orderSNs []string) (*BaseResponse, error) {
 	q := map[string]string{"order_sn_list": stringsJoin(orderSNs, ",")}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetUnbindOrderList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetUnbindOrderList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -659,7 +662,7 @@ func (s *LogisticsService) GetDetail(trackingNumber string, channelID int64) (*B
 		"channel_id":      strconv.FormatInt(channelID, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -671,7 +674,7 @@ func (s *LogisticsService) GetDetail(trackingNumber string, channelID int64) (*B
 func (s *LogisticsService) GetTrackingNumberList(orderSNs []string) (*BaseResponse, error) {
 	q := map[string]string{"order_sn_list": stringsJoin(orderSNs, ",")}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetTrackingNumList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetTrackingNumList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -686,7 +689,7 @@ func (s *LogisticsService) GetWaybill(orderSNs []string, channelID int64) (*Base
 		"channel_id":    strconv.FormatInt(channelID, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetWaybill, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetWaybill, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -701,7 +704,7 @@ func (s *LogisticsService) GetCourierDeliveryChannelList(addressID int64, orderA
 		"order_amount": strconv.FormatFloat(orderAmount, 'f', 2, 64),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetCourierChannelList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetCourierChannelList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -712,7 +715,7 @@ func (s *LogisticsService) GetCourierDeliveryChannelList(addressID int64, orderA
 
 func (s *LogisticsService) GetTransitWarehouseList() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetTransitWarehouseList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetTransitWarehouseList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -724,7 +727,7 @@ func (s *LogisticsService) GetTransitWarehouseList() (*BaseResponse, error) {
 func (s *LogisticsService) GetCourierDeliveryDetail(trackingNumber string) (*BaseResponse, error) {
 	q := map[string]string{"tracking_number": trackingNumber}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetCourierDeliveryDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetCourierDeliveryDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -736,7 +739,7 @@ func (s *LogisticsService) GetCourierDeliveryDetail(trackingNumber string) (*Bas
 func (s *LogisticsService) GetCourierDeliveryWaybill(trackingNumber string) (*BaseResponse, error) {
 	q := map[string]string{"tracking_number": trackingNumber}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetCourierDeliveryWaybill, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetCourierDeliveryWaybill, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -748,7 +751,7 @@ func (s *LogisticsService) GetCourierDeliveryWaybill(trackingNumber string) (*Ba
 func (s *LogisticsService) GetCourierDeliveryTrackingNumberList(orderSNs []string) (*BaseResponse, error) {
 	q := map[string]string{"order_sn_list": stringsJoin(orderSNs, ",")}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLogisticsGetCourierTrackingList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLogisticsGetCourierTrackingList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

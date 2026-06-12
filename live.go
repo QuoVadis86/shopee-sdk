@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type LiveService struct {
 	client *Client
@@ -27,7 +30,7 @@ type CreateSessionResponse struct {
 
 func (s *LiveService) CreateSession(params any) (*CreateSessionResponse, error) {
 	result := &CreateSessionResponse{}
-	if err := s.client.DoPost(PathLiveCreateSession, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLiveCreateSession, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -38,7 +41,7 @@ func (s *LiveService) CreateSession(params any) (*CreateSessionResponse, error) 
 
 func (s *LiveService) UpdateSession(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLiveUpdateSession, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLiveUpdateSession, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -55,7 +58,7 @@ type GetSessionDetailResponse struct {
 func (s *LiveService) GetSessionDetail(sessionID int64) (*GetSessionDetailResponse, error) {
 	q := map[string]string{"session_id": strconv.FormatInt(sessionID, 10)}
 	result := &GetSessionDetailResponse{}
-	if err := s.client.DoGet(PathLiveGetSessionDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetSessionDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -70,7 +73,7 @@ func (s *LiveService) AddItemList(sessionID int64, itemIDs []int64) (*BaseRespon
 		"item_id_list": itemIDs,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLiveAddItemList, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLiveAddItemList, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -85,7 +88,7 @@ func (s *LiveService) DeleteItemList(sessionID int64, itemIDs []int64) (*BaseRes
 		"item_id_list": itemIDs,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLiveDeleteItemList, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLiveDeleteItemList, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -96,7 +99,7 @@ func (s *LiveService) DeleteItemList(sessionID int64, itemIDs []int64) (*BaseRes
 
 func (s *LiveService) UpdateItemList(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLiveUpdateItemList, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLiveUpdateItemList, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -117,7 +120,7 @@ type GetLiveItemCountResponse struct {
 func (s *LiveService) GetItemCount(sessionID int64) (*GetLiveItemCountResponse, error) {
 	q := map[string]string{"session_id": strconv.FormatInt(sessionID, 10)}
 	result := &GetLiveItemCountResponse{}
-	if err := s.client.DoGet(PathLiveGetItemCount, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetItemCount, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -149,7 +152,7 @@ func (s *LiveService) GetItemList(sessionID int64, pageSize, pageNumber int) (*G
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &GetLiveItemListResponse{}
-	if err := s.client.DoGet(PathLiveGetItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -164,7 +167,7 @@ func (s *LiveService) UpdateShowItem(sessionID int64, itemID int64) (*BaseRespon
 		"item_id":    itemID,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLiveUpdateShowItem, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLiveUpdateShowItem, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -179,7 +182,7 @@ func (s *LiveService) DeleteShowItem(sessionID int64, itemID int64) (*BaseRespon
 		"item_id":    itemID,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathLiveDeleteShowItem, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathLiveDeleteShowItem, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -201,7 +204,7 @@ type GetShowItemResponse struct {
 func (s *LiveService) GetShowItem(sessionID int64) (*GetShowItemResponse, error) {
 	q := map[string]string{"session_id": strconv.FormatInt(sessionID, 10)}
 	result := &GetShowItemResponse{}
-	if err := s.client.DoGet(PathLiveGetShowItem, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetShowItem, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -217,7 +220,7 @@ func (s *LiveService) GetLikeItemList(sessionID int64, pageSize, pageNumber int)
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathLiveGetLikeItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetLikeItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -233,7 +236,7 @@ func (s *LiveService) GetRecentItemList(sessionID int64, pageSize, pageNumber in
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &GetLiveItemListResponse{}
-	if err := s.client.DoGet(PathLiveGetRecentItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetRecentItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -263,7 +266,7 @@ func (s *LiveService) GetItemSetList(pageSize, pageNumber int) (*GetItemSetListR
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &GetItemSetListResponse{}
-	if err := s.client.DoGet(PathLiveGetItemSetList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetItemSetList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -279,7 +282,7 @@ func (s *LiveService) GetItemSetItemList(itemSetID int64, pageSize, pageNumber i
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &GetLiveItemListResponse{}
-	if err := s.client.DoGet(PathLiveGetItemSetItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetItemSetItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -307,7 +310,7 @@ type GetSessionMetricResponse struct {
 func (s *LiveService) GetSessionMetric(sessionID int64) (*GetSessionMetricResponse, error) {
 	q := map[string]string{"session_id": strconv.FormatInt(sessionID, 10)}
 	result := &GetSessionMetricResponse{}
-	if err := s.client.DoGet(PathLiveGetSessionMetric, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetSessionMetric, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -335,7 +338,7 @@ func (s *LiveService) GetSessionItemMetric(sessionID, itemID int64) (*GetSession
 		"item_id":    strconv.FormatInt(itemID, 10),
 	}
 	result := &GetSessionItemMetricResponse{}
-	if err := s.client.DoGet(PathLiveGetSessionItemMetric, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetSessionItemMetric, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -366,7 +369,7 @@ func (s *LiveService) GetLatestCommentList(sessionID int64, pageSize, pageNumber
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &GetLatestCommentListResponse{}
-	if err := s.client.DoGet(PathLiveGetLatestCommentList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathLiveGetLatestCommentList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

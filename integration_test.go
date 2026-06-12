@@ -257,13 +257,13 @@ func TestIntegrationAMS_GetOpenCampaignAddedProduct(t *testing.T) {
 	c := getClient(t)
 	s := &AMSService{client: c}
 
-	resp, err := s.GetOpenCampaignAddedProduct(1, 10, "")
+	resp, err := s.GetOpenCampaignAddedProduct(10, "", "", "", "")
 	if err != nil {
 		t.Logf("GetOpenCampaignAddedProduct: %v", err)
 		return
 	}
 	if resp.Response != nil {
-		t.Logf("AMS products: %d total", resp.Response.Total)
+		t.Logf("AMS products: %d total, has_more=%v", resp.Response.TotalCount, resp.Response.HasMore)
 	}
 }
 

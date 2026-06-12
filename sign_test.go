@@ -16,7 +16,7 @@ func TestGenerateSignature(t *testing.T) {
 	accessToken := "test-token"
 	shopID := int64(67890)
 
-	sig := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, accessToken, shopID)
+	sig := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, accessToken, shopID, 0)
 
 	// Recompute manually to verify
 	parts := make([]byte, 0, 256)
@@ -40,7 +40,7 @@ func TestGenerateSignatureNoAccessToken(t *testing.T) {
 	apiPath := "/api/v2/partner/get_shopee_ip_ranges"
 	timestamp := int64(1700000000)
 
-	sig := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, "", 0)
+	sig := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, "", 0, 0)
 
 	parts := make([]byte, 0, 256)
 	parts = strconv.AppendInt(parts, partnerID, 10)
@@ -62,7 +62,7 @@ func TestGenerateSignatureNoShopID(t *testing.T) {
 	timestamp := int64(1700000000)
 	accessToken := "test-token"
 
-	sig := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, accessToken, 0)
+	sig := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, accessToken, 0, 0)
 
 	parts := make([]byte, 0, 256)
 	parts = strconv.AppendInt(parts, partnerID, 10)
@@ -86,8 +86,8 @@ func TestGenerateSignatureConsistency(t *testing.T) {
 	accessToken := "test-access-token"
 	shopID := int64(12345)
 
-	sig1 := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, accessToken, shopID)
-	sig2 := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, accessToken, shopID)
+	sig1 := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, accessToken, shopID, 0)
+	sig2 := GenerateSignature(partnerKey, partnerID, apiPath, timestamp, accessToken, shopID, 0)
 
 	if sig1 != sig2 {
 		t.Fatal("signature is not deterministic")
