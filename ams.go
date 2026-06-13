@@ -31,16 +31,6 @@ type AMSCommissionProtection struct {
 	ProtectionPeriodEndTime int64   `json:"protection_period_end_time"`
 }
 
-type AMSCursorResponse struct {
-	BaseResponse
-	Response *struct {
-		ItemList   []AMSItem `json:"item_list"`
-		TotalCount int       `json:"total_count"`
-		Cursor     string    `json:"cursor"`
-		HasMore    bool      `json:"has_more"`
-	} `json:"response,omitempty"`
-}
-
 // AMSPaginatedResponse is used by AMS endpoints that use page_num/page_size pagination.
 type AMSPaginatedResponse struct {
 	BaseResponse
@@ -52,23 +42,59 @@ type AMSPaginatedResponse struct {
 	} `json:"response,omitempty"`
 }
 
-// GetOpenCampaignAddedProduct retrieves all products currently in the Open Campaign.
-// Official params: page_size, cursor, sort_by, search_type, search_content.
-func (s *AMSService) GetOpenCampaignAddedProduct(pageSize int, cursor, sortBy, searchType, searchContent string) (*AMSCursorResponse, error) {
+type GetOpenCampaignAddedProductRequest struct {
+	PageSize      int
+	Cursor        string
+	SortBy        string
+	SearchType    string
+	SearchContent string
+}
+
+type CommissionProtection struct {
+	CommissionRate          float64 `json:"commission_rate"`
+	ProtectionPeriodEndTime int64   `json:"protection_period_end_time"`
+}
+
+type OpenCampaignAddedProduct struct {
+	ItemID                      int64                  `json:"item_id"`
+	ItemName                    string                 `json:"item_name"`
+	CampaignID                  int64                  `json:"campaign_id"`
+	CampaignStatus              string                 `json:"campaign_status"`
+	CommissionRate              float64                `json:"commission_rate"`
+	PeriodStartTime             int64                  `json:"period_start_time"`
+	PeriodEndTime               int64                  `json:"period_end_time"`
+	PendingTerminatedTime       int64                  `json:"pending_terminated_time"`
+	CommissionProtectionList    []CommissionProtection `json:"commission_protection_list"`
+	MaxCommissionRateCurrentDay float64                `json:"max_commission_rate_current_day"`
+}
+
+type AMSCursorResponse struct {
+	BaseResponse
+	Response *struct {
+		ItemList   []OpenCampaignAddedProduct `json:"item_list"`
+		TotalCount int                        `json:"total_count"`
+		Cursor     string                     `json:"cursor"`
+		HasMore    bool                       `json:"has_more"`
+	} `json:"response,omitempty"`
+}
+
+func (s *AMSService) GetOpenCampaignAddedProduct(
+	request GetOpenCampaignAddedProductRequest,
+) (*AMSCursorResponse, error) {
 	q := map[string]string{
-		"page_size": strconv.Itoa(pageSize),
+		"page_size": strconv.Itoa(request.PageSize),
 	}
-	if cursor != "" {
-		q["cursor"] = cursor
+	if request.Cursor != "" {
+		q["cursor"] = request.Cursor
 	}
-	if sortBy != "" {
-		q["sort_by"] = sortBy
+	if request.SortBy != "" {
+		q["sort_by"] = request.SortBy
 	}
-	if searchType != "" {
-		q["search_type"] = searchType
+	if request.SearchType != "" {
+		q["search_type"] = request.SearchType
 	}
-	if searchContent != "" {
-		q["search_content"] = searchContent
+	if request.SearchContent != "" {
+		q["search_content"] = request.SearchContent
 	}
 	result := &AMSCursorResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetOpenCampaignAddedProduct, q, result); err != nil {
@@ -434,14 +460,14 @@ type AMSDateRangeParams struct {
 }
 
 type AMSShopPerformanceData struct {
-	Impression  int64   `json:"impression"`
-	Click       int64   `json:"click"`
-	Spend       float64 `json:"spend"`
-	Sales       float64 `json:"sales"`
-	ROI         float64 `json:"roi"`
-	CTR         float64 `json:"ctr"`
-	CPC         float64 `json:"cpc"`
-	Conversion  float64 `json:"conversion"`
+	Impression int64   `json:"impression"`
+	Click      int64   `json:"click"`
+	Spend      float64 `json:"spend"`
+	Sales      float64 `json:"sales"`
+	ROI        float64 `json:"roi"`
+	CTR        float64 `json:"ctr"`
+	CPC        float64 `json:"cpc"`
+	Conversion float64 `json:"conversion"`
 }
 
 type GetAMSShopPerformanceResponse struct {
@@ -465,14 +491,14 @@ func (s *AMSService) GetShopPerformance(dateFrom, dateTo int64) (*GetAMSShopPerf
 }
 
 type ProductPerformance struct {
-	ItemID      int64   `json:"item_id"`
-	ItemName    string  `json:"item_name"`
-	Impression  int64   `json:"impression"`
-	Click       int64   `json:"click"`
-	Spend       float64 `json:"spend"`
-	Sales       float64 `json:"sales"`
-	ROI         float64 `json:"roi"`
-	Conversion  float64 `json:"conversion"`
+	ItemID     int64   `json:"item_id"`
+	ItemName   string  `json:"item_name"`
+	Impression int64   `json:"impression"`
+	Click      int64   `json:"click"`
+	Spend      float64 `json:"spend"`
+	Sales      float64 `json:"sales"`
+	ROI        float64 `json:"roi"`
+	Conversion float64 `json:"conversion"`
 }
 
 type GetProductPerformanceResponse struct {

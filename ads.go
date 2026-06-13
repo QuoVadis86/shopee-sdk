@@ -14,7 +14,7 @@ func NewAdsService(client *Client) *AdsService {
 }
 
 type RecommendedKeyword struct {
-	Keyword string `json:"keyword"`
+	Keyword string  `json:"keyword"`
 	Score   float64 `json:"score,omitempty"`
 }
 
@@ -67,22 +67,34 @@ func (s *AdsService) GetRecommendedItems(keyword string, limit int) (*GetRecomme
 	return result, nil
 }
 
-type CPCAdsPerformance struct {
-	Impression int64   `json:"impression"`
-	Click      int64   `json:"click"`
-	Spend      float64 `json:"spend"`
-	Sales      float64 `json:"sales"`
-	ROI        float64 `json:"roi"`
+type CPCAdsDailyPerformance struct {
+	Date              string  `json:"date"`
+	Impression        int64   `json:"impression"`
+	Clicks            int64   `json:"clicks"`
+	CTR               float64 `json:"ctr"`
+	DirectOrder       int64   `json:"direct_order"`
+	BroadOrder        int64   `json:"broad_order"`
+	DirectConversions float64 `json:"direct_conversions"`
+	BroadConversions  float64 `json:"broad_conversions"`
+	DirectItemSold    int64   `json:"direct_item_sold"`
+	BroadItemSold     int64   `json:"broad_item_sold"`
+	DirectGMV         float64 `json:"direct_gmv"`
+	BroadGMV          float64 `json:"broad_gmv"`
+	Expense           float64 `json:"expense"`
+	CostPerConversion float64 `json:"cost_per_conversion"`
+	DirectROAS        float64 `json:"direct_roas"`
+	BroadROAS         float64 `json:"broad_roas"`
 }
 
-type GetAllCPCAdsPerformanceResponse struct {
+type GetAllCPCAdsDailyPerformanceResponse struct {
 	BaseResponse
-	Response *CPCAdsPerformance `json:"response,omitempty"`
+	Warning  string                   `json:"warning,omitempty"`
+	Response []CPCAdsDailyPerformance `json:"response"`
 }
 
-func (s *AdsService) GetAllCPCHourlyPerformance(date int64) (*GetAllCPCAdsPerformanceResponse, error) {
+func (s *AdsService) GetAllCPCHourlyPerformance(date int64) (*BaseResponse, error) {
 	q := map[string]string{"date": strconv.FormatInt(date, 10)}
-	result := &GetAllCPCAdsPerformanceResponse{}
+	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetAllCPCHourlyPerf, q, result); err != nil {
 		return nil, err
 	}
@@ -92,12 +104,14 @@ func (s *AdsService) GetAllCPCHourlyPerformance(date int64) (*GetAllCPCAdsPerfor
 	return result, nil
 }
 
-func (s *AdsService) GetAllCPCDailyPerformance(dateFrom, dateTo int64) (*GetAllCPCAdsPerformanceResponse, error) {
+func (s *AdsService) GetAllCPCDailyPerformance(
+	startDate, endDate string,
+) (*GetAllCPCAdsDailyPerformanceResponse, error) {
 	q := map[string]string{
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
+		"start_date": startDate,
+		"end_date":   endDate,
 	}
-	result := &GetAllCPCAdsPerformanceResponse{}
+	result := &GetAllCPCAdsDailyPerformanceResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetAllCPCDailyPerf, q, result); err != nil {
 		return nil, err
 	}
@@ -107,13 +121,62 @@ func (s *AdsService) GetAllCPCDailyPerformance(dateFrom, dateTo int64) (*GetAllC
 	return result, nil
 }
 
-func (s *AdsService) GetProductCampaignDailyPerformance(campaignID int64, dateFrom, dateTo int64) (*GetAllCPCAdsPerformanceResponse, error) {
-	q := map[string]string{
-		"campaign_id": strconv.FormatInt(campaignID, 10),
-		"date_from":   strconv.FormatInt(dateFrom, 10),
-		"date_to":     strconv.FormatInt(dateTo, 10),
+type ProductCampaignDailyMetric struct {
+	Date              string  `json:"date"`
+	Impression        int64   `json:"impression"`
+	Clicks            int64   `json:"clicks"`
+	CTR               float64 `json:"ctr"`
+	Expense           float64 `json:"expense"`
+	BroadGMV          float64 `json:"broad_gmv"`
+	BroadOrder        int64   `json:"broad_order"`
+	BroadOrderAmount  int64   `json:"broad_order_amount"`
+	BroadROI          float64 `json:"broad_roi"`
+	BroadCIR          float64 `json:"broad_cir"`
+	CR                float64 `json:"cr"`
+	CPC               float64 `json:"cpc"`
+	DirectOrder       int64   `json:"direct_order"`
+	DirectOrderAmount int64   `json:"direct_order_amount"`
+	DirectGMV         float64 `json:"direct_gmv"`
+	DirectROI         float64 `json:"direct_roi"`
+	DirectCIR         float64 `json:"direct_cir"`
+	DirectCR          float64 `json:"direct_cr"`
+	CPDC              float64 `json:"cpdc"`
+}
+
+type ProductCampaignDaily struct {
+	CampaignID        int64                        `json:"campaign_id"`
+	AdType            string                       `json:"ad_type"`
+	CampaignPlacement string                       `json:"campaign_placement"`
+	AdName            string                       `json:"ad_name"`
+	MetricsList       []ProductCampaignDailyMetric `json:"metrics_list"`
+}
+
+type ProductCampaignDailyShop struct {
+	ShopID       int64                  `json:"shop_id"`
+	Region       string                 `json:"region"`
+	CampaignList []ProductCampaignDaily `json:"campaign_list"`
+}
+
+type GetProductCampaignDailyPerformanceResponse struct {
+	BaseResponse
+	Warning  string                     `json:"warning,omitempty"`
+	Response []ProductCampaignDailyShop `json:"response"`
+}
+
+func (s *AdsService) GetProductCampaignDailyPerformance(
+	campaignIDs []int64,
+	startDate, endDate string,
+) (*GetProductCampaignDailyPerformanceResponse, error) {
+	ids := make([]string, len(campaignIDs))
+	for i, id := range campaignIDs {
+		ids[i] = strconv.FormatInt(id, 10)
 	}
-	result := &GetAllCPCAdsPerformanceResponse{}
+	q := map[string]string{
+		"campaign_id_list": stringsJoin(ids, ","),
+		"start_date":       startDate,
+		"end_date":         endDate,
+	}
+	result := &GetProductCampaignDailyPerformanceResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetProductCampaignDailyPerf, q, result); err != nil {
 		return nil, err
 	}
@@ -123,12 +186,12 @@ func (s *AdsService) GetProductCampaignDailyPerformance(campaignID int64, dateFr
 	return result, nil
 }
 
-func (s *AdsService) GetProductCampaignHourlyPerformance(campaignID int64, date int64) (*GetAllCPCAdsPerformanceResponse, error) {
+func (s *AdsService) GetProductCampaignHourlyPerformance(campaignID int64, date int64) (*BaseResponse, error) {
 	q := map[string]string{
 		"campaign_id": strconv.FormatInt(campaignID, 10),
 		"date":        strconv.FormatInt(date, 10),
 	}
-	result := &GetAllCPCAdsPerformanceResponse{}
+	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetProductCampaignHourlyPerf, q, result); err != nil {
 		return nil, err
 	}
@@ -167,11 +230,11 @@ func (s *AdsService) GetProductLevelCampaignIDs(itemIDs []int64) (*GetProductLev
 }
 
 type CampaignSettingInfo struct {
-	CampaignID     int64   `json:"campaign_id"`
-	CampaignName   string  `json:"campaign_name"`
-	Budget         float64 `json:"budget"`
-	BudgetType     string  `json:"budget_type"`
-	Status         string  `json:"status"`
+	CampaignID   int64   `json:"campaign_id"`
+	CampaignName string  `json:"campaign_name"`
+	Budget       float64 `json:"budget"`
+	BudgetType   string  `json:"budget_type"`
+	Status       string  `json:"status"`
 }
 
 type GetProductLevelCampaignSettingResponse struct {
@@ -345,13 +408,13 @@ func (s *AdsService) EditGMSItemCampaign(params any) (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *AdsService) GetGMSCampaignPerformance(campaignID int64, dateFrom, dateTo int64) (*GetAllCPCAdsPerformanceResponse, error) {
+func (s *AdsService) GetGMSCampaignPerformance(campaignID int64, dateFrom, dateTo int64) (*BaseResponse, error) {
 	q := map[string]string{
 		"campaign_id": strconv.FormatInt(campaignID, 10),
 		"date_from":   strconv.FormatInt(dateFrom, 10),
 		"date_to":     strconv.FormatInt(dateTo, 10),
 	}
-	result := &GetAllCPCAdsPerformanceResponse{}
+	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetGMSCampaignPerf, q, result); err != nil {
 		return nil, err
 	}
