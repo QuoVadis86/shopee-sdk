@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type ShopService struct {
 	client *Client
@@ -37,7 +40,7 @@ type GetShopInfoResponse struct {
 
 func (s *ShopService) GetShopInfo() (*GetShopInfoResponse, error) {
 	result := &GetShopInfoResponse{}
-	if err := s.client.DoGet(PathShopGetInfo, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetInfo, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -59,7 +62,7 @@ type GetProfileResponse struct {
 
 func (s *ShopService) GetProfile() (*GetProfileResponse, error) {
 	result := &GetProfileResponse{}
-	if err := s.client.DoGet(PathShopGetProfile, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetProfile, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -70,7 +73,7 @@ func (s *ShopService) GetProfile() (*GetProfileResponse, error) {
 
 func (s *ShopService) UpdateProfile(params *ShopProfile) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathShopUpdateProfile, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathShopUpdateProfile, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -94,7 +97,7 @@ type GetWarehouseDetailResponse struct {
 func (s *ShopService) GetWarehouseDetail(warehouseID int64) (*GetWarehouseDetailResponse, error) {
 	q := map[string]string{"warehouse_id": strconv.FormatInt(warehouseID, 10)}
 	result := &GetWarehouseDetailResponse{}
-	if err := s.client.DoGet(PathShopGetWarehouseDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetWarehouseDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -125,7 +128,7 @@ func (s *ShopService) GetShopNotification(pageSize, pageNumber int) (*GetShopNot
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &GetShopNotificationResponse{}
-	if err := s.client.DoGet(PathShopGetNotification, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetNotification, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -136,7 +139,7 @@ func (s *ShopService) GetShopNotification(pageSize, pageNumber int) (*GetShopNot
 
 func (s *ShopService) GetAuthorisedResellerBrand() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetAuthResellerBrand, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetAuthResellerBrand, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -147,7 +150,7 @@ func (s *ShopService) GetAuthorisedResellerBrand() (*BaseResponse, error) {
 
 func (s *ShopService) GetBROnboardingInfo() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetBROnboardingInfo, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetBROnboardingInfo, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -169,7 +172,7 @@ type GetHolidayModeResponse struct {
 
 func (s *ShopService) GetHolidayMode() (*GetHolidayModeResponse, error) {
 	result := &GetHolidayModeResponse{}
-	if err := s.client.DoGet(PathShopGetHolidayMode, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetHolidayMode, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -180,7 +183,7 @@ func (s *ShopService) GetHolidayMode() (*GetHolidayModeResponse, error) {
 
 func (s *ShopService) SetHolidayMode(params *HolidayMode) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathShopSetHolidayMode, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathShopSetHolidayMode, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -210,7 +213,7 @@ type GetMerchantInfoResponse struct {
 
 func (s *ShopService) GetMerchantInfo() (*GetMerchantInfoResponse, error) {
 	result := &GetMerchantInfoResponse{}
-	if err := s.client.DoGet(PathShopGetMerchantInfo, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetMerchantInfo, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -232,7 +235,7 @@ type GetShopListByMerchantResponse struct {
 
 func (s *ShopService) GetShopListByMerchant() (*GetShopListByMerchantResponse, error) {
 	result := &GetShopListByMerchantResponse{}
-	if err := s.client.DoGet(PathShopGetListByMerchant, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetListByMerchant, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -243,7 +246,7 @@ func (s *ShopService) GetShopListByMerchant() (*GetShopListByMerchantResponse, e
 
 func (s *ShopService) GetMerchantWarehouseLocationList() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetMerchantWarehouseLocations, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetMerchantWarehouseLocations, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -254,7 +257,7 @@ func (s *ShopService) GetMerchantWarehouseLocationList() (*BaseResponse, error) 
 
 func (s *ShopService) GetMerchantWarehouseList() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetMerchantWarehouseList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetMerchantWarehouseList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -265,7 +268,7 @@ func (s *ShopService) GetMerchantWarehouseList() (*BaseResponse, error) {
 
 func (s *ShopService) GetWarehouseEligibleShopList() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetWarehouseEligibleShopList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetWarehouseEligibleShopList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -276,7 +279,7 @@ func (s *ShopService) GetWarehouseEligibleShopList() (*BaseResponse, error) {
 
 func (s *ShopService) GetMerchantPrepaidAccountList() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetMerchantPrepaidAccountList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetMerchantPrepaidAccountList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -300,7 +303,7 @@ type GetShopPerformanceResponse struct {
 
 func (s *ShopService) GetShopPerformance() (*GetShopPerformanceResponse, error) {
 	result := &GetShopPerformanceResponse{}
-	if err := s.client.DoGet(PathShopGetPerformance, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetPerformance, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -312,7 +315,7 @@ func (s *ShopService) GetShopPerformance() (*GetShopPerformanceResponse, error) 
 func (s *ShopService) GetMetricSourceDetail(metricName string) (*BaseResponse, error) {
 	q := map[string]string{"metric_name": metricName}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetMetricSourceDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetMetricSourceDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -337,7 +340,7 @@ type GetPenaltyHistoryResponse struct {
 
 func (s *ShopService) GetPenaltyPointHistory() (*GetPenaltyHistoryResponse, error) {
 	result := &GetPenaltyHistoryResponse{}
-	if err := s.client.DoGet(PathShopGetPenaltyHistory, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetPenaltyHistory, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -348,7 +351,7 @@ func (s *ShopService) GetPenaltyPointHistory() (*GetPenaltyHistoryResponse, erro
 
 func (s *ShopService) GetPunishmentHistory() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetPunishmentHistory, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetPunishmentHistory, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -363,7 +366,7 @@ func (s *ShopService) GetListingsWithIssues(pageSize, pageNumber int) (*BaseResp
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetListingsWithIssues, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetListingsWithIssues, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -378,7 +381,7 @@ func (s *ShopService) GetLateOrders(pageSize int, cursor string) (*BaseResponse,
 		q["cursor"] = cursor
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetLateOrders, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetLateOrders, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -389,7 +392,7 @@ func (s *ShopService) GetLateOrders(pageSize int, cursor string) (*BaseResponse,
 
 func (s *ShopService) GetTotalBalance() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetTotalBalance, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetTotalBalance, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -400,7 +403,7 @@ func (s *ShopService) GetTotalBalance() (*BaseResponse, error) {
 
 func (s *ShopService) GetToggleInfo() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathShopGetToggleInfo, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetToggleInfo, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

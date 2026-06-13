@@ -32,7 +32,7 @@ func TestPartnerRefreshAccessTokenUsesPublicAuthSignature(t *testing.T) {
 		if err != nil {
 			t.Fatalf("invalid timestamp: %v", err)
 		}
-		wantSign := GenerateSignature(partnerKey, partnerID, PathPartnerRefreshAccessToken, timestamp, "", 0)
+		wantSign := GenerateSignature(partnerKey, partnerID, PathPartnerRefreshAccessToken, timestamp, "", 0, 0)
 		if got := r.URL.Query().Get("sign"); got != wantSign {
 			t.Fatalf("unexpected signature: got %s want %s", got, wantSign)
 		}

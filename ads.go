@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type AdsService struct {
 	client *Client
@@ -28,7 +31,7 @@ func (s *AdsService) GetRecommendedKeywords(itemID int64, limit int) (*GetRecomm
 		"limit":   strconv.Itoa(limit),
 	}
 	result := &GetRecommendedKeywordsResponse{}
-	if err := s.client.DoGet(PathAdsGetRecommendedKeywords, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetRecommendedKeywords, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -55,7 +58,7 @@ func (s *AdsService) GetRecommendedItems(keyword string, limit int) (*GetRecomme
 		"limit":   strconv.Itoa(limit),
 	}
 	result := &GetRecommendedItemsResponse{}
-	if err := s.client.DoGet(PathAdsGetRecommendedItems, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetRecommendedItems, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -80,7 +83,7 @@ type GetAllCPCAdsPerformanceResponse struct {
 func (s *AdsService) GetAllCPCHourlyPerformance(date int64) (*GetAllCPCAdsPerformanceResponse, error) {
 	q := map[string]string{"date": strconv.FormatInt(date, 10)}
 	result := &GetAllCPCAdsPerformanceResponse{}
-	if err := s.client.DoGet(PathAdsGetAllCPCHourlyPerf, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetAllCPCHourlyPerf, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -95,7 +98,7 @@ func (s *AdsService) GetAllCPCDailyPerformance(dateFrom, dateTo int64) (*GetAllC
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &GetAllCPCAdsPerformanceResponse{}
-	if err := s.client.DoGet(PathAdsGetAllCPCDailyPerf, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetAllCPCDailyPerf, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -111,7 +114,7 @@ func (s *AdsService) GetProductCampaignDailyPerformance(campaignID int64, dateFr
 		"date_to":     strconv.FormatInt(dateTo, 10),
 	}
 	result := &GetAllCPCAdsPerformanceResponse{}
-	if err := s.client.DoGet(PathAdsGetProductCampaignDailyPerf, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetProductCampaignDailyPerf, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -126,7 +129,7 @@ func (s *AdsService) GetProductCampaignHourlyPerformance(campaignID int64, date 
 		"date":        strconv.FormatInt(date, 10),
 	}
 	result := &GetAllCPCAdsPerformanceResponse{}
-	if err := s.client.DoGet(PathAdsGetProductCampaignHourlyPerf, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetProductCampaignHourlyPerf, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -154,7 +157,7 @@ func (s *AdsService) GetProductLevelCampaignIDs(itemIDs []int64) (*GetProductLev
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetProductLevelCampaignIDsResponse{}
-	if err := s.client.DoGet(PathAdsGetProductLevelCampaignIDs, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetProductLevelCampaignIDs, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -179,7 +182,7 @@ type GetProductLevelCampaignSettingResponse struct {
 func (s *AdsService) GetProductLevelCampaignSetting(campaignID int64) (*GetProductLevelCampaignSettingResponse, error) {
 	q := map[string]string{"campaign_id": strconv.FormatInt(campaignID, 10)}
 	result := &GetProductLevelCampaignSettingResponse{}
-	if err := s.client.DoGet(PathAdsGetProductLevelCampaignSetting, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetProductLevelCampaignSetting, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -190,7 +193,7 @@ func (s *AdsService) GetProductLevelCampaignSetting(campaignID int64) (*GetProdu
 
 func (s *AdsService) CreateManualProductAds(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAdsCreateManualProductAds, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAdsCreateManualProductAds, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -201,7 +204,7 @@ func (s *AdsService) CreateManualProductAds(params any) (*BaseResponse, error) {
 
 func (s *AdsService) EditManualProductAdKeywords(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAdsEditManualProductAdKeywords, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAdsEditManualProductAdKeywords, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -212,7 +215,7 @@ func (s *AdsService) EditManualProductAdKeywords(params any) (*BaseResponse, err
 
 func (s *AdsService) EditManualProductAds(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAdsEditManualProductAds, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAdsEditManualProductAds, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -235,7 +238,7 @@ type GetCreateAdBudgetSuggestionResponse struct {
 func (s *AdsService) GetCreateAdBudgetSuggestion(campaignID int64) (*GetCreateAdBudgetSuggestionResponse, error) {
 	q := map[string]string{"campaign_id": strconv.FormatInt(campaignID, 10)}
 	result := &GetCreateAdBudgetSuggestionResponse{}
-	if err := s.client.DoGet(PathAdsGetCreateAdBudgetSuggestion, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetCreateAdBudgetSuggestion, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -258,7 +261,7 @@ type GetRecommendedROITargetResponse struct {
 func (s *AdsService) GetRecommendedROITarget(campaignID int64) (*GetRecommendedROITargetResponse, error) {
 	q := map[string]string{"campaign_id": strconv.FormatInt(campaignID, 10)}
 	result := &GetRecommendedROITargetResponse{}
-	if err := s.client.DoGet(PathAdsGetRecommendedROITarget, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetRecommendedROITarget, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -279,7 +282,7 @@ type GetFacilShopRateResponse struct {
 
 func (s *AdsService) GetFacilShopRate() (*GetFacilShopRateResponse, error) {
 	result := &GetFacilShopRateResponse{}
-	if err := s.client.DoGet(PathAdsGetFacilShopRate, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetFacilShopRate, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -300,7 +303,7 @@ type CheckGMSCampaignEligibilityResponse struct {
 
 func (s *AdsService) CheckCreateGMSCampaignEligibility() (*CheckGMSCampaignEligibilityResponse, error) {
 	result := &CheckGMSCampaignEligibilityResponse{}
-	if err := s.client.DoGet(PathAdsCheckCreateGMSCampaignElig, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsCheckCreateGMSCampaignElig, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -311,7 +314,7 @@ func (s *AdsService) CheckCreateGMSCampaignEligibility() (*CheckGMSCampaignEligi
 
 func (s *AdsService) CreateGMSCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAdsCreateGMSCampaign, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAdsCreateGMSCampaign, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -322,7 +325,7 @@ func (s *AdsService) CreateGMSCampaign(params any) (*BaseResponse, error) {
 
 func (s *AdsService) EditGMSCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAdsEditGMSCampaign, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAdsEditGMSCampaign, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -333,7 +336,7 @@ func (s *AdsService) EditGMSCampaign(params any) (*BaseResponse, error) {
 
 func (s *AdsService) EditGMSItemCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAdsEditGMSItemCampaign, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAdsEditGMSItemCampaign, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -349,7 +352,7 @@ func (s *AdsService) GetGMSCampaignPerformance(campaignID int64, dateFrom, dateT
 		"date_to":     strconv.FormatInt(dateTo, 10),
 	}
 	result := &GetAllCPCAdsPerformanceResponse{}
-	if err := s.client.DoGet(PathAdsGetGMSCampaignPerf, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetGMSCampaignPerf, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -367,7 +370,7 @@ func (s *AdsService) GetGMSItemPerformance(campaignID int64, dateFrom, dateTo in
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAdsGetGMSItemPerf, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAdsGetGMSItemPerf, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

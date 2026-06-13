@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type AMSService struct {
 	client *Client
@@ -11,34 +14,64 @@ func NewAMSService(client *Client) *AMSService {
 }
 
 type AMSItem struct {
-	ItemID       int64   `json:"item_id"`
-	ItemName     string  `json:"item_name"`
-	ItemStatus   string  `json:"item_status"`
-	CurrentBid   float64 `json:"current_bid,omitempty"`
-	SuggestedBid float64 `json:"suggested_bid,omitempty"`
-	ImageURL     string  `json:"image_url,omitempty"`
+	ItemID                   int64                    `json:"item_id"`
+	ItemName                 string                   `json:"item_name"`
+	CampaignID               int64                    `json:"campaign_id"`
+	CampaignStatus           string                   `json:"campaign_status"`
+	CommissionRate           float64                  `json:"commission_rate"`
+	PeriodStartTime          int64                    `json:"period_start_time"`
+	PeriodEndTime            int64                    `json:"period_end_time"`
+	PendingTerminatedTime    int64                    `json:"pending_terminated_time"`
+	CommissionProtectionList []AMSCommissionProtection `json:"commission_protection_list"`
+	MaxCommissionRateCurrentDay float64               `json:"max_commission_rate_current_day"`
 }
 
-type AMSPaginatedResponse struct {
+type AMSCommissionProtection struct {
+	CommissionRate          float64 `json:"commission_rate"`
+	ProtectionPeriodEndTime int64   `json:"protection_period_end_time"`
+}
+
+type AMSCursorResponse struct {
 	BaseResponse
 	Response *struct {
-		ItemList  []AMSItem `json:"item_list"`
-		Total     int       `json:"total"`
-		PageNum   int       `json:"page_num"`
-		PageSize  int       `json:"page_size"`
+		ItemList   []AMSItem `json:"item_list"`
+		TotalCount int       `json:"total_count"`
+		Cursor     string    `json:"cursor"`
+		HasMore    bool      `json:"has_more"`
 	} `json:"response,omitempty"`
 }
 
-func (s *AMSService) GetOpenCampaignAddedProduct(pageNum, pageSize int, keyword string) (*AMSPaginatedResponse, error) {
+// AMSPaginatedResponse is used by AMS endpoints that use page_num/page_size pagination.
+type AMSPaginatedResponse struct {
+	BaseResponse
+	Response *struct {
+		ItemList []AMSItem `json:"item_list"`
+		Total    int       `json:"total"`
+		PageNum  int       `json:"page_num"`
+		PageSize int       `json:"page_size"`
+	} `json:"response,omitempty"`
+}
+
+// GetOpenCampaignAddedProduct retrieves all products currently in the Open Campaign.
+// Official params: page_size, cursor, sort_by, search_type, search_content.
+func (s *AMSService) GetOpenCampaignAddedProduct(pageSize int, cursor, sortBy, searchType, searchContent string) (*AMSCursorResponse, error) {
 	q := map[string]string{
-		"page_num":  strconv.Itoa(pageNum),
 		"page_size": strconv.Itoa(pageSize),
 	}
-	if keyword != "" {
-		q["keyword"] = keyword
+	if cursor != "" {
+		q["cursor"] = cursor
 	}
-	result := &AMSPaginatedResponse{}
-	if err := s.client.DoGet(PathAMSGetOpenCampaignAddedProduct, q, result); err != nil {
+	if sortBy != "" {
+		q["sort_by"] = sortBy
+	}
+	if searchType != "" {
+		q["search_type"] = searchType
+	}
+	if searchContent != "" {
+		q["search_content"] = searchContent
+	}
+	result := &AMSCursorResponse{}
+	if err := s.client.DoGet(context.Background(), PathAMSGetOpenCampaignAddedProduct, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -47,16 +80,25 @@ func (s *AMSService) GetOpenCampaignAddedProduct(pageNum, pageSize int, keyword 
 	return result, nil
 }
 
-func (s *AMSService) GetOpenCampaignNotAddedProduct(pageNum, pageSize int, keyword string) (*AMSPaginatedResponse, error) {
+// GetOpenCampaignNotAddedProduct retrieves products not yet in the Open Campaign.
+func (s *AMSService) GetOpenCampaignNotAddedProduct(pageSize int, cursor, sortBy, searchType, searchContent string) (*AMSCursorResponse, error) {
 	q := map[string]string{
-		"page_num":  strconv.Itoa(pageNum),
 		"page_size": strconv.Itoa(pageSize),
 	}
-	if keyword != "" {
-		q["keyword"] = keyword
+	if cursor != "" {
+		q["cursor"] = cursor
 	}
-	result := &AMSPaginatedResponse{}
-	if err := s.client.DoGet(PathAMSGetOpenCampaignNotAddedProduct, q, result); err != nil {
+	if sortBy != "" {
+		q["sort_by"] = sortBy
+	}
+	if searchType != "" {
+		q["search_type"] = searchType
+	}
+	if searchContent != "" {
+		q["search_content"] = searchContent
+	}
+	result := &AMSCursorResponse{}
+	if err := s.client.DoGet(context.Background(), PathAMSGetOpenCampaignNotAddedProduct, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -67,7 +109,7 @@ func (s *AMSService) GetOpenCampaignNotAddedProduct(pageNum, pageSize int, keywo
 
 func (s *AMSService) BatchAddProductsToOpenCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSBatchAddProductsToOpenCampaign, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSBatchAddProductsToOpenCampaign, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -78,7 +120,7 @@ func (s *AMSService) BatchAddProductsToOpenCampaign(params any) (*BaseResponse, 
 
 func (s *AMSService) AddAllProductsToOpenCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSAddAllProductsToOpenCampaign, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSAddAllProductsToOpenCampaign, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -98,7 +140,7 @@ type GetAutoAddToggleStatusResponse struct {
 
 func (s *AMSService) GetAutoAddToggleStatus() (*GetAutoAddToggleStatusResponse, error) {
 	result := &GetAutoAddToggleStatusResponse{}
-	if err := s.client.DoGet(PathAMSGetAutoAddToggleStatus, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetAutoAddToggleStatus, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -109,7 +151,7 @@ func (s *AMSService) GetAutoAddToggleStatus() (*GetAutoAddToggleStatusResponse, 
 
 func (s *AMSService) UpdateAutoAddNewProductSetting(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSUpdateAutoAddNewProductSetting, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSUpdateAutoAddNewProductSetting, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -120,7 +162,7 @@ func (s *AMSService) UpdateAutoAddNewProductSetting(params any) (*BaseResponse, 
 
 func (s *AMSService) BatchEditProductsOCSetting(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSBatchEditProductsOCSetting, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSBatchEditProductsOCSetting, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -131,7 +173,7 @@ func (s *AMSService) BatchEditProductsOCSetting(params any) (*BaseResponse, erro
 
 func (s *AMSService) EditAllProductsOCSetting(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSEditAllProductsOCSetting, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSEditAllProductsOCSetting, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -142,7 +184,7 @@ func (s *AMSService) EditAllProductsOCSetting(params any) (*BaseResponse, error)
 
 func (s *AMSService) BatchRemoveProductsOCSetting(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSBatchRemoveProductsOCSetting, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSBatchRemoveProductsOCSetting, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -153,7 +195,7 @@ func (s *AMSService) BatchRemoveProductsOCSetting(params any) (*BaseResponse, er
 
 func (s *AMSService) RemoveAllProductsOCSetting(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSRemoveAllProductsOCSetting, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSRemoveAllProductsOCSetting, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -178,7 +220,7 @@ type GetBatchTaskResultResponse struct {
 func (s *AMSService) GetOpenCampaignBatchTaskResult(batchID string) (*GetBatchTaskResultResponse, error) {
 	q := map[string]string{"batch_id": batchID}
 	result := &GetBatchTaskResultResponse{}
-	if err := s.client.DoGet(PathAMSGetOpenCampaignBatchTaskResult, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetOpenCampaignBatchTaskResult, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -193,7 +235,7 @@ func (s *AMSService) GetOptimizationSuggestionProduct(pageNum, pageSize int) (*A
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &AMSPaginatedResponse{}
-	if err := s.client.DoGet(PathAMSGetOptimizationSuggestionProduct, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetOptimizationSuggestionProduct, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -204,7 +246,7 @@ func (s *AMSService) GetOptimizationSuggestionProduct(pageNum, pageSize int) (*A
 
 func (s *AMSService) BatchGetProductsSuggestedRate(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSBatchGetProductsSuggestedRate, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSBatchGetProductsSuggestedRate, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -225,7 +267,7 @@ type GetShopSuggestedRateResponse struct {
 
 func (s *AMSService) GetShopSuggestedRate() (*GetShopSuggestedRateResponse, error) {
 	result := &GetShopSuggestedRateResponse{}
-	if err := s.client.DoGet(PathAMSGetShopSuggestedRate, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetShopSuggestedRate, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -241,7 +283,7 @@ func (s *AMSService) GetTargetedCampaignAddableProductList(campaignID string, pa
 		"page_size":   strconv.Itoa(pageSize),
 	}
 	result := &AMSPaginatedResponse{}
-	if err := s.client.DoGet(PathAMSGetTargetedCampaignAddableProducts, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetTargetedCampaignAddableProducts, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -253,7 +295,7 @@ func (s *AMSService) GetTargetedCampaignAddableProductList(campaignID string, pa
 func (s *AMSService) GetRecommendedAffiliateList(campaignID string) (*BaseResponse, error) {
 	q := map[string]string{"campaign_id": campaignID}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetRecommendedAffiliateList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetRecommendedAffiliateList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -268,7 +310,7 @@ func (s *AMSService) GetManagedAffiliateList(pageNum, pageSize int) (*BaseRespon
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetManagedAffiliateList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetManagedAffiliateList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -286,7 +328,7 @@ func (s *AMSService) QueryAffiliateList(keyword string, pageNum, pageSize int) (
 		q["keyword"] = keyword
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSQueryAffiliateList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSQueryAffiliateList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -297,7 +339,7 @@ func (s *AMSService) QueryAffiliateList(keyword string, pageNum, pageSize int) (
 
 func (s *AMSService) CreateNewTargetedCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSCreateTargetedCampaign, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSCreateTargetedCampaign, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -312,7 +354,7 @@ func (s *AMSService) GetTargetedCampaignList(pageNum, pageSize int) (*BaseRespon
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetTargetedCampaignList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetTargetedCampaignList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -324,7 +366,7 @@ func (s *AMSService) GetTargetedCampaignList(pageNum, pageSize int) (*BaseRespon
 func (s *AMSService) GetTargetedCampaignSettings(campaignID string) (*BaseResponse, error) {
 	q := map[string]string{"campaign_id": campaignID}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetTargetedCampaignSettings, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetTargetedCampaignSettings, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -335,7 +377,7 @@ func (s *AMSService) GetTargetedCampaignSettings(campaignID string) (*BaseRespon
 
 func (s *AMSService) UpdateBasicInfoOfTargetedCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSUpdateTargetedCampaignBasicInfo, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSUpdateTargetedCampaignBasicInfo, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -346,7 +388,7 @@ func (s *AMSService) UpdateBasicInfoOfTargetedCampaign(params any) (*BaseRespons
 
 func (s *AMSService) EditProductListOfTargetedCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSEditTargetedCampaignProductList, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSEditTargetedCampaignProductList, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -357,7 +399,7 @@ func (s *AMSService) EditProductListOfTargetedCampaign(params any) (*BaseRespons
 
 func (s *AMSService) EditAffiliateListOfTargetedCampaign(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSEditTargetedCampaignAffiliateList, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSEditTargetedCampaignAffiliateList, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -377,7 +419,7 @@ type GetPerfDataUpdateTimeResponse struct {
 
 func (s *AMSService) GetPerformanceDataUpdateTime() (*GetPerfDataUpdateTimeResponse, error) {
 	result := &GetPerfDataUpdateTimeResponse{}
-	if err := s.client.DoGet(PathAMSGetPerfDataUpdateTime, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetPerfDataUpdateTime, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -413,7 +455,7 @@ func (s *AMSService) GetShopPerformance(dateFrom, dateTo int64) (*GetAMSShopPerf
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &GetAMSShopPerformanceResponse{}
-	if err := s.client.DoGet(PathAMSGetShopPerformance, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetShopPerformance, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -451,7 +493,7 @@ func (s *AMSService) GetProductPerformance(dateFrom, dateTo int64, pageNum, page
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &GetProductPerformanceResponse{}
-	if err := s.client.DoGet(PathAMSGetProductPerformance, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetProductPerformance, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -468,7 +510,7 @@ func (s *AMSService) GetAffiliatePerformance(dateFrom, dateTo int64, pageNum, pa
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetAffiliatePerformance, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetAffiliatePerformance, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -485,7 +527,7 @@ func (s *AMSService) GetContentPerformance(dateFrom, dateTo int64, pageNum, page
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetContentPerformance, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetContentPerformance, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -501,7 +543,7 @@ func (s *AMSService) GetCampaignKeyMetricsPerformance(campaignID string, dateFro
 		"date_to":     strconv.FormatInt(dateTo, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetCampaignKeyMetricsPerformance, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetCampaignKeyMetricsPerformance, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -516,7 +558,7 @@ func (s *AMSService) GetOpenCampaignPerformance(dateFrom, dateTo int64) (*GetAMS
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &GetAMSShopPerformanceResponse{}
-	if err := s.client.DoGet(PathAMSGetOpenCampaignPerformance, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetOpenCampaignPerformance, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -532,7 +574,7 @@ func (s *AMSService) GetTargetedCampaignPerformance(campaignID string, dateFrom,
 		"date_to":     strconv.FormatInt(dateTo, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetTargetedCampaignPerformance, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetTargetedCampaignPerformance, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -547,7 +589,7 @@ func (s *AMSService) GetConversionReport(dateFrom, dateTo int64) (*BaseResponse,
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetConversionReport, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetConversionReport, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -562,7 +604,7 @@ func (s *AMSService) GetValidationList(pageNum, pageSize int) (*BaseResponse, er
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetValidationList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetValidationList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -574,7 +616,7 @@ func (s *AMSService) GetValidationList(pageNum, pageSize int) (*BaseResponse, er
 func (s *AMSService) GetValidationReport(validationID string) (*BaseResponse, error) {
 	q := map[string]string{"validation_id": validationID}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetValidationReport, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetValidationReport, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -589,7 +631,7 @@ func (s *AMSService) GetCoverList(pageNum, pageSize int) (*BaseResponse, error) 
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetCoverList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetCoverList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -600,7 +642,7 @@ func (s *AMSService) GetCoverList(pageNum, pageSize int) (*BaseResponse, error) 
 
 func (s *AMSService) EditVideoInfo(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSEditVideoInfo, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSEditVideoInfo, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -615,7 +657,7 @@ func (s *AMSService) GetVideoList(pageNum, pageSize int) (*BaseResponse, error) 
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetVideoList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetVideoList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -627,7 +669,7 @@ func (s *AMSService) GetVideoList(pageNum, pageSize int) (*BaseResponse, error) 
 func (s *AMSService) GetVideoDetail(videoID string) (*BaseResponse, error) {
 	q := map[string]string{"video_id": videoID}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetVideoDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -638,7 +680,7 @@ func (s *AMSService) GetVideoDetail(videoID string) (*BaseResponse, error) {
 
 func (s *AMSService) DeleteVideo(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathAMSDeleteVideo, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathAMSDeleteVideo, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -653,7 +695,7 @@ func (s *AMSService) GetOverviewPerformance(dateFrom, dateTo int64) (*GetAMSShop
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &GetAMSShopPerformanceResponse{}
-	if err := s.client.DoGet(PathAMSGetOverviewPerformance, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetOverviewPerformance, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -669,7 +711,7 @@ func (s *AMSService) GetMetricTrend(metric string, dateFrom, dateTo int64) (*Bas
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetMetricTrend, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetMetricTrend, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -684,7 +726,7 @@ func (s *AMSService) GetUserDemographics(dateFrom, dateTo int64) (*BaseResponse,
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetUserDemographics, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetUserDemographics, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -701,7 +743,7 @@ func (s *AMSService) GetVideoPerformanceList(dateFrom, dateTo int64, pageNum, pa
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetVideoPerfList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetVideoPerfList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -718,7 +760,7 @@ func (s *AMSService) GetProductPerfList(dateFrom, dateTo int64, pageNum, pageSiz
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetProductPerfList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetProductPerfList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -734,7 +776,7 @@ func (s *AMSService) GetVideoDetailPerformance(videoID string, dateFrom, dateTo 
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetVideoDetailPerf, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetailPerf, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -751,7 +793,7 @@ func (s *AMSService) GetVideoDetailMetricTrend(videoID, metric string, dateFrom,
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetVideoDetailMetricTrend, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetailMetricTrend, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -767,7 +809,7 @@ func (s *AMSService) GetVideoDetailAudienceDistribution(videoID string, dateFrom
 		"date_to":   strconv.FormatInt(dateTo, 10),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetVideoDetailAudienceDist, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetailAudienceDist, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -785,7 +827,7 @@ func (s *AMSService) GetVideoDetailProductPerformance(videoID string, dateFrom, 
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathAMSGetVideoDetailProductPerf, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetailProductPerf, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

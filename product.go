@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type ProductService struct {
 	client *Client
@@ -30,7 +33,7 @@ func (s *ProductService) GetCategory(language string) (*GetCategoryResponse, err
 		q["language"] = language
 	}
 	result := &GetCategoryResponse{}
-	if err := s.client.DoGet(PathProductGetCategory, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetCategory, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -67,7 +70,7 @@ func (s *ProductService) GetAttributeTree(categoryID int64, language string) (*G
 		q["language"] = language
 	}
 	result := &GetAttributeTreeResponse{}
-	if err := s.client.DoGet(PathProductGetAttributeTree, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetAttributeTree, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -102,7 +105,7 @@ func (s *ProductService) GetBrandList(categoryID int64, language string, offset,
 		q["status"] = status
 	}
 	result := &GetBrandListResponse{}
-	if err := s.client.DoGet(PathProductGetBrandList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetBrandList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -131,7 +134,7 @@ func (s *ProductService) GetItemLimit(itemName string, categoryID int64) (*GetIt
 		q["category_id"] = strconv.FormatInt(categoryID, 10)
 	}
 	result := &GetItemLimitResponse{}
-	if err := s.client.DoGet(PathProductGetItemLimit, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetItemLimit, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -171,7 +174,7 @@ func (s *ProductService) GetItemList(offset, pageSize int, updateTimeFrom, updat
 		q["item_status"] = itemStatus
 	}
 	result := &GetItemListResponse{}
-	if err := s.client.DoGet(PathProductGetItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -254,7 +257,7 @@ func (s *ProductService) GetItemBaseInfo(itemIDs []int64) (*GetItemBaseInfoRespo
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetItemBaseInfoResponse{}
-	if err := s.client.DoGet(PathProductGetItemBaseInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetItemBaseInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -285,7 +288,7 @@ func (s *ProductService) GetItemExtraInfo(itemIDs []int64) (*GetItemExtraInfoRes
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetItemExtraInfoResponse{}
-	if err := s.client.DoGet(PathProductGetItemExtraInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetItemExtraInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -321,7 +324,7 @@ type AddItemResponse struct {
 
 func (s *ProductService) AddItem(params *AddItemParams) (*AddItemResponse, error) {
 	result := &AddItemResponse{}
-	if err := s.client.DoPost(PathProductAddItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductAddItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -353,7 +356,7 @@ type UpdateItemResponse struct {
 
 func (s *ProductService) UpdateItem(params *UpdateItemParams) (*UpdateItemResponse, error) {
 	result := &UpdateItemResponse{}
-	if err := s.client.DoPost(PathProductUpdateItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductUpdateItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -365,7 +368,7 @@ func (s *ProductService) UpdateItem(params *UpdateItemParams) (*UpdateItemRespon
 func (s *ProductService) DeleteItem(itemIDs []int64) (*BaseResponse, error) {
 	payload := map[string]any{"item_id_list": itemIDs}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductDeleteItem, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductDeleteItem, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -392,7 +395,7 @@ type UpdateTierVariationParams struct {
 
 func (s *ProductService) UpdateTierVariation(params *UpdateTierVariationParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductUpdateTierVariation, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductUpdateTierVariation, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -430,7 +433,7 @@ type GetModelListResponse struct {
 func (s *ProductService) GetModelList(itemID int64) (*GetModelListResponse, error) {
 	q := map[string]string{"item_id": strconv.FormatInt(itemID, 10)}
 	result := &GetModelListResponse{}
-	if err := s.client.DoGet(PathProductGetModelList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetModelList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -449,7 +452,7 @@ type AddModelParams struct {
 
 func (s *ProductService) AddModel(params *AddModelParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductAddModel, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductAddModel, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -474,7 +477,7 @@ type UpdateModelResponse struct {
 
 func (s *ProductService) UpdateModel(params *UpdateModelParams) (*UpdateModelResponse, error) {
 	result := &UpdateModelResponse{}
-	if err := s.client.DoPost(PathProductUpdateModel, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductUpdateModel, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -486,7 +489,7 @@ func (s *ProductService) UpdateModel(params *UpdateModelParams) (*UpdateModelRes
 func (s *ProductService) DeleteModel(modelID int64) (*BaseResponse, error) {
 	payload := map[string]any{"model_id": modelID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductDeleteModel, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductDeleteModel, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -518,7 +521,7 @@ type UpdatePriceResponse struct {
 
 func (s *ProductService) UpdatePrice(params *UpdatePriceParams) (*UpdatePriceResponse, error) {
 	result := &UpdatePriceResponse{}
-	if err := s.client.DoPost(PathProductUpdatePrice, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductUpdatePrice, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -555,7 +558,7 @@ type UpdateStockResponse struct {
 
 func (s *ProductService) UpdateStock(params *UpdateStockParams) (*UpdateStockResponse, error) {
 	result := &UpdateStockResponse{}
-	if err := s.client.DoPost(PathProductUpdateStock, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductUpdateStock, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -584,7 +587,7 @@ func (s *ProductService) GetBoostedList(pageSize, pageNumber int) (*GetBoostedLi
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &GetBoostedListResponse{}
-	if err := s.client.DoGet(PathProductGetBoostedList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetBoostedList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -600,7 +603,7 @@ func (s *ProductService) GetItemPromotion(itemIDs []int64) (*GetItemBaseInfoResp
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetItemBaseInfoResponse{}
-	if err := s.client.DoGet(PathProductGetItemPromotion, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetItemPromotion, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -616,7 +619,7 @@ type SIPItemPriceParams struct {
 
 func (s *ProductService) UpdateSIPItemPrice(params *SIPItemPriceParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductUpdateSIPItemPrice, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductUpdateSIPItemPrice, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -655,7 +658,7 @@ func (s *ProductService) GetComment(itemID int64, pageSize, pageNumber int, crea
 		q["create_time_to"] = strconv.FormatInt(createTimeTo, 10)
 	}
 	result := &GetCommentResponse{}
-	if err := s.client.DoGet(PathProductGetComment, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetComment, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -685,7 +688,7 @@ func (s *ProductService) GetRecommendAttribute(categoryID int64, language string
 		q["language"] = language
 	}
 	result := &GetRecommendAttributeResponse{}
-	if err := s.client.DoGet(PathProductGetRecommendAttr, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetRecommendAttr, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -716,7 +719,7 @@ func (s *ProductService) GetWeightRecommendation(categoryID int64, itemName, wei
 		q["weight"] = weight
 	}
 	result := &GetWeightRecommendationResponse{}
-	if err := s.client.DoGet(PathProductGetWeightRec, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetWeightRec, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -739,7 +742,7 @@ type GetSizeChartListResponse struct {
 
 func (s *ProductService) GetSizeChartList() (*GetSizeChartListResponse, error) {
 	result := &GetSizeChartListResponse{}
-	if err := s.client.DoGet(PathProductGetSizeChartList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetSizeChartList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -751,7 +754,7 @@ func (s *ProductService) GetSizeChartList() (*GetSizeChartListResponse, error) {
 func (s *ProductService) GetSizeChartDetail(sizeChartID int64) (*BaseResponse, error) {
 	q := map[string]string{"size_chart_id": strconv.FormatInt(sizeChartID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetSizeChartDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetSizeChartDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -782,7 +785,7 @@ func (s *ProductService) GetVariations(itemIDs []int64) (*GetVariationsResponse,
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetVariationsResponse{}
-	if err := s.client.DoGet(PathProductGetVariations, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetVariations, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -805,7 +808,7 @@ type GetAllVehicleListResponse struct {
 
 func (s *ProductService) GetAllVehicleList() (*GetAllVehicleListResponse, error) {
 	result := &GetAllVehicleListResponse{}
-	if err := s.client.DoGet(PathProductGetAllVehicleList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetAllVehicleList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -820,7 +823,7 @@ func (s *ProductService) GetVehicleListByCompatibilityDetail(categoryID int64, v
 		"vehicle_type": vehicleType,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetVehicleCompList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetVehicleCompList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -835,7 +838,7 @@ func (s *ProductService) GetItemContentDiagnosisResult(itemID int64, diagnosisTy
 		"diagnosis_type": diagnosisType,
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetContentDiagResult, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetContentDiagResult, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -851,7 +854,7 @@ func (s *ProductService) GetItemListByContentDiagnosis(diagnosisType string, off
 		"page_size":      strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetContentDiagList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetContentDiagList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -874,7 +877,7 @@ type GetKitItemLimitResponse struct {
 func (s *ProductService) GetKitItemLimit(categoryID int64) (*GetKitItemLimitResponse, error) {
 	q := map[string]string{"category_id": strconv.FormatInt(categoryID, 10)}
 	result := &GetKitItemLimitResponse{}
-	if err := s.client.DoGet(PathProductGetKitLimit, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetKitLimit, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -885,7 +888,7 @@ func (s *ProductService) GetKitItemLimit(categoryID int64) (*GetKitItemLimitResp
 
 func (s *ProductService) AddKitItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductAddKitItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductAddKitItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -896,7 +899,7 @@ func (s *ProductService) AddKitItem(params any) (*BaseResponse, error) {
 
 func (s *ProductService) UpdateKitItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductUpdateKitItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductUpdateKitItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -908,7 +911,7 @@ func (s *ProductService) UpdateKitItem(params any) (*BaseResponse, error) {
 func (s *ProductService) GetKitItemInfo(kitItemID int64) (*BaseResponse, error) {
 	q := map[string]string{"kit_item_id": strconv.FormatInt(kitItemID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetKitItemInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetKitItemInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -937,7 +940,7 @@ func (s *ProductService) GetSSPList(offset, pageSize int) (*GetSSPListResponse, 
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &GetSSPListResponse{}
-	if err := s.client.DoGet(PathProductGetSSPList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetSSPList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -949,7 +952,7 @@ func (s *ProductService) GetSSPList(offset, pageSize int) (*GetSSPListResponse, 
 func (s *ProductService) GetSSPInfo(sspID int64) (*BaseResponse, error) {
 	q := map[string]string{"ssp_id": strconv.FormatInt(sspID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetSSPInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetSSPInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -960,7 +963,7 @@ func (s *ProductService) GetSSPInfo(sspID int64) (*BaseResponse, error) {
 
 func (s *ProductService) AddSSPItem(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductAddSSPItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductAddSSPItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -972,7 +975,7 @@ func (s *ProductService) AddSSPItem(params any) (*BaseResponse, error) {
 func (s *ProductService) GetAItemByPItemID(pItemID int64) (*BaseResponse, error) {
 	q := map[string]string{"p_item_id": strconv.FormatInt(pItemID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetAItemByPItemID, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetAItemByPItemID, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1005,7 +1008,7 @@ func (s *ProductService) SearchAttributeValueList(categoryID, attributeID int64,
 		q["language"] = language
 	}
 	result := &SearchAttributeValueResponse{}
-	if err := s.client.DoGet(PathProductSearchAttrValue, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductSearchAttrValue, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1021,7 +1024,7 @@ func (s *ProductService) GetMainItemList(itemIDs []int64) (*GetItemBaseInfoRespo
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetItemBaseInfoResponse{}
-	if err := s.client.DoGet(PathProductGetMainItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetMainItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1037,7 +1040,7 @@ func (s *ProductService) GetDirectItemList(itemIDs []int64) (*BaseResponse, erro
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetDirectItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetDirectItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1049,7 +1052,7 @@ func (s *ProductService) GetDirectItemList(itemIDs []int64) (*BaseResponse, erro
 func (s *ProductService) GetDirectShopRecommendedPrice(itemID int64) (*BaseResponse, error) {
 	q := map[string]string{"item_id": strconv.FormatInt(itemID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetDirectShopPrice, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetDirectShopPrice, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1060,7 +1063,7 @@ func (s *ProductService) GetDirectShopRecommendedPrice(itemID int64) (*BaseRespo
 
 func (s *ProductService) GetProductCertificationRule(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductGetCertRule, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductGetCertRule, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1071,7 +1074,7 @@ func (s *ProductService) GetProductCertificationRule(params any) (*BaseResponse,
 
 func (s *ProductService) PublishItemToOutletShop(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathProductPublishToOutlet, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductPublishToOutlet, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1083,7 +1086,7 @@ func (s *ProductService) PublishItemToOutletShop(params any) (*BaseResponse, err
 func (s *ProductService) GetMartItemMappingByID(martItemID int64) (*BaseResponse, error) {
 	q := map[string]string{"mart_item_id": strconv.FormatInt(martItemID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetMartItemMapping, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetMartItemMapping, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1098,7 +1101,7 @@ func (s *ProductService) SearchUnpackagedModelList(pageSize, pageNumber int) (*B
 		"page_number": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductSearchUnpackaged, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductSearchUnpackaged, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1110,7 +1113,7 @@ func (s *ProductService) SearchUnpackagedModelList(pageSize, pageNumber int) (*B
 func (s *ProductService) GetMartItemByOutletItemID(outletItemID int64) (*BaseResponse, error) {
 	q := map[string]string{"outlet_item_id": strconv.FormatInt(outletItemID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathProductGetMartItemByOutlet, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetMartItemByOutlet, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1140,7 +1143,7 @@ func (s *ProductService) GetItemViolationInfo(itemIDs []int64) (*GetItemViolatio
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetItemViolationInfoResponse{}
-	if err := s.client.DoGet(PathProductGetItemViolation, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetItemViolation, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1168,7 +1171,7 @@ type BoostItemResponse struct {
 
 func (s *ProductService) BoostItem(itemIDs []int64) (*BoostItemResponse, error) {
 	result := &BoostItemResponse{}
-	if err := s.client.DoPost(PathProductBoostItem, &BoostItemParams{ItemIDList: itemIDs}, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductBoostItem, &BoostItemParams{ItemIDList: itemIDs}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -1203,7 +1206,7 @@ func (s *ProductService) UnlistItem(itemIDs []int64, unlist bool) (*UnlistItemRe
 		list[i] = UnlistItemReq{ItemID: id, Unlist: unlist}
 	}
 	result := &UnlistItemResponse{}
-	if err := s.client.DoPost(PathProductUnlistItem, &UnlistItemParams{ItemList: list}, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathProductUnlistItem, &UnlistItemParams{ItemList: list}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

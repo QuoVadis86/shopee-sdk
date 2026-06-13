@@ -1,6 +1,7 @@
 package shopee
 
 import (
+	"context"
 	"os"
 	"strconv"
 	"testing"
@@ -43,7 +44,7 @@ func TestIntegrationGetShopeeIPRanges(t *testing.T) {
 	client := NewClient(partnerID, partnerKey, accessToken, shopID, WithRegion(RegionSandbox))
 
 	result := &GetShopeeIPRangesResponse{}
-	err := client.DoGet(PathPartnerGetShopeeIPRanges, map[string]string{}, result)
+	err := client.DoGet(context.Background(), PathPartnerGetShopeeIPRanges, map[string]string{}, result)
 	if err != nil {
 		t.Fatalf("request failed: %v", err)
 	}
@@ -67,7 +68,7 @@ func TestIntegrationGetShopInfo(t *testing.T) {
 	client := NewClient(partnerID, partnerKey, accessToken, shopID, WithRegion(RegionSandbox))
 
 	result := &GetShopInfoResponse{}
-	err := client.DoGet(PathShopGetInfo, map[string]string{}, result)
+	err := client.DoGet(context.Background(), PathShopGetInfo, map[string]string{}, result)
 	if err != nil {
 		t.Fatalf("request failed: %v", err)
 	}
@@ -92,7 +93,7 @@ func TestIntegrationGetCategory(t *testing.T) {
 	client := NewClient(partnerID, partnerKey, accessToken, shopID, WithRegion(RegionSandbox))
 
 	result := &GetCategoryResponse{}
-	err := client.DoGet(PathProductGetCategory, map[string]string{"language": "en"}, result)
+	err := client.DoGet(context.Background(), PathProductGetCategory, map[string]string{"language": "en"}, result)
 	if err != nil {
 		t.Fatalf("request failed: %v", err)
 	}

@@ -166,7 +166,7 @@ var (
 	PathOrderGetBookingList          = APIPath("order", "get_booking_list")
 	PathOrderGetBookingDetail        = APIPath("order", "get_booking_detail")
 	PathOrderGetFBSInvoicesResult    = APIPath("order", "get_fbs_invoices_result")
-	PathOrderGetEstimateCancelValue  = APIPath("order", "get_estimiate_cancel_value")
+	PathOrderGetEstimateCancelValue  = APIPath("order", "get_estimate_cancel_value")
 )
 
 // ---------------------------------------------------------------------------
@@ -305,7 +305,7 @@ var (
 	PathAMSGetMetricTrend                     = APIPath("ams", "get_metric_trend")
 	PathAMSGetUserDemographics                = APIPath("ams", "get_user_demographics")
 	PathAMSGetVideoPerfList                   = APIPath("ams", "get_video_performance_list")
-	PathAMSGetProductPerfList                 = APIPath("ams", "get_prodcut_performance_list")
+	PathAMSGetProductPerfList                 = APIPath("ams", "get_product_performance_list")
 	PathAMSGetVideoDetailPerf                 = APIPath("ams", "get_video_detail_performance")
 	PathAMSGetVideoDetailMetricTrend          = APIPath("ams", "get_video_detail_metric_trend")
 	PathAMSGetVideoDetailAudienceDist         = APIPath("ams", "get_video_detail_audience_distribution")
@@ -441,7 +441,7 @@ var (
 	PathAdsEditManualProductAds         = APIPath("ads", "edit_manual_product_ads")
 	PathAdsGetCreateAdBudgetSuggestion  = APIPath("ads", "get_create_product_ad_budget_suggestion")
 	PathAdsGetRecommendedROITarget      = APIPath("ads", "get_product_recommended_roi_target")
-	PathAdsGetFacilShopRate             = APIPath("ads", "get_ads_fácil_shop_rate")
+	PathAdsGetFacilShopRate             = APIPath("ads", "get_ads_facil_shop_rate")
 	PathAdsCheckCreateGMSCampaignElig   = APIPath("ads", "check_create_gms_product_campaign_eligibility")
 	PathAdsCreateGMSCampaign            = APIPath("ads", "create_gms_product_campaign")
 	PathAdsEditGMSCampaign              = APIPath("ads", "edit_gms_product_campaign")

@@ -1,6 +1,8 @@
 package shopee
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,6 +10,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -24,8 +27,11 @@ type Client struct {
 	PartnerKey  string
 	AccessToken string
 	ShopID      int64
+	MerchantID  int64
 	BaseURL     string
+	Region      Region
 	HTTPClient  HTTPClient
+	mu          sync.RWMutex
 }
 
 // ClientOption configures a Client.
@@ -34,6 +40,7 @@ type ClientOption func(*Client)
 // WithRegion sets the region for the API base URL.
 func WithRegion(region Region) ClientOption {
 	return func(c *Client) {
+		c.Region = region
 		if u, ok := BaseURLs[region]; ok {
 			c.BaseURL = u
 		}
@@ -54,6 +61,13 @@ func WithHTTPClient(hc HTTPClient) ClientOption {
 	}
 }
 
+// WithMerchantID sets the merchant ID for Merchant API calls.
+func WithMerchantID(merchantID int64) ClientOption {
+	return func(c *Client) {
+		c.MerchantID = merchantID
+	}
+}
+
 // NewClient creates a new Shopee API client.
 func NewClient(partnerID int64, partnerKey, accessToken string, shopID int64, opts ...ClientOption) *Client {
 	c := &Client{
@@ -62,6 +76,7 @@ func NewClient(partnerID int64, partnerKey, accessToken string, shopID int64, op
 		AccessToken: accessToken,
 		ShopID:      shopID,
 		BaseURL:     BaseURLs[RegionGlobal],
+		Region:      RegionGlobal,
 		HTTPClient:  defaultClient,
 	}
 	for _, opt := range opts {
@@ -70,29 +85,51 @@ func NewClient(partnerID int64, partnerKey, accessToken string, shopID int64, op
 	return c
 }
 
+// SetAccessToken updates the access token in a thread-safe manner.
+func (c *Client) SetAccessToken(token string) {
+	c.mu.Lock()
+	c.AccessToken = token
+	c.mu.Unlock()
+}
+
+// GetAccessToken returns the current access token in a thread-safe manner.
+func (c *Client) GetAccessToken() string {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.AccessToken
+}
+
+// authSnapshot returns a consistent snapshot of auth fields for signing.
+func (c *Client) authSnapshot() (accessToken string, shopID, merchantID int64) {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
+	return c.AccessToken, c.ShopID, c.MerchantID
+}
+
 func (c *Client) baseQuery(timestamp int64) url.Values {
+	accessToken, shopID, merchantID := c.authSnapshot()
 	q := url.Values{}
 	q.Set("partner_id", strconv.FormatInt(c.PartnerID, 10))
 	q.Set("timestamp", strconv.FormatInt(timestamp, 10))
-	if c.AccessToken != "" {
-		q.Set("access_token", c.AccessToken)
+	if accessToken != "" {
+		q.Set("access_token", accessToken)
 	}
-	if c.ShopID > 0 {
-		q.Set("shop_id", strconv.FormatInt(c.ShopID, 10))
+	if shopID > 0 {
+		q.Set("shop_id", strconv.FormatInt(shopID, 10))
+	}
+	if merchantID > 0 {
+		q.Set("merchant_id", strconv.FormatInt(merchantID, 10))
 	}
 	return q
 }
 
-func (c *Client) signAndBuildURL(apiPath string, timestamp int64) string {
-	q := c.baseQuery(timestamp)
-	sign := GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, timestamp, c.AccessToken, c.ShopID)
-	q.Set("sign", sign)
-	return fmt.Sprintf("%s%s?%s", c.BaseURL, apiPath, q.Encode())
+func (c *Client) generateSign(apiPath string, timestamp int64) string {
+	accessToken, shopID, merchantID := c.authSnapshot()
+	return GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, timestamp, accessToken, shopID, merchantID)
 }
 
-// DoGet performs a GET request.
-// queryParams are additional query parameters beyond the standard auth params.
-func (c *Client) DoGet(apiPath string, queryParams map[string]string, result any) error {
+// DoGet performs a GET request with context support.
+func (c *Client) DoGet(ctx context.Context, apiPath string, queryParams map[string]string, result any) error {
 	ts := time.Now().Unix()
 	q := c.baseQuery(ts)
 	for k, v := range queryParams {
@@ -100,35 +137,20 @@ func (c *Client) DoGet(apiPath string, queryParams map[string]string, result any
 			q.Set(k, v)
 		}
 	}
-	sign := GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, ts, c.AccessToken, c.ShopID)
+	sign := c.generateSign(apiPath, ts)
 	q.Set("sign", sign)
 	reqURL := fmt.Sprintf("%s%s?%s", c.BaseURL, apiPath, q.Encode())
 
-	req, err := http.NewRequest(http.MethodGet, reqURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("request failed: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("read response: %w", err)
-	}
-	if err := json.Unmarshal(body, result); err != nil {
-		return fmt.Errorf("unmarshal: %w (body: %s)", err, truncate(string(body), 500))
-	}
-	return nil
+	return c.doRequest(req, result)
 }
 
-// DoPost performs a POST request.
-// bodyPayload is the JSON-serializable request body.
-func (c *Client) DoPost(apiPath string, bodyPayload any, result any) error {
+// DoPost performs a POST request with context support.
+func (c *Client) DoPost(ctx context.Context, apiPath string, bodyPayload any, result any) error {
 	ts := time.Now().Unix()
 
 	var bodyBytes []byte
@@ -141,52 +163,25 @@ func (c *Client) DoPost(apiPath string, bodyPayload any, result any) error {
 	}
 
 	q := c.baseQuery(ts)
-	sign := GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, ts, c.AccessToken, c.ShopID)
+	sign := c.generateSign(apiPath, ts)
 	q.Set("sign", sign)
 
 	reqURL := fmt.Sprintf("%s%s?%s", c.BaseURL, apiPath, q.Encode())
-	bodyReader := strings.NewReader(string(bodyBytes))
+	bodyReader := bytes.NewReader(bodyBytes)
 
-	req, err := http.NewRequest(http.MethodPost, reqURL, bodyReader)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bodyReader)
 	if err != nil {
 		return fmt.Errorf("create request: %w", err)
 	}
-	req.Header.Set("Content-Type", "application/json")
+	if bodyPayload != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
 
-	resp, err := c.HTTPClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("request failed: %w", err)
-	}
-	defer resp.Body.Close()
-
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return fmt.Errorf("read response: %w", err)
-	}
-	if err := json.Unmarshal(respBody, result); err != nil {
-		return fmt.Errorf("unmarshal: %w (body: %s)", err, truncate(string(respBody), 500))
-	}
-	return nil
+	return c.doRequest(req, result)
 }
 
-// DoGetWithTimestamp performs a GET request with a custom timestamp (for testing).
-func (c *Client) DoGetWithTimestamp(apiPath string, queryParams map[string]string, timestamp int64, result any) error {
-	q := c.baseQuery(timestamp)
-	for k, v := range queryParams {
-		if v != "" {
-			q.Set(k, v)
-		}
-	}
-	sign := GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, timestamp, c.AccessToken, c.ShopID)
-	q.Set("sign", sign)
-	reqURL := fmt.Sprintf("%s%s?%s", c.BaseURL, apiPath, q.Encode())
-
-	req, err := http.NewRequest(http.MethodGet, reqURL, nil)
-	if err != nil {
-		return fmt.Errorf("create request: %w", err)
-	}
-	req.Header.Set("Content-Type", "application/json")
-
+// doRequest executes the HTTP request and unmarshals the response.
+func (c *Client) doRequest(req *http.Request, result any) error {
 	resp, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("request failed: %w", err)
@@ -197,10 +192,35 @@ func (c *Client) DoGetWithTimestamp(apiPath string, queryParams map[string]strin
 	if err != nil {
 		return fmt.Errorf("read response: %w", err)
 	}
+
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		return fmt.Errorf("HTTP %d %s: %s", resp.StatusCode, resp.Status, truncate(string(body), 500))
+	}
+
 	if err := json.Unmarshal(body, result); err != nil {
 		return fmt.Errorf("unmarshal: %w (body: %s)", err, truncate(string(body), 500))
 	}
 	return nil
+}
+
+// DoGetWithTimestamp performs a GET request with a custom timestamp (for testing).
+func (c *Client) DoGetWithTimestamp(ctx context.Context, apiPath string, queryParams map[string]string, timestamp int64, result any) error {
+	q := c.baseQuery(timestamp)
+	for k, v := range queryParams {
+		if v != "" {
+			q.Set(k, v)
+		}
+	}
+	sign := c.generateSign(apiPath, timestamp)
+	q.Set("sign", sign)
+	reqURL := fmt.Sprintf("%s%s?%s", c.BaseURL, apiPath, q.Encode())
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
+	if err != nil {
+		return fmt.Errorf("create request: %w", err)
+	}
+
+	return c.doRequest(req, result)
 }
 
 func truncate(s string, n int) string {

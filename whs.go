@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type WHSService struct {
 	client *Client
@@ -38,7 +41,7 @@ func (s *WHSService) GetCurrentInventory(warehouseID int64, skuList []string, pa
 		q["sku_list"] = stringsJoin(skuList, ",")
 	}
 	result := &GetCurrentInventoryResponse{}
-	if err := s.client.DoGet(PathWHSGetCurrentInventory, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathWHSGetCurrentInventory, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -71,7 +74,7 @@ func (s *WHSService) GetExpiryReport(warehouseID int64, pageSize, pageNumber int
 		"page_number":  strconv.Itoa(pageNumber),
 	}
 	result := &GetExpiryReportResponse{}
-	if err := s.client.DoGet(PathWHSGetExpiryReport, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathWHSGetExpiryReport, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -105,7 +108,7 @@ func (s *WHSService) GetStockAging(warehouseID int64, pageSize, pageNumber int) 
 		"page_number":  strconv.Itoa(pageNumber),
 	}
 	result := &GetStockAgingResponse{}
-	if err := s.client.DoGet(PathWHSGetStockAging, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathWHSGetStockAging, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -145,7 +148,7 @@ func (s *WHSService) GetStockMovement(warehouseID int64, dateFrom, dateTo int64,
 		q["date_to"] = strconv.FormatInt(dateTo, 10)
 	}
 	result := &GetStockMovementResponse{}
-	if err := s.client.DoGet(PathWHSGetStockMovement, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathWHSGetStockMovement, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

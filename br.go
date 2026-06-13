@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type BRService struct {
 	client *Client
@@ -30,7 +33,7 @@ func (s *BRService) QueryShopEnrollmentStatus(shopIDs []int64) (*GetBRShopEnroll
 	}
 	q := map[string]string{"shop_id_list": stringsJoin(ids, ",")}
 	result := &GetBRShopEnrollmentStatusResponse{}
-	if err := s.client.DoGet(PathBRQueryShopEnrollmentStatus, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathBRQueryShopEnrollmentStatus, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -59,7 +62,7 @@ func (s *BRService) QueryShopInvoiceError(shopIDs []int64) (*GetBRShopInvoiceErr
 	}
 	q := map[string]string{"shop_id_list": stringsJoin(ids, ",")}
 	result := &GetBRShopInvoiceErrorResponse{}
-	if err := s.client.DoGet(PathBRQueryShopInvoiceError, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathBRQueryShopInvoiceError, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -88,7 +91,7 @@ func (s *BRService) QueryShopBlockStatus(shopIDs []int64) (*GetBRShopBlockStatus
 	}
 	q := map[string]string{"shop_id_list": stringsJoin(ids, ",")}
 	result := &GetBRShopBlockStatusResponse{}
-	if err := s.client.DoGet(PathBRQueryShopBlockStatus, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathBRQueryShopBlockStatus, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -118,7 +121,7 @@ func (s *BRService) QuerySKUBlockStatus(itemIDs []int64) (*GetBRSKUBlockStatusRe
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetBRSKUBlockStatusResponse{}
-	if err := s.client.DoGet(PathBRQuerySKUBlockStatus, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathBRQuerySKUBlockStatus, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

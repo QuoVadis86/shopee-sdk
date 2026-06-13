@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type OrderService struct {
 	client *Client
@@ -38,7 +41,7 @@ func (s *OrderService) GetOrderList(timeRangeField string, timeFrom, timeTo int6
 		q["order_status"] = orderStatus
 	}
 	result := &GetOrderListResponse{}
-	if err := s.client.DoGet(PathOrderGetOrderList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetOrderList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -126,7 +129,7 @@ func (s *OrderService) GetOrderDetail(orderSNs []string, optionalFields string) 
 		q["response_optional_fields"] = optionalFields
 	}
 	result := &GetOrderDetailResponse{}
-	if err := s.client.DoGet(PathOrderGetOrderDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetOrderDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -155,7 +158,7 @@ func (s *OrderService) GetShipmentList(pageSize int, cursor string) (*GetShipmen
 		q["cursor"] = cursor
 	}
 	result := &GetShipmentListResponse{}
-	if err := s.client.DoGet(PathOrderGetShipmentList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetShipmentList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -194,7 +197,7 @@ type SearchPackageListResponse struct {
 
 func (s *OrderService) SearchPackageList(params *SearchPackageListParams) (*SearchPackageListResponse, error) {
 	result := &SearchPackageListResponse{}
-	if err := s.client.DoPost(PathOrderSearchPackageList, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathOrderSearchPackageList, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -229,7 +232,7 @@ type GetPackageDetailResponse struct {
 func (s *OrderService) GetPackageDetail(packageNumbers []string) (*GetPackageDetailResponse, error) {
 	q := map[string]string{"package_number_list": stringsJoin(packageNumbers, ",")}
 	result := &GetPackageDetailResponse{}
-	if err := s.client.DoGet(PathOrderGetPackageDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetPackageDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -248,7 +251,7 @@ type SplitOrderParams struct {
 
 func (s *OrderService) SplitOrder(params *SplitOrderParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathOrderSplitOrder, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathOrderSplitOrder, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -260,7 +263,7 @@ func (s *OrderService) SplitOrder(params *SplitOrderParams) (*BaseResponse, erro
 func (s *OrderService) UnsplitOrder(orderSN string) (*BaseResponse, error) {
 	payload := map[string]any{"order_sn": orderSN}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathOrderUnsplitOrder, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathOrderUnsplitOrder, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -287,7 +290,7 @@ type CancelOrderResponse struct {
 
 func (s *OrderService) CancelOrder(params *CancelOrderParams) (*CancelOrderResponse, error) {
 	result := &CancelOrderResponse{}
-	if err := s.client.DoPost(PathOrderCancelOrder, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathOrderCancelOrder, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -303,7 +306,7 @@ type SetNoteParams struct {
 
 func (s *OrderService) SetNote(params *SetNoteParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathOrderSetNote, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathOrderSetNote, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -318,7 +321,7 @@ func (s *OrderService) GetPendingBuyerInvoiceOrderList(pageSize int, cursor stri
 		q["cursor"] = cursor
 	}
 	result := &GetOrderListResponse{}
-	if err := s.client.DoGet(PathOrderGetPendingInvoiceList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetPendingInvoiceList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -330,7 +333,7 @@ func (s *OrderService) GetPendingBuyerInvoiceOrderList(pageSize int, cursor stri
 func (s *OrderService) GetBuyerInvoiceInfo(orderSNs []string) (*BaseResponse, error) {
 	q := map[string]string{"order_sn_list": stringsJoin(orderSNs, ",")}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathOrderGetBuyerInvoiceInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetBuyerInvoiceInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -341,7 +344,7 @@ func (s *OrderService) GetBuyerInvoiceInfo(orderSNs []string) (*BaseResponse, er
 
 func (s *OrderService) GetWarehouseFilterConfig() (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathOrderGetWarehouseFilterCfg, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetWarehouseFilterCfg, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -364,7 +367,7 @@ func (s *OrderService) GetBookingList(pageSize int, cursor string, timeFrom, tim
 		q["time_to"] = strconv.FormatInt(timeTo, 10)
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathOrderGetBookingList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetBookingList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -376,7 +379,7 @@ func (s *OrderService) GetBookingList(pageSize int, cursor string, timeFrom, tim
 func (s *OrderService) GetBookingDetail(bookingID int64) (*BaseResponse, error) {
 	q := map[string]string{"booking_id": strconv.FormatInt(bookingID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathOrderGetBookingDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetBookingDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -391,7 +394,7 @@ func (s *OrderService) GetFBSInvoicesResult(pageSize int, cursor string) (*BaseR
 		q["cursor"] = cursor
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathOrderGetFBSInvoicesResult, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetFBSInvoicesResult, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -410,7 +413,7 @@ func (s *OrderService) GetEstimateCancelValue(orderSN string, itemIDs []int64) (
 		"item_list": stringsJoin(ids, ","),
 	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathOrderGetEstimateCancelValue, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathOrderGetEstimateCancelValue, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

@@ -42,7 +42,7 @@ func NewSDK(partnerID int64, partnerKey, accessToken string, shopID int64, opts 
 	}
 }
 
-// SetAccessToken updates the access token used by all services.
+// SetAccessToken updates the access token used by all services (thread-safe).
 func (s *SDK) SetAccessToken(token string) {
-	s.Client.AccessToken = token
+	s.Client.SetAccessToken(token)
 }

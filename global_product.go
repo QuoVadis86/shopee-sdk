@@ -1,6 +1,9 @@
 package shopee
 
-import "strconv"
+import (
+	"context"
+	"strconv"
+)
 
 type GlobalProductService struct {
 	client *Client
@@ -16,7 +19,7 @@ func (s *GlobalProductService) GetCategory(language string) (*GetCategoryRespons
 		q["language"] = language
 	}
 	result := &GetCategoryResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetCategory, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetCategory, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -33,7 +36,7 @@ func (s *GlobalProductService) GetAttributeTree(categoryID int64, language strin
 		q["language"] = language
 	}
 	result := &GetAttributeTreeResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetAttributeTree, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetAttributeTree, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -52,7 +55,7 @@ func (s *GlobalProductService) GetBrandList(categoryID int64, language string, o
 		q["language"] = language
 	}
 	result := &GetBrandListResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetBrandList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetBrandList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -67,7 +70,7 @@ func (s *GlobalProductService) GetItemLimit(itemName string, categoryID int64) (
 		q["category_id"] = strconv.FormatInt(categoryID, 10)
 	}
 	result := &GetItemLimitResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetItemLimit, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetItemLimit, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -91,7 +94,7 @@ func (s *GlobalProductService) GetItemList(offset, pageSize int, updateTimeFrom,
 		q["item_status"] = itemStatus
 	}
 	result := &GetItemListResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetItemList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -129,7 +132,7 @@ func (s *GlobalProductService) GetItemInfo(itemIDs []int64) (*GetGlobalItemInfoR
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetGlobalItemInfoResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetItemInfo, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetItemInfo, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -160,7 +163,7 @@ type AddGlobalItemResponse struct {
 
 func (s *GlobalProductService) AddItem(params *AddGlobalItemParams) (*AddGlobalItemResponse, error) {
 	result := &AddGlobalItemResponse{}
-	if err := s.client.DoPost(PathGlobalProductAddItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductAddItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -181,7 +184,7 @@ type UpdateGlobalItemParams struct {
 
 func (s *GlobalProductService) UpdateItem(params *UpdateGlobalItemParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductUpdateItem, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductUpdateItem, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -193,7 +196,7 @@ func (s *GlobalProductService) UpdateItem(params *UpdateGlobalItemParams) (*Base
 func (s *GlobalProductService) DeleteItem(itemID int64) (*BaseResponse, error) {
 	payload := map[string]any{"item_id": itemID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductDeleteItem, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductDeleteItem, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -204,7 +207,7 @@ func (s *GlobalProductService) DeleteItem(itemID int64) (*BaseResponse, error) {
 
 func (s *GlobalProductService) UpdateTierVariation(params *UpdateTierVariationParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductUpdateTierVariation, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductUpdateTierVariation, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -223,7 +226,7 @@ type AddGlobalModelParams struct {
 
 func (s *GlobalProductService) AddModel(params *AddGlobalModelParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductAddModel, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductAddModel, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -241,7 +244,7 @@ type UpdateGlobalModelParams struct {
 
 func (s *GlobalProductService) UpdateModel(params *UpdateGlobalModelParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductUpdateModel, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductUpdateModel, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -253,7 +256,7 @@ func (s *GlobalProductService) UpdateModel(params *UpdateGlobalModelParams) (*Ba
 func (s *GlobalProductService) DeleteModel(modelID int64) (*BaseResponse, error) {
 	payload := map[string]any{"model_id": modelID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductDeleteModel, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductDeleteModel, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -281,7 +284,7 @@ type GetGlobalModelListResponse struct {
 func (s *GlobalProductService) GetModelList(itemID int64) (*GetGlobalModelListResponse, error) {
 	q := map[string]string{"item_id": strconv.FormatInt(itemID, 10)}
 	result := &GetGlobalModelListResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetModelList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetModelList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -292,7 +295,7 @@ func (s *GlobalProductService) GetModelList(itemID int64) (*GetGlobalModelListRe
 
 func (s *GlobalProductService) UpdateSizeChart(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductUpdateSizeChart, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductUpdateSizeChart, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -315,7 +318,7 @@ type CreatePublishTaskResponse struct {
 
 func (s *GlobalProductService) CreatePublishTask(params *CreatePublishTaskParams) (*CreatePublishTaskResponse, error) {
 	result := &CreatePublishTaskResponse{}
-	if err := s.client.DoPost(PathGlobalProductCreatePublishTask, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductCreatePublishTask, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -340,7 +343,7 @@ type GetPublishableShopResponse struct {
 
 func (s *GlobalProductService) GetPublishableShop() (*GetPublishableShopResponse, error) {
 	result := &GetPublishableShopResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetPublishableShop, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetPublishableShop, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -366,7 +369,7 @@ type GetPublishTaskResultResponse struct {
 func (s *GlobalProductService) GetPublishTaskResult(publishTaskID int64) (*GetPublishTaskResultResponse, error) {
 	q := map[string]string{"publish_task_id": strconv.FormatInt(publishTaskID, 10)}
 	result := &GetPublishTaskResultResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetPublishTaskResult, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetPublishTaskResult, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -398,7 +401,7 @@ func (s *GlobalProductService) GetPublishedList(offset, pageSize int) (*GetPubli
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &GetPublishedListResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetPublishedList, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetPublishedList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -414,7 +417,7 @@ type UpdateGlobalPriceParams struct {
 
 func (s *GlobalProductService) UpdatePrice(params *UpdateGlobalPriceParams) (*UpdatePriceResponse, error) {
 	result := &UpdatePriceResponse{}
-	if err := s.client.DoPost(PathGlobalProductUpdatePrice, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductUpdatePrice, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -430,7 +433,7 @@ type UpdateGlobalStockParams struct {
 
 func (s *GlobalProductService) UpdateStock(params *UpdateGlobalStockParams) (*UpdateStockResponse, error) {
 	result := &UpdateStockResponse{}
-	if err := s.client.DoPost(PathGlobalProductUpdateStock, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductUpdateStock, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -446,7 +449,7 @@ type SetSyncFieldParams struct {
 
 func (s *GlobalProductService) SetSyncField(params *SetSyncFieldParams) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductSetSyncField, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductSetSyncField, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -474,7 +477,7 @@ func (s *GlobalProductService) GetGlobalItemID(itemIDs []int64) (*GetGlobalItemI
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetGlobalItemIDResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetGlobalItemID, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetGlobalItemID, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -491,7 +494,7 @@ func (s *GlobalProductService) GetRecommendAttribute(categoryID int64, language 
 		q["language"] = language
 	}
 	result := &GetRecommendAttributeResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetRecommendAttr, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetRecommendAttr, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -512,7 +515,7 @@ func (s *GlobalProductService) GetShopPublishableStatus(shopIDs []int64) (*BaseR
 	}
 	q := map[string]string{"shop_id_list": stringsJoin(ids, ",")}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetShopPublishable, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetShopPublishable, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -528,7 +531,7 @@ func (s *GlobalProductService) GetVariations(itemIDs []int64) (*GetVariationsRes
 	}
 	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &GetVariationsResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetVariations, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetVariations, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -539,7 +542,7 @@ func (s *GlobalProductService) GetVariations(itemIDs []int64) (*GetVariationsRes
 
 func (s *GlobalProductService) GetSizeChartList() (*GetSizeChartListResponse, error) {
 	result := &GetSizeChartListResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetSizeChartList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetSizeChartList, map[string]string{}, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -551,7 +554,7 @@ func (s *GlobalProductService) GetSizeChartList() (*GetSizeChartListResponse, er
 func (s *GlobalProductService) GetSizeChartDetail(sizeChartID int64) (*BaseResponse, error) {
 	q := map[string]string{"size_chart_id": strconv.FormatInt(sizeChartID, 10)}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetSizeChartDetail, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetSizeChartDetail, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -572,7 +575,7 @@ func (s *GlobalProductService) SearchAttributeValueList(categoryID, attributeID 
 		q["language"] = language
 	}
 	result := &SearchAttributeValueResponse{}
-	if err := s.client.DoGet(PathGlobalProductSearchAttrValue, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductSearchAttrValue, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -596,7 +599,7 @@ type GetLocalAdjustmentRateResponse struct {
 func (s *GlobalProductService) GetLocalAdjustmentRate(currency string) (*GetLocalAdjustmentRateResponse, error) {
 	q := map[string]string{"currency": currency}
 	result := &GetLocalAdjustmentRateResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetLocalAdjRate, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetLocalAdjRate, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -607,7 +610,7 @@ func (s *GlobalProductService) GetLocalAdjustmentRate(currency string) (*GetLoca
 
 func (s *GlobalProductService) UpdateLocalAdjustmentRate(params any) (*BaseResponse, error) {
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductUpdateLocalAdjRate, params, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductUpdateLocalAdjRate, params, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -632,7 +635,7 @@ type GetVideoUploadResultResponse struct {
 func (s *GlobalProductService) GetVideoUploadResult(videoUploadID string) (*GetVideoUploadResultResponse, error) {
 	q := map[string]string{"video_upload_id": videoUploadID}
 	result := &GetVideoUploadResultResponse{}
-	if err := s.client.DoGet(PathGlobalProductGetVideoUploadResult, q, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathGlobalProductGetVideoUploadResult, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -644,7 +647,7 @@ func (s *GlobalProductService) GetVideoUploadResult(videoUploadID string) (*GetV
 func (s *GlobalProductService) CancelVideoUpload(videoUploadID string) (*BaseResponse, error) {
 	payload := map[string]any{"video_upload_id": videoUploadID}
 	result := &BaseResponse{}
-	if err := s.client.DoPost(PathGlobalProductCancelVideoUpload, payload, result); err != nil {
+	if err := s.client.DoPost(context.Background(), PathGlobalProductCancelVideoUpload, payload, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
