@@ -77,9 +77,9 @@ func TestIntegrationGetShopInfo(t *testing.T) {
 
 	if result.HasError() {
 		t.Logf("API returned error (expected without auth): %s - %s", result.Error, result.Message)
-	} else if result.Response != nil {
-		t.Logf("Shop: %s (ID: %d, Region: %s, Status: %s)",
-			result.Response.ShopName, result.Response.ShopID, result.Response.Region, result.Response.Status)
+	} else if result.ShopName != "" {
+		t.Logf("Shop: %s (Region: %s, Status: %s)",
+			result.ShopName, result.Region, result.Status)
 	}
 }
 

@@ -216,12 +216,12 @@ func TestIntegrationShop_GetShopInfo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("GetShopInfo failed: %v", err)
 	}
-	if result.Response == nil {
-		t.Logf("Response is nil (sandbox limitation for shop_info).")
+	if result.ShopName == "" {
+		t.Logf("ShopName is empty (sandbox limitation for shop_info).")
 		return
 	}
-	t.Logf("Shop: %s (ID: %d, Region: %s, Status: %s)",
-		result.Response.ShopName, result.Response.ShopID, result.Response.Region, result.Response.Status)
+	t.Logf("Shop: %s (Region: %s, Status: %s)",
+		result.ShopName, result.Region, result.Status)
 }
 
 func TestIntegrationShop_GetProfile(t *testing.T) {

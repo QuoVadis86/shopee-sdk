@@ -22,7 +22,7 @@ func main() {
 	} else if shopInfo.HasError() {
 		fmt.Fprintf(os.Stderr, "API error: %s - %s\n", shopInfo.Error, shopInfo.Message)
 	} else {
-		log.Printf("Shop: %s (ID: %d, Region: %s)", shopInfo.Response.ShopName, shopInfo.Response.ShopID, shopInfo.Response.Region)
+		log.Printf("Shop: %s (Region: %s)", shopInfo.ShopName, shopInfo.Region)
 	}
 
 	categories, err := sdk.Product.GetCategory("en")

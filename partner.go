@@ -54,9 +54,10 @@ func (s *PartnerService) GetMerchantsByPartner() (*BaseResponse, error) {
 }
 
 type GetAccessTokenParams struct {
-	Code      string `json:"code"`
-	PartnerID int64  `json:"partner_id"`
-	ShopID    int64  `json:"shop_id,omitempty"`
+	Code          string `json:"code"`
+	PartnerID     int64  `json:"partner_id"`
+	ShopID        int64  `json:"shop_id,omitempty"`
+	MainAccountID int64  `json:"main_account_id,omitempty"`
 }
 
 type GetAccessTokenResponse struct {

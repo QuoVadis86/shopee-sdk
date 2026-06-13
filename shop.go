@@ -20,7 +20,19 @@ type ShopInfo struct {
 
 type GetShopInfoResponse struct {
 	BaseResponse
-	Response *ShopInfo `json:"response,omitempty"`
+
+	ShopName            string `json:"shop_name"`
+	Region              string `json:"region"`
+	Status              string `json:"status"`
+	AuthTime            int64  `json:"auth_time"`
+	ExpireTime          int64  `json:"expire_time"`
+	IsCB                bool   `json:"is_cb"`
+	MerchantID          int64  `json:"merchant_id"`
+	IsSIP               bool   `json:"is_sip"`
+	IsMainShop          bool   `json:"is_main_shop"`
+	IsDirectShop        bool   `json:"is_direct_shop"`
+	IsUpgradedCBSC      bool   `json:"is_upgraded_cbsc"`
+	ShopFulfillmentFlag string `json:"shop_fulfillment_flag"`
 }
 
 func (s *ShopService) GetShopInfo() (*GetShopInfoResponse, error) {
@@ -185,7 +197,15 @@ type MerchantInfo struct {
 
 type GetMerchantInfoResponse struct {
 	BaseResponse
-	Response *MerchantInfo `json:"response,omitempty"`
+
+	MerchantName     string `json:"merchant_name"`
+	Region           string `json:"region,omitempty"`
+	MerchantRegion   string `json:"merchant_region,omitempty"`
+	MerchantCurrency string `json:"merchant_currency,omitempty"`
+	IsCNSC           bool   `json:"is_cnsc"`
+	IsUpgradedCBSC   bool   `json:"is_upgraded_cbsc"`
+	AuthTime         int64  `json:"auth_time"`
+	ExpireTime       int64  `json:"expire_time"`
 }
 
 func (s *ShopService) GetMerchantInfo() (*GetMerchantInfoResponse, error) {
@@ -199,8 +219,19 @@ func (s *ShopService) GetMerchantInfo() (*GetMerchantInfoResponse, error) {
 	return result, nil
 }
 
-func (s *ShopService) GetShopListByMerchant() (*BaseResponse, error) {
-	result := &BaseResponse{}
+type MerchantShop struct {
+	ShopID int64 `json:"shop_id"`
+}
+
+type GetShopListByMerchantResponse struct {
+	BaseResponse
+	ShopList []MerchantShop `json:"shop_list"`
+	More     bool           `json:"more"`
+	IsCNSC   bool           `json:"is_cnsc"`
+}
+
+func (s *ShopService) GetShopListByMerchant() (*GetShopListByMerchantResponse, error) {
+	result := &GetShopListByMerchantResponse{}
 	if err := s.client.DoGet(PathShopGetListByMerchant, map[string]string{}, result); err != nil {
 		return nil, err
 	}
