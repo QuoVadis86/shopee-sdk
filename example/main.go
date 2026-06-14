@@ -32,7 +32,7 @@ func main() {
 		log.Printf("Found %d categories", len(categories.Response.CategoryList))
 	}
 
-	items, err := sdk.Product.GetItemList(0, 10, 0, 0, "")
+	items, err := sdk.Product.GetItemList(0, 10, 0, 0, nil)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "GetItemList error: %v\n", err)
 	} else {

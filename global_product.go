@@ -2,6 +2,7 @@ package shopee
 
 import (
 	"context"
+	"net/url"
 	"strconv"
 )
 
@@ -79,22 +80,34 @@ func (s *GlobalProductService) GetItemLimit(itemName string, categoryID int64) (
 	return result, nil
 }
 
-func (s *GlobalProductService) GetItemList(offset, pageSize int, updateTimeFrom, updateTimeTo int64, itemStatus string) (*GetItemListResponse, error) {
-	q := map[string]string{
-		"offset":    strconv.Itoa(offset),
-		"page_size": strconv.Itoa(pageSize),
+// GetGlobalItemListResponse is the response for global_product.get_global_item_list.
+// Uses item_list (not item) to match the global product API response structure.
+type GetGlobalItemListResponse struct {
+	BaseResponse
+	Response struct {
+		ItemList    []ItemListItem `json:"item_list"`
+		TotalCount  int            `json:"total_count"`
+		HasNextPage bool           `json:"has_next_page"`
+		NextOffset  int            `json:"next_offset"`
+	} `json:"response"`
+}
+
+func (s *GlobalProductService) GetItemList(offset, pageSize int, updateTimeFrom, updateTimeTo int64, itemStatus []string) (*GetGlobalItemListResponse, error) {
+	q := url.Values{
+		"offset":    {strconv.Itoa(offset)},
+		"page_size": {strconv.Itoa(pageSize)},
 	}
 	if updateTimeFrom > 0 {
-		q["update_time_from"] = strconv.FormatInt(updateTimeFrom, 10)
+		q.Set("update_time_from", strconv.FormatInt(updateTimeFrom, 10))
 	}
 	if updateTimeTo > 0 {
-		q["update_time_to"] = strconv.FormatInt(updateTimeTo, 10)
+		q.Set("update_time_to", strconv.FormatInt(updateTimeTo, 10))
 	}
-	if itemStatus != "" {
-		q["item_status"] = itemStatus
+	for _, status := range itemStatus {
+		q.Add("item_status", status)
 	}
-	result := &GetItemListResponse{}
-	if err := s.client.DoGet(context.Background(), PathGlobalProductGetItemList, q, result); err != nil {
+	result := &GetGlobalItemListResponse{}
+	if err := s.client.DoGetMulti(context.Background(), PathGlobalProductGetItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -114,8 +127,9 @@ type GlobalItemInfo struct {
 	Image        *ImageInfo `json:"image,omitempty"`
 	Weight       string     `json:"weight,omitempty"`
 	Dimension    *Dimension `json:"dimension,omitempty"`
-	ItemStatus   ItemStatus `json:"item_status"`
-	HasModel     bool       `json:"has_model"`
+	ItemStatus   ItemStatus  `json:"item_status"`
+	HasModel     bool        `json:"has_model"`
+	PriceInfo    []PriceInfo `json:"price_info,omitempty"`
 }
 
 type GetGlobalItemInfoResponse struct {

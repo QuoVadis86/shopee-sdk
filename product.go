@@ -2,6 +2,7 @@ package shopee
 
 import (
 	"context"
+	"net/url"
 	"strconv"
 )
 
@@ -159,22 +160,22 @@ type GetItemListResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetItemList(offset, pageSize int, updateTimeFrom, updateTimeTo int64, itemStatus string) (*GetItemListResponse, error) {
-	q := map[string]string{
-		"offset":    strconv.Itoa(offset),
-		"page_size": strconv.Itoa(pageSize),
+func (s *ProductService) GetItemList(offset, pageSize int, updateTimeFrom, updateTimeTo int64, itemStatus []string) (*GetItemListResponse, error) {
+	q := url.Values{
+		"offset":    {strconv.Itoa(offset)},
+		"page_size": {strconv.Itoa(pageSize)},
 	}
 	if updateTimeFrom > 0 {
-		q["update_time_from"] = strconv.FormatInt(updateTimeFrom, 10)
+		q.Set("update_time_from", strconv.FormatInt(updateTimeFrom, 10))
 	}
 	if updateTimeTo > 0 {
-		q["update_time_to"] = strconv.FormatInt(updateTimeTo, 10)
+		q.Set("update_time_to", strconv.FormatInt(updateTimeTo, 10))
 	}
-	if itemStatus != "" {
-		q["item_status"] = itemStatus
+	for _, status := range itemStatus {
+		q.Add("item_status", status)
 	}
 	result := &GetItemListResponse{}
-	if err := s.client.DoGet(context.Background(), PathProductGetItemList, q, result); err != nil {
+	if err := s.client.DoGetMulti(context.Background(), PathProductGetItemList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -241,6 +242,7 @@ type ItemBaseInfo struct {
 	HasModel     bool           `json:"has_model"`
 	Brand        *BrandInfo     `json:"brand,omitempty"`
 	VideoInfo    []VideoInfo    `json:"video_info,omitempty"`
+	PriceInfo    []PriceInfo    `json:"price_info,omitempty"`
 }
 
 type GetItemBaseInfoResponse struct {

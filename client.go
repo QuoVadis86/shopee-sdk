@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -19,7 +20,7 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-var defaultClient HTTPClient = &http.Client{Timeout: 30 * time.Second}
+var defaultClient HTTPClient = &http.Client{Timeout: 120 * time.Second}
 
 // Client handles HTTP communication with the Shopee Open Platform.
 type Client struct {
@@ -115,9 +116,12 @@ func (c *Client) baseQuery(timestamp int64) url.Values {
 		q.Set("access_token", accessToken)
 	}
 	if shopID > 0 {
+		// Shop-level APIs always need shop_id in the query.
 		q.Set("shop_id", strconv.FormatInt(shopID, 10))
 	}
 	if merchantID > 0 {
+		// Include merchant_id for cross-border (CB) shops that need
+		// it alongside shop_id for item/order scope resolution.
 		q.Set("merchant_id", strconv.FormatInt(merchantID, 10))
 	}
 	return q
@@ -135,6 +139,30 @@ func (c *Client) DoGet(ctx context.Context, apiPath string, queryParams map[stri
 	for k, v := range queryParams {
 		if v != "" {
 			q.Set(k, v)
+		}
+	}
+	sign := c.generateSign(apiPath, ts)
+	q.Set("sign", sign)
+	reqURL := fmt.Sprintf("%s%s?%s", c.BaseURL, apiPath, q.Encode())
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
+	if err != nil {
+		return fmt.Errorf("create request: %w", err)
+	}
+
+	return c.doRequest(req, result)
+}
+
+// DoGetMulti is like DoGet but accepts url.Values, allowing multiple values
+// for the same query parameter key (e.g. item_status=NORMAL&item_status=UNLIST).
+func (c *Client) DoGetMulti(ctx context.Context, apiPath string, queryParams url.Values, result any) error {
+	ts := time.Now().Unix()
+	q := c.baseQuery(ts)
+	for k, vs := range queryParams {
+		for _, v := range vs {
+			if v != "" {
+				q.Add(k, v)
+			}
 		}
 	}
 	sign := c.generateSign(apiPath, ts)
@@ -194,8 +222,8 @@ func (c *Client) doRequest(req *http.Request, result any) error {
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		// Try to parse the body as a Shopee API error first.
-		// Shopee may return 4xx/5xx with a JSON body containing error details.
+		log.Printf("DEBUG: Shopee non-2xx response: status=%d url=%s body=%s",
+			resp.StatusCode, req.URL.String(), truncate(string(body), 2000))
 		var apiErr struct {
 			Error     string `json:"error"`
 			Message   string `json:"message"`
@@ -205,6 +233,17 @@ func (c *Client) doRequest(req *http.Request, result any) error {
 			return &APIError{ErrorCode: apiErr.Error, Message: apiErr.Message, RequestID: apiErr.RequestID}
 		}
 		return fmt.Errorf("HTTP %d %s: %s", resp.StatusCode, resp.Status, truncate(string(body), 500))
+	}
+
+	// Debug: check for error in success response
+	var errCheck struct {
+		Error     string `json:"error"`
+		Message   string `json:"message"`
+		RequestID string `json:"request_id"`
+	}
+	if json.Unmarshal(body, &errCheck) == nil && errCheck.Error != "" {
+		log.Printf("DEBUG: Shopee returned error in 2xx body: url=%s error=%q message=%q request_id=%q body=%s",
+			req.URL.String(), errCheck.Error, errCheck.Message, errCheck.RequestID, truncate(string(body), 1000))
 	}
 
 	if err := json.Unmarshal(body, result); err != nil {

@@ -24,10 +24,14 @@ func GenerateSignature(partnerKey string, partnerID int64, apiPath string, times
 	parts = strconv.AppendInt(parts, timestamp, 10)
 	if accessToken != "" {
 		parts = append(parts, accessToken...)
-		if merchantID > 0 {
-			parts = strconv.AppendInt(parts, merchantID, 10)
-		} else if shopID > 0 {
+		// Shop API: sign = partner_id + path + timestamp + access_token + shop_id
+		// Merchant API: sign = partner_id + path + timestamp + access_token + merchant_id
+		// The API TYPE determines which ID goes in the sign, regardless of
+		// which IDs appear in the query. Shop-level APIs always use shop_id.
+		if shopID > 0 {
 			parts = strconv.AppendInt(parts, shopID, 10)
+		} else if merchantID > 0 {
+			parts = strconv.AppendInt(parts, merchantID, 10)
 		}
 	} else if shopID > 0 {
 		parts = strconv.AppendInt(parts, shopID, 10)
