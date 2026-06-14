@@ -194,6 +194,16 @@ func (c *Client) doRequest(req *http.Request, result any) error {
 	}
 
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		// Try to parse the body as a Shopee API error first.
+		// Shopee may return 4xx/5xx with a JSON body containing error details.
+		var apiErr struct {
+			Error     string `json:"error"`
+			Message   string `json:"message"`
+			RequestID string `json:"request_id"`
+		}
+		if json.Unmarshal(body, &apiErr) == nil && apiErr.Error != "" {
+			return &APIError{ErrorCode: apiErr.Error, Message: apiErr.Message, RequestID: apiErr.RequestID}
+		}
 		return fmt.Errorf("HTTP %d %s: %s", resp.StatusCode, resp.Status, truncate(string(body), 500))
 	}
 
