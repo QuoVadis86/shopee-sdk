@@ -257,10 +257,11 @@ func (s *PaymentService) GetWalletTransactionList(pageSize int, cursor string, t
 }
 
 type EscrowListItem struct {
-	OrderSN    string  `json:"order_sn"`
-	Amount     float64 `json:"amount"`
-	Status     string  `json:"status"`
-	CreateTime int64   `json:"create_time"`
+	OrderSN          string  `json:"order_sn"`
+	Amount           float64 `json:"payout_amount"`
+	Status           string  `json:"-"`
+	EscrowReleaseTime int64  `json:"escrow_release_time"`
+	CreateTime       int64   `json:"create_time,omitempty"`
 }
 
 type GetEscrowListResponse struct {
@@ -278,10 +279,10 @@ func (s *PaymentService) GetEscrowList(pageSize int, cursor string, timeFrom, ti
 		q["cursor"] = cursor
 	}
 	if timeFrom > 0 {
-		q["time_from"] = strconv.FormatInt(timeFrom, 10)
+		q["release_time_from"] = strconv.FormatInt(timeFrom, 10)
 	}
 	if timeTo > 0 {
-		q["time_to"] = strconv.FormatInt(timeTo, 10)
+		q["release_time_to"] = strconv.FormatInt(timeTo, 10)
 	}
 	result := &GetEscrowListResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetEscrowList, q, result); err != nil {
@@ -393,10 +394,15 @@ func (s *PaymentService) GetIncomeReport(dateFrom, dateTo int64, pageSize int, c
 	return result, nil
 }
 
+type IncomeTotal struct {
+	PendingAmount   float64 `json:"pending_amount"`
+	ReleasedAmount  float64 `json:"released_amount"`
+	ToReleaseAmount float64 `json:"to_release_amount"`
+}
+
 type IncomeOverview struct {
-	TotalIncome     float64 `json:"total_income"`
-	PendingIncome   float64 `json:"pending_income"`
-	CompletedIncome float64 `json:"completed_income"`
+	LatestPayoutDate string      `json:"latest_payout_date"`
+	TotalIncome      IncomeTotal `json:"total_income"`
 }
 
 type GetIncomeOverviewResponse struct {
