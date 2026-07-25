@@ -252,7 +252,7 @@ var (
 	PathShopGetPunishmentHistory  = APIPath("shop", "get_punishment_history")
 	PathShopGetListingsWithIssues = APIPath("shop", "get_listings_with_issues")
 	PathShopGetLateOrders         = APIPath("shop", "get_late_orders")
-	PathShopGetTotalBalance       = APIPath("shop", "get_total_balance")
+	// PathShopGetTotalBalance removed — Shopee API v2 no longer has this endpoint
 	PathShopGetToggleInfo         = APIPath("shop", "get_shop_toggle_info")
 )
 

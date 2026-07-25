@@ -390,17 +390,6 @@ func (s *ShopService) GetLateOrders(pageSize int, cursor string) (*BaseResponse,
 	return result, nil
 }
 
-func (s *ShopService) GetTotalBalance() (*BaseResponse, error) {
-	result := &BaseResponse{}
-	if err := s.client.DoGet(context.Background(), PathShopGetTotalBalance, map[string]string{}, result); err != nil {
-		return nil, err
-	}
-	if result.HasError() {
-		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
-	}
-	return result, nil
-}
-
 func (s *ShopService) GetToggleInfo() (*BaseResponse, error) {
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathShopGetToggleInfo, map[string]string{}, result); err != nil {
