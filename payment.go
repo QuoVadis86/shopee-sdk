@@ -219,11 +219,18 @@ func (s *PaymentService) GetPaymentMethodList() (*GetPaymentMethodListResponse, 
 }
 
 type WalletTransaction struct {
-	TransactionID   string  `json:"transaction_id"`
-	TransactionType string  `json:"transaction_type"`
-	Amount          float64 `json:"amount"`
-	Status          string  `json:"status"`
-	CreateTime      int64   `json:"create_time"`
+	TransactionID       string  `json:"transaction_id"`
+	TransactionType     string  `json:"transaction_type"`
+	Amount              float64 `json:"amount"`
+	CurrentBalance      float64 `json:"current_balance,omitempty"`
+	Status              string  `json:"status"`
+	CreateTime          int64   `json:"create_time"`
+	OrderSN             string  `json:"order_sn,omitempty"`
+	RefundSN            string  `json:"refund_sn,omitempty"`
+	TransactionFee      float64 `json:"transaction_fee,omitempty"`
+	MoneyFlow           string  `json:"money_flow,omitempty"`
+	WithdrawalType      string  `json:"withdrawal_type,omitempty"`
+	TxnTitle            string  `json:"txn_title,omitempty"`
 }
 
 type GetWalletTransactionListResponse struct {
@@ -235,16 +242,16 @@ type GetWalletTransactionListResponse struct {
 	} `json:"response"`
 }
 
-func (s *PaymentService) GetWalletTransactionList(pageSize int, cursor string, timeFrom, timeTo int64) (*GetWalletTransactionListResponse, error) {
+func (s *PaymentService) GetWalletTransactionList(pageSize, pageNo int, createTimeFrom, createTimeTo int64) (*GetWalletTransactionListResponse, error) {
 	q := map[string]string{"page_size": strconv.Itoa(pageSize)}
-	if cursor != "" {
-		q["cursor"] = cursor
+	if pageNo > 0 {
+		q["page_no"] = strconv.Itoa(pageNo)
 	}
-	if timeFrom > 0 {
-		q["time_from"] = strconv.FormatInt(timeFrom, 10)
+	if createTimeFrom > 0 {
+		q["create_time_from"] = strconv.FormatInt(createTimeFrom, 10)
 	}
-	if timeTo > 0 {
-		q["time_to"] = strconv.FormatInt(timeTo, 10)
+	if createTimeTo > 0 {
+		q["create_time_to"] = strconv.FormatInt(createTimeTo, 10)
 	}
 	result := &GetWalletTransactionListResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetWalletTransactionList, q, result); err != nil {
@@ -273,10 +280,10 @@ type GetEscrowListResponse struct {
 	} `json:"response"`
 }
 
-func (s *PaymentService) GetEscrowList(pageSize int, cursor string, timeFrom, timeTo int64) (*GetEscrowListResponse, error) {
+func (s *PaymentService) GetEscrowList(pageSize, pageNo int, timeFrom, timeTo int64) (*GetEscrowListResponse, error) {
 	q := map[string]string{"page_size": strconv.Itoa(pageSize)}
-	if cursor != "" {
-		q["cursor"] = cursor
+	if pageNo > 0 {
+		q["page_no"] = strconv.Itoa(pageNo)
 	}
 	if timeFrom > 0 {
 		q["release_time_from"] = strconv.FormatInt(timeFrom, 10)
