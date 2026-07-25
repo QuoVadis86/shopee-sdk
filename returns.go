@@ -33,10 +33,10 @@ type GetReturnListResponse struct {
 	} `json:"response"`
 }
 
-func (s *ReturnsService) GetReturnList(pageSize int, cursor string, createTimeFrom, createTimeTo int64, status string) (*GetReturnListResponse, error) {
+func (s *ReturnsService) GetReturnList(pageSize, pageNo int, createTimeFrom, createTimeTo int64, status string) (*GetReturnListResponse, error) {
 	q := map[string]string{"page_size": strconv.Itoa(pageSize)}
-	if cursor != "" {
-		q["cursor"] = cursor
+	if pageNo > 0 {
+		q["page_no"] = strconv.Itoa(pageNo)
 	}
 	if createTimeFrom > 0 {
 		q["create_time_from"] = strconv.FormatInt(createTimeFrom, 10)
