@@ -432,29 +432,37 @@ func (s *PaymentService) GetIncomeOverview(dateFrom, dateTo int64) (*GetIncomeOv
 	return result, nil
 }
 
-type IncomeDetail struct {
-	TransactionID string  `json:"transaction_id"`
-	OrderSN       string  `json:"order_sn"`
-	Amount        float64 `json:"amount"`
-	Type          string  `json:"type"`
-	Status        string  `json:"status"`
-	CreateTime    int64   `json:"create_time"`
+type IncomeDetailListItem struct {
+	PaymentMethod      string  `json:"payment_method,omitempty"`
+	OrderSN            string  `json:"order_sn,omitempty"`
+	Description        string  `json:"description,omitempty"`
+	Status             string  `json:"status,omitempty"`
+	Currency           string  `json:"currency,omitempty"`
+	EstimatedEscrowAmt float64 `json:"estimated_escrow_amount,omitempty"`
+	EstimatedPayoutTime int64  `json:"estimated_payout_time,omitempty"`
+	ToReleaseAmount    float64 `json:"to_release_amount,omitempty"`
+	CreationDate       int64   `json:"creation_date,omitempty"`
+	ReleasedAmount     float64 `json:"released_amount,omitempty"`
+	ActualPayoutTime   int64   `json:"actual_payout_time,omitempty"`
 }
 
 type GetIncomeDetailResponse struct {
 	BaseResponse
-	Response struct {
-		IncomeList []IncomeDetail `json:"income_list"`
-		More       bool           `json:"more"`
-		NextCursor string         `json:"next_cursor"`
-	} `json:"response"`
+	IncomeDetailList *struct {
+		NextPage *struct {
+			Cursor   string `json:"cursor"`
+			PageSize int    `json:"page_size"`
+		} `json:"next_page,omitempty"`
+		List []IncomeDetailListItem `json:"list,omitempty"`
+	} `json:"income_detail_list,omitempty"`
 }
 
-func (s *PaymentService) GetIncomeDetail(dateFrom, dateTo int64, pageSize int, cursor string) (*GetIncomeDetailResponse, error) {
+func (s *PaymentService) GetIncomeDetail(dateFrom, dateTo string, incomeStatus int, pageSize int, cursor string) (*GetIncomeDetailResponse, error) {
 	q := map[string]string{
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
-		"page_size": strconv.Itoa(pageSize),
+		"date_from":     dateFrom,
+		"date_to":       dateTo,
+		"income_status": strconv.Itoa(incomeStatus),
+		"page_size":     strconv.Itoa(pageSize),
 	}
 	if cursor != "" {
 		q["cursor"] = cursor
