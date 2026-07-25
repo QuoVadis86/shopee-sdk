@@ -246,7 +246,9 @@ func TestIntegrationShop_GetWarehouseDetail(t *testing.T) {
 		t.Logf("GetWarehouseDetail: %v", err)
 		return
 	}
-	t.Logf("Warehouse: %s", resp.Response.WarehouseName)
+	for _, w := range resp.Response {
+		t.Logf("Warehouse: ID=%d Name=%s", w.WarehouseID, w.WarehouseName)
+	}
 }
 
 // ---------------------------------------------------------------------------
