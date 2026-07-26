@@ -95,13 +95,47 @@ func (s *PromotionService) DeleteDiscountItem(params *AddDiscountItemParams) (*B
 	return result, nil
 }
 
-type GetDiscountResponse struct {
-	BaseResponse
-	Response *DiscountInfo `json:"response,omitempty"`
+type DiscountModelDetail struct {
+	ModelID          int64   `json:"model_id"`
+	ModelName        string  `json:"model_name,omitempty"`
+	NormalStock      int     `json:"model_normal_stock"`
+	PromotionStock   int     `json:"model_promotion_stock"`
+	OriginalPrice    float64 `json:"model_original_price"`
+	PromotionPrice   float64 `json:"model_promotion_price"`
 }
 
-func (s *PromotionService) GetDiscount(discountID int64) (*GetDiscountResponse, error) {
-	q := map[string]string{"discount_id": strconv.FormatInt(discountID, 10)}
+type DiscountItemDetail struct {
+	ItemID             int64                `json:"item_id"`
+	ItemName           string               `json:"item_name,omitempty"`
+	NormalStock        int                  `json:"normal_stock"`
+	ItemPromotionStock int                  `json:"item_promotion_stock"`
+	ItemOriginalPrice  float64              `json:"item_original_price"`
+	ItemPromotionPrice float64              `json:"item_promotion_price"`
+	ModelList          []DiscountModelDetail `json:"model_list"`
+	PurchaseLimit      int                  `json:"purchase_limit"`
+}
+
+type DiscountDetail struct {
+	DiscountID   int64                `json:"discount_id"`
+	DiscountName string               `json:"discount_name"`
+	Status       string               `json:"status,omitempty"`
+	StartTime    int64                `json:"start_time"`
+	EndTime      int64                `json:"end_time"`
+	ItemList     []DiscountItemDetail `json:"item_list"`
+	More         bool                 `json:"more"`
+}
+
+type GetDiscountResponse struct {
+	BaseResponse
+	Response *DiscountDetail `json:"response,omitempty"`
+}
+
+func (s *PromotionService) GetDiscount(discountID int64, pageNo, pageSize int) (*GetDiscountResponse, error) {
+	q := map[string]string{
+		"discount_id": strconv.FormatInt(discountID, 10),
+		"page_no":     strconv.Itoa(pageNo),
+		"page_size":   strconv.Itoa(pageSize),
+	}
 	result := &GetDiscountResponse{}
 	if err := s.client.DoGet(context.Background(), PathPromotionGetDiscount, q, result); err != nil {
 		return nil, err
@@ -116,7 +150,7 @@ type GetDiscountListResponse struct {
 	BaseResponse
 	Response struct {
 		DiscountList []DiscountInfo `json:"discount_list"`
-		Total        int            `json:"total"`
+		More         bool           `json:"more"`
 	} `json:"response"`
 }
 
