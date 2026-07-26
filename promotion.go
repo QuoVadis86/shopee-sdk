@@ -120,13 +120,11 @@ type GetDiscountListResponse struct {
 	} `json:"response"`
 }
 
-func (s *PromotionService) GetDiscountList(pageSize, pageNumber int, status string) (*GetDiscountListResponse, error) {
+func (s *PromotionService) GetDiscountList(pageSize, pageNo int, discountStatus string) (*GetDiscountListResponse, error) {
 	q := map[string]string{
-		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
-	}
-	if status != "" {
-		q["status"] = status
+		"page_size":       strconv.Itoa(pageSize),
+		"page_no":         strconv.Itoa(pageNo),
+		"discount_status": discountStatus,
 	}
 	result := &GetDiscountListResponse{}
 	if err := s.client.DoGet(context.Background(), PathPromotionGetDiscountList, q, result); err != nil {
