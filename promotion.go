@@ -15,7 +15,7 @@ func NewPromotionService(client *Client) *PromotionService {
 
 type DiscountInfo struct {
 	DiscountID  int64  `json:"discount_id"`
-	Name        string `json:"name"`
+	Name        string `json:"discount_name"`
 	Description string `json:"description,omitempty"`
 	StartTime   int64  `json:"start_time"`
 	EndTime     int64  `json:"end_time"`
