@@ -2,6 +2,7 @@ package shopee
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 )
 
@@ -353,9 +354,10 @@ func (s *OrderService) GetWarehouseFilterConfig() (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *OrderService) GetBookingList(pageSize int, cursor string, timeFrom, timeTo int64) (*BaseResponse, error) {
+func (s *OrderService) GetBookingList(timeRangeField string, timeFrom, timeTo int64, pageSize int, cursor string) (*BaseResponse, error) {
 	q := map[string]string{
-		"page_size": strconv.Itoa(pageSize),
+		"time_range_field": timeRangeField,
+		"page_size":        strconv.Itoa(pageSize),
 	}
 	if cursor != "" {
 		q["cursor"] = cursor
@@ -376,8 +378,8 @@ func (s *OrderService) GetBookingList(pageSize int, cursor string, timeFrom, tim
 	return result, nil
 }
 
-func (s *OrderService) GetBookingDetail(bookingID int64) (*BaseResponse, error) {
-	q := map[string]string{"booking_id": strconv.FormatInt(bookingID, 10)}
+func (s *OrderService) GetBookingDetail(bookingSNs []string) (*BaseResponse, error) {
+	q := map[string]string{"booking_sn_list": stringsJoin(bookingSNs, ",")}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathOrderGetBookingDetail, q, result); err != nil {
 		return nil, err
@@ -388,11 +390,8 @@ func (s *OrderService) GetBookingDetail(bookingID int64) (*BaseResponse, error) 
 	return result, nil
 }
 
-func (s *OrderService) GetFBSInvoicesResult(pageSize int, cursor string) (*BaseResponse, error) {
-	q := map[string]string{"page_size": strconv.Itoa(pageSize)}
-	if cursor != "" {
-		q["cursor"] = cursor
-	}
+func (s *OrderService) GetFBSInvoicesResult(requestIDs []string) (*BaseResponse, error) {
+	q := map[string]string{"request_id_list": stringsJoin(requestIDs, ",")}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathOrderGetFBSInvoicesResult, q, result); err != nil {
 		return nil, err
@@ -403,14 +402,12 @@ func (s *OrderService) GetFBSInvoicesResult(pageSize int, cursor string) (*BaseR
 	return result, nil
 }
 
-func (s *OrderService) GetEstimateCancelValue(orderSN string, itemIDs []int64) (*BaseResponse, error) {
-	ids := make([]string, len(itemIDs))
-	for i, id := range itemIDs {
-		ids[i] = strconv.FormatInt(id, 10)
-	}
+func (s *OrderService) GetEstimateCancelValue(orderSN string, partialCancelItems []map[string]any) (*BaseResponse, error) {
 	q := map[string]string{
-		"order_sn":  orderSN,
-		"item_list": stringsJoin(ids, ","),
+		"order_sn": orderSN,
+	}
+	if payload, err := json.Marshal(partialCancelItems); err == nil {
+		q["partial_cancel_item_list"] = string(payload)
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathOrderGetEstimateCancelValue, q, result); err != nil {
