@@ -2,6 +2,7 @@ package shopee
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"strconv"
 )
@@ -717,13 +718,17 @@ type GetWeightRecommendationResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetWeightRecommendation(categoryID int64, itemName, weight string) (*GetWeightRecommendationResponse, error) {
+func (s *ProductService) GetWeightRecommendation(categoryID, brandID int64, itemName, coverImageID, descriptionType string, attributeList []map[string]any) (*GetWeightRecommendationResponse, error) {
+	attrs, _ := json.Marshal(attributeList)
 	q := map[string]string{
-		"category_id": strconv.FormatInt(categoryID, 10),
-		"item_name":   itemName,
+		"category_id":      strconv.FormatInt(categoryID, 10),
+		"brand_id":         strconv.FormatInt(brandID, 10),
+		"item_name":        itemName,
+		"cover_image_id":   coverImageID,
+		"description_type": descriptionType,
 	}
-	if weight != "" {
-		q["weight"] = weight
+	if len(attributeList) > 0 {
+		q["attribute_list"] = string(attrs)
 	}
 	result := &GetWeightRecommendationResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetWeightRec, q, result); err != nil {
@@ -809,9 +814,10 @@ type GetAllVehicleListResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetAllVehicleList() (*GetAllVehicleListResponse, error) {
+func (s *ProductService) GetAllVehicleList(pageSize int64) (*GetAllVehicleListResponse, error) {
+	q := map[string]string{"page_size": strconv.FormatInt(pageSize, 10)}
 	result := &GetAllVehicleListResponse{}
-	if err := s.client.DoGet(context.Background(), PathProductGetAllVehicleList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathProductGetAllVehicleList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -820,10 +826,9 @@ func (s *ProductService) GetAllVehicleList() (*GetAllVehicleListResponse, error)
 	return result, nil
 }
 
-func (s *ProductService) GetVehicleListByCompatibilityDetail(categoryID int64, vehicleType string) (*BaseResponse, error) {
+func (s *ProductService) GetVehicleListByCompatibilityDetail(compatibilityDetails string) (*BaseResponse, error) {
 	q := map[string]string{
-		"category_id":  strconv.FormatInt(categoryID, 10),
-		"vehicle_type": vehicleType,
+		"compatibility_details": compatibilityDetails,
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetVehicleCompList, q, result); err != nil {
@@ -835,10 +840,13 @@ func (s *ProductService) GetVehicleListByCompatibilityDetail(categoryID int64, v
 	return result, nil
 }
 
-func (s *ProductService) GetItemContentDiagnosisResult(itemID int64, diagnosisType string) (*BaseResponse, error) {
+func (s *ProductService) GetItemContentDiagnosisResult(itemIDs []int64) (*BaseResponse, error) {
+	ids := make([]string, len(itemIDs))
+	for i, id := range itemIDs {
+		ids[i] = strconv.FormatInt(id, 10)
+	}
 	q := map[string]string{
-		"item_id":        strconv.FormatInt(itemID, 10),
-		"diagnosis_type": diagnosisType,
+		"item_id_list": stringsJoin(ids, ","),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetContentDiagResult, q, result); err != nil {
@@ -911,8 +919,8 @@ func (s *ProductService) UpdateKitItem(params any) (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *ProductService) GetKitItemInfo(kitItemID int64) (*BaseResponse, error) {
-	q := map[string]string{"kit_item_id": strconv.FormatInt(kitItemID, 10)}
+func (s *ProductService) GetKitItemInfo(itemID int64) (*BaseResponse, error) {
+	q := map[string]string{"item_id": strconv.FormatInt(itemID, 10)}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetKitItemInfo, q, result); err != nil {
 		return nil, err
@@ -999,16 +1007,11 @@ type SearchAttributeValueResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) SearchAttributeValueList(categoryID, attributeID int64, keyword, language string) (*SearchAttributeValueResponse, error) {
+func (s *ProductService) SearchAttributeValueList(attributeID, cursor, limit int64) (*SearchAttributeValueResponse, error) {
 	q := map[string]string{
-		"category_id":   strconv.FormatInt(categoryID, 10),
-		"attribute_id":  strconv.FormatInt(attributeID, 10),
-	}
-	if keyword != "" {
-		q["keyword"] = keyword
-	}
-	if language != "" {
-		q["language"] = language
+		"attribute_id": strconv.FormatInt(attributeID, 10),
+		"cursor":       strconv.FormatInt(cursor, 10),
+		"limit":        strconv.FormatInt(limit, 10),
 	}
 	result := &SearchAttributeValueResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductSearchAttrValue, q, result); err != nil {
