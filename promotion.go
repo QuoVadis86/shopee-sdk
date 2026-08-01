@@ -449,13 +449,11 @@ type GetAddOnDealListResponse struct {
 	} `json:"response"`
 }
 
-func (s *PromotionService) GetAddOnDealList(pageSize, pageNumber int, status string) (*GetAddOnDealListResponse, error) {
+func (s *PromotionService) GetAddOnDealList(pageSize, pageNumber int, promotionStatus string) (*GetAddOnDealListResponse, error) {
 	q := map[string]string{
-		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
-	}
-	if status != "" {
-		q["status"] = status
+		"page_size":        strconv.Itoa(pageSize),
+		"page_number":      strconv.Itoa(pageNumber),
+		"promotion_status": promotionStatus,
 	}
 	result := &GetAddOnDealListResponse{}
 	if err := s.client.DoGet(context.Background(), PathPromotionGetAddOnDealList, q, result); err != nil {
@@ -638,9 +636,7 @@ func (s *PromotionService) GetVoucherList(pageSize, pageNumber int, status strin
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
 		"page_number": strconv.Itoa(pageNumber),
-	}
-	if status != "" {
-		q["status"] = status
+		"status":      status,
 	}
 	result := &GetVoucherListResponse{}
 	if err := s.client.DoGet(context.Background(), PathPromotionGetVoucherList, q, result); err != nil {
@@ -859,9 +855,7 @@ func (s *PromotionService) GetFollowPrizeList(status string, pageSize, pageNumbe
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
 		"page_number": strconv.Itoa(pageNumber),
-	}
-	if status != "" {
-		q["status"] = status
+		"status":      status,
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathPromotionGetFollowPrizeList, q, result); err != nil {
@@ -949,9 +943,13 @@ type GetShopCategoryListResponse struct {
 	} `json:"response"`
 }
 
-func (s *PromotionService) GetShopCategoryList() (*GetShopCategoryListResponse, error) {
+func (s *PromotionService) GetShopCategoryList(pageNo, pageSize int) (*GetShopCategoryListResponse, error) {
+	q := map[string]string{
+		"page_no":   strconv.Itoa(pageNo),
+		"page_size": strconv.Itoa(pageSize),
+	}
 	result := &GetShopCategoryListResponse{}
-	if err := s.client.DoGet(context.Background(), PathPromotionGetShopCategoryList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathPromotionGetShopCategoryList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
