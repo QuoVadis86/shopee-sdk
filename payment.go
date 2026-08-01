@@ -159,8 +159,13 @@ type GetPayoutDetailResponse struct {
 	Response *PayoutDetail `json:"response,omitempty"`
 }
 
-func (s *PaymentService) GetPayoutDetail(payoutID int64) (*GetPayoutDetailResponse, error) {
-	q := map[string]string{"payout_id": strconv.FormatInt(payoutID, 10)}
+func (s *PaymentService) GetPayoutDetail(pageNo, pageSize int, payoutTimeFrom, payoutTimeTo int64) (*GetPayoutDetailResponse, error) {
+	q := map[string]string{
+		"page_no":           strconv.Itoa(pageNo),
+		"page_size":         strconv.Itoa(pageSize),
+		"payout_time_from":  strconv.FormatInt(payoutTimeFrom, 10),
+		"payout_time_to":    strconv.FormatInt(payoutTimeTo, 10),
+	}
 	result := &GetPayoutDetailResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetPayoutDetail, q, result); err != nil {
 		return nil, err
@@ -182,8 +187,12 @@ func (s *PaymentService) SetItemInstallmentStatus(params any) (*BaseResponse, er
 	return result, nil
 }
 
-func (s *PaymentService) GetItemInstallmentStatus(itemID int64) (*BaseResponse, error) {
-	q := map[string]string{"item_id": strconv.FormatInt(itemID, 10)}
+func (s *PaymentService) GetItemInstallmentStatus(itemIDs []int64) (*BaseResponse, error) {
+	ids := make([]string, len(itemIDs))
+	for i, id := range itemIDs {
+		ids[i] = strconv.FormatInt(id, 10)
+	}
+	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetItemInstallment, q, result); err != nil {
 		return nil, err
@@ -243,9 +252,9 @@ type GetWalletTransactionListResponse struct {
 }
 
 func (s *PaymentService) GetWalletTransactionList(pageSize, pageNo int, createTimeFrom, createTimeTo int64) (*GetWalletTransactionListResponse, error) {
-	q := map[string]string{"page_size": strconv.Itoa(pageSize)}
-	if pageNo > 0 {
-		q["page_no"] = strconv.Itoa(pageNo)
+	q := map[string]string{
+		"page_size": strconv.Itoa(pageSize),
+		"page_no":   strconv.Itoa(pageNo),
 	}
 	if createTimeFrom > 0 {
 		q["create_time_from"] = strconv.FormatInt(createTimeFrom, 10)
@@ -281,15 +290,11 @@ type GetEscrowListResponse struct {
 }
 
 func (s *PaymentService) GetEscrowList(pageSize, pageNo int, timeFrom, timeTo int64) (*GetEscrowListResponse, error) {
-	q := map[string]string{"page_size": strconv.Itoa(pageSize)}
-	if pageNo > 0 {
-		q["page_no"] = strconv.Itoa(pageNo)
-	}
-	if timeFrom > 0 {
-		q["release_time_from"] = strconv.FormatInt(timeFrom, 10)
-	}
-	if timeTo > 0 {
-		q["release_time_to"] = strconv.FormatInt(timeTo, 10)
+	q := map[string]string{
+		"page_size":          strconv.Itoa(pageSize),
+		"page_no":            strconv.Itoa(pageNo),
+		"release_time_from":  strconv.FormatInt(timeFrom, 10),
+		"release_time_to":    strconv.FormatInt(timeTo, 10),
 	}
 	result := &GetEscrowListResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetEscrowList, q, result); err != nil {
@@ -301,8 +306,15 @@ func (s *PaymentService) GetEscrowList(pageSize, pageNo int, timeFrom, timeTo in
 	return result, nil
 }
 
-func (s *PaymentService) GetPayoutInfo(payoutID int64) (*BaseResponse, error) {
-	q := map[string]string{"payout_id": strconv.FormatInt(payoutID, 10)}
+func (s *PaymentService) GetPayoutInfo(cursor string, pageSize int, payoutTimeFrom, payoutTimeTo int64) (*BaseResponse, error) {
+	q := map[string]string{
+		"page_size":         strconv.Itoa(pageSize),
+		"payout_time_from":  strconv.FormatInt(payoutTimeFrom, 10),
+		"payout_time_to":    strconv.FormatInt(payoutTimeTo, 10),
+	}
+	if cursor != "" {
+		q["cursor"] = cursor
+	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetPayoutInfo, q, result); err != nil {
 		return nil, err
@@ -313,8 +325,14 @@ func (s *PaymentService) GetPayoutInfo(payoutID int64) (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *PaymentService) GetBillingTransactionInfo(transactionID string) (*BaseResponse, error) {
-	q := map[string]string{"transaction_id": transactionID}
+func (s *PaymentService) GetBillingTransactionInfo(infoType int, cursor string, pageSize int) (*BaseResponse, error) {
+	q := map[string]string{
+		"billing_transaction_info_type": strconv.Itoa(infoType),
+		"page_size":                     strconv.Itoa(pageSize),
+	}
+	if cursor != "" {
+		q["cursor"] = cursor
+	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetBillingTransaction, q, result); err != nil {
 		return nil, err
