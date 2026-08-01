@@ -330,9 +330,13 @@ type GetShopListByMerchantResponse struct {
 	IsCNSC   bool           `json:"is_cnsc"`
 }
 
-func (s *ShopService) GetShopListByMerchant() (*GetShopListByMerchantResponse, error) {
+func (s *ShopService) GetShopListByMerchant(pageNo, pageSize int) (*GetShopListByMerchantResponse, error) {
+	q := map[string]string{
+		"page_no":   strconv.Itoa(pageNo),
+		"page_size": strconv.Itoa(pageSize),
+	}
 	result := &GetShopListByMerchantResponse{}
-	if err := s.client.DoGet(context.Background(), PathShopGetListByMerchant, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetListByMerchant, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -352,9 +356,16 @@ func (s *ShopService) GetMerchantWarehouseLocationList() (*BaseResponse, error) 
 	return result, nil
 }
 
-func (s *ShopService) GetMerchantWarehouseList() (*BaseResponse, error) {
+func (s *ShopService) GetMerchantWarehouseList(cursor string, warehouseType int) (*BaseResponse, error) {
+	q := map[string]string{}
+	if cursor != "" {
+		q["cursor"] = cursor
+	}
+	if warehouseType > 0 {
+		q["warehouse_type"] = strconv.Itoa(warehouseType)
+	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(context.Background(), PathShopGetMerchantWarehouseList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetMerchantWarehouseList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -363,9 +374,16 @@ func (s *ShopService) GetMerchantWarehouseList() (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *ShopService) GetWarehouseEligibleShopList() (*BaseResponse, error) {
+func (s *ShopService) GetWarehouseEligibleShopList(cursor string, warehouseID, warehouseType int) (*BaseResponse, error) {
+	q := map[string]string{
+		"warehouse_id":   strconv.Itoa(warehouseID),
+		"warehouse_type": strconv.Itoa(warehouseType),
+	}
+	if cursor != "" {
+		q["cursor"] = cursor
+	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(context.Background(), PathShopGetWarehouseEligibleShopList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetWarehouseEligibleShopList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -374,9 +392,13 @@ func (s *ShopService) GetWarehouseEligibleShopList() (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *ShopService) GetMerchantPrepaidAccountList() (*BaseResponse, error) {
+func (s *ShopService) GetMerchantPrepaidAccountList(pageNo, pageSize int) (*BaseResponse, error) {
+	q := map[string]string{
+		"page_no":   strconv.Itoa(pageNo),
+		"page_size": strconv.Itoa(pageSize),
+	}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(context.Background(), PathShopGetMerchantPrepaidAccountList, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetMerchantPrepaidAccountList, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
