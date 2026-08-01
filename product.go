@@ -649,11 +649,13 @@ type GetCommentResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetComment(itemID int64, pageSize, pageNumber int, createTimeFrom, createTimeTo int64) (*GetCommentResponse, error) {
+func (s *ProductService) GetComment(itemID int64, pageSize int, cursor string, createTimeFrom, createTimeTo int64) (*GetCommentResponse, error) {
 	q := map[string]string{
-		"item_id":    strconv.FormatInt(itemID, 10),
-		"page_size":  strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"item_id":   strconv.FormatInt(itemID, 10),
+		"page_size": strconv.Itoa(pageSize),
+	}
+	if cursor != "" {
+		q["cursor"] = cursor
 	}
 	if createTimeFrom > 0 {
 		q["create_time_from"] = strconv.FormatInt(createTimeFrom, 10)
@@ -684,9 +686,10 @@ type GetRecommendAttributeResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetRecommendAttribute(categoryID int64, language string) (*GetRecommendAttributeResponse, error) {
+func (s *ProductService) GetRecommendAttribute(categoryID int64, itemName, language string) (*GetRecommendAttributeResponse, error) {
 	q := map[string]string{
 		"category_id": strconv.FormatInt(categoryID, 10),
+		"item_name":   itemName,
 	}
 	if language != "" {
 		q["language"] = language
@@ -782,12 +785,8 @@ type GetVariationsResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetVariations(itemIDs []int64) (*GetVariationsResponse, error) {
-	ids := make([]string, len(itemIDs))
-	for i, id := range itemIDs {
-		ids[i] = strconv.FormatInt(id, 10)
-	}
-	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
+func (s *ProductService) GetVariations(categoryID int64) (*GetVariationsResponse, error) {
+	q := map[string]string{"category_id": strconv.FormatInt(categoryID, 10)}
 	result := &GetVariationsResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetVariations, q, result); err != nil {
 		return nil, err
@@ -1021,12 +1020,12 @@ func (s *ProductService) SearchAttributeValueList(categoryID, attributeID int64,
 	return result, nil
 }
 
-func (s *ProductService) GetMainItemList(itemIDs []int64) (*GetItemBaseInfoResponse, error) {
-	ids := make([]string, len(itemIDs))
-	for i, id := range itemIDs {
+func (s *ProductService) GetMainItemList(directItemIDs []int64) (*GetItemBaseInfoResponse, error) {
+	ids := make([]string, len(directItemIDs))
+	for i, id := range directItemIDs {
 		ids[i] = strconv.FormatInt(id, 10)
 	}
-	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
+	q := map[string]string{"direct_item_id": stringsJoin(ids, ",")}
 	result := &GetItemBaseInfoResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetMainItemList, q, result); err != nil {
 		return nil, err
@@ -1037,12 +1036,12 @@ func (s *ProductService) GetMainItemList(itemIDs []int64) (*GetItemBaseInfoRespo
 	return result, nil
 }
 
-func (s *ProductService) GetDirectItemList(itemIDs []int64) (*BaseResponse, error) {
-	ids := make([]string, len(itemIDs))
-	for i, id := range itemIDs {
+func (s *ProductService) GetDirectItemList(mainItemIDs []int64) (*BaseResponse, error) {
+	ids := make([]string, len(mainItemIDs))
+	for i, id := range mainItemIDs {
 		ids[i] = strconv.FormatInt(id, 10)
 	}
-	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
+	q := map[string]string{"main_item_id": stringsJoin(ids, ",")}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetDirectItemList, q, result); err != nil {
 		return nil, err
