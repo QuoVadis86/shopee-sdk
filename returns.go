@@ -79,8 +79,8 @@ type GetReturnDetailResponse struct {
 	Response *ReturnDetail `json:"response,omitempty"`
 }
 
-func (s *ReturnsService) GetReturnDetail(returnID int64) (*GetReturnDetailResponse, error) {
-	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
+func (s *ReturnsService) GetReturnDetail(returnSN string) (*GetReturnDetailResponse, error) {
+	q := map[string]string{"return_sn": returnSN}
 	result := &GetReturnDetailResponse{}
 	if err := s.client.DoGet(context.Background(), PathReturnGetDetail, q, result); err != nil {
 		return nil, err
@@ -104,8 +104,8 @@ type GetAvailableSolutionsResponse struct {
 	} `json:"response"`
 }
 
-func (s *ReturnsService) GetAvailableSolutions(returnID int64) (*GetAvailableSolutionsResponse, error) {
-	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
+func (s *ReturnsService) GetAvailableSolutions(returnSN string) (*GetAvailableSolutionsResponse, error) {
+	q := map[string]string{"return_sn": returnSN}
 	result := &GetAvailableSolutionsResponse{}
 	if err := s.client.DoGet(context.Background(), PathReturnGetAvailableSolutions, q, result); err != nil {
 		return nil, err
@@ -116,8 +116,8 @@ func (s *ReturnsService) GetAvailableSolutions(returnID int64) (*GetAvailableSol
 	return result, nil
 }
 
-func (s *ReturnsService) QueryProof(returnID int64) (*BaseResponse, error) {
-	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
+func (s *ReturnsService) QueryProof(returnSN string) (*BaseResponse, error) {
+	q := map[string]string{"return_sn": returnSN}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathReturnQueryProof, q, result); err != nil {
 		return nil, err
@@ -140,8 +140,8 @@ type GetReturnDisputeReasonResponse struct {
 	} `json:"response"`
 }
 
-func (s *ReturnsService) GetReturnDisputeReason(returnID int64) (*GetReturnDisputeReasonResponse, error) {
-	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
+func (s *ReturnsService) GetReturnDisputeReason(returnSN string) (*GetReturnDisputeReasonResponse, error) {
+	q := map[string]string{"return_sn": returnSN}
 	result := &GetReturnDisputeReasonResponse{}
 	if err := s.client.DoGet(context.Background(), PathReturnGetDisputeReason, q, result); err != nil {
 		return nil, err
@@ -152,8 +152,8 @@ func (s *ReturnsService) GetReturnDisputeReason(returnID int64) (*GetReturnDispu
 	return result, nil
 }
 
-func (s *ReturnsService) CancelDispute(returnID int64) (*BaseResponse, error) {
-	payload := map[string]any{"return_id": returnID}
+func (s *ReturnsService) CancelDispute(returnSN string) (*BaseResponse, error) {
+	payload := map[string]any{"return_sn": returnSN}
 	result := &BaseResponse{}
 	if err := s.client.DoPost(context.Background(), PathReturnCancelDispute, payload, result); err != nil {
 		return nil, err
@@ -176,9 +176,10 @@ type GetShippingCarrierResponse struct {
 	} `json:"response"`
 }
 
-func (s *ReturnsService) GetShippingCarrier() (*GetShippingCarrierResponse, error) {
+func (s *ReturnsService) GetShippingCarrier(returnSN string) (*GetShippingCarrierResponse, error) {
+	q := map[string]string{"return_sn": returnSN}
 	result := &GetShippingCarrierResponse{}
-	if err := s.client.DoGet(context.Background(), PathReturnGetShippingCarrier, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathReturnGetShippingCarrier, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
@@ -199,8 +200,8 @@ type GetReverseTrackingInfoResponse struct {
 	Response *ReverseTrackingInfo `json:"response,omitempty"`
 }
 
-func (s *ReturnsService) GetReverseTrackingInfo(returnID int64) (*GetReverseTrackingInfoResponse, error) {
-	q := map[string]string{"return_id": strconv.FormatInt(returnID, 10)}
+func (s *ReturnsService) GetReverseTrackingInfo(returnSN string) (*GetReverseTrackingInfoResponse, error) {
+	q := map[string]string{"return_sn": returnSN}
 	result := &GetReverseTrackingInfoResponse{}
 	if err := s.client.DoGet(context.Background(), PathReturnGetReverseTracking, q, result); err != nil {
 		return nil, err
