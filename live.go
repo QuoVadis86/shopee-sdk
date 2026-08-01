@@ -149,7 +149,7 @@ func (s *LiveService) GetItemList(sessionID int64, pageSize, pageNumber int) (*G
 	q := map[string]string{
 		"session_id":  strconv.FormatInt(sessionID, 10),
 		"page_size":   strconv.Itoa(pageSize),
-		"page_no": strconv.Itoa(pageNumber),
+		"offset": strconv.Itoa(pageNumber),
 	}
 	result := &GetLiveItemListResponse{}
 	if err := s.client.DoGet(context.Background(), PathLiveGetItemList, q, result); err != nil {
@@ -217,7 +217,7 @@ func (s *LiveService) GetLikeItemList(sessionID int64, pageSize, pageNumber int)
 	q := map[string]string{
 		"session_id":  strconv.FormatInt(sessionID, 10),
 		"page_size":   strconv.Itoa(pageSize),
-		"page_no": strconv.Itoa(pageNumber),
+		"offset": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathLiveGetLikeItemList, q, result); err != nil {
@@ -233,7 +233,7 @@ func (s *LiveService) GetRecentItemList(sessionID int64, pageSize, pageNumber in
 	q := map[string]string{
 		"session_id":  strconv.FormatInt(sessionID, 10),
 		"page_size":   strconv.Itoa(pageSize),
-		"page_no": strconv.Itoa(pageNumber),
+		"offset": strconv.Itoa(pageNumber),
 	}
 	result := &GetLiveItemListResponse{}
 	if err := s.client.DoGet(context.Background(), PathLiveGetRecentItemList, q, result); err != nil {
@@ -263,7 +263,7 @@ type GetItemSetListResponse struct {
 func (s *LiveService) GetItemSetList(pageSize, pageNumber int) (*GetItemSetListResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_no": strconv.Itoa(pageNumber),
+		"offset": strconv.Itoa(pageNumber),
 	}
 	result := &GetItemSetListResponse{}
 	if err := s.client.DoGet(context.Background(), PathLiveGetItemSetList, q, result); err != nil {
@@ -279,7 +279,7 @@ func (s *LiveService) GetItemSetItemList(itemSetID int64, pageSize, pageNumber i
 	q := map[string]string{
 		"item_set_id": strconv.FormatInt(itemSetID, 10),
 		"page_size":   strconv.Itoa(pageSize),
-		"page_no": strconv.Itoa(pageNumber),
+		"offset": strconv.Itoa(pageNumber),
 	}
 	result := &GetLiveItemListResponse{}
 	if err := s.client.DoGet(context.Background(), PathLiveGetItemSetItemList, q, result); err != nil {
@@ -366,7 +366,7 @@ func (s *LiveService) GetLatestCommentList(sessionID int64, pageSize, pageNumber
 	q := map[string]string{
 		"session_id":  strconv.FormatInt(sessionID, 10),
 		"page_size":   strconv.Itoa(pageSize),
-		"page_no": strconv.Itoa(pageNumber),
+		"offset": strconv.Itoa(pageNumber),
 	}
 	result := &GetLatestCommentListResponse{}
 	if err := s.client.DoGet(context.Background(), PathLiveGetLatestCommentList, q, result); err != nil {

@@ -114,12 +114,8 @@ type GetBRSKUBlockStatusResponse struct {
 	} `json:"response"`
 }
 
-func (s *BRService) QuerySKUBlockStatus(itemIDs []int64) (*GetBRSKUBlockStatusResponse, error) {
-	ids := make([]string, len(itemIDs))
-	for i, id := range itemIDs {
-		ids[i] = strconv.FormatInt(id, 10)
-	}
-	q := map[string]string{"item_id_list": stringsJoin(ids, ",")}
+func (s *BRService) QuerySKUBlockStatus(shopSKUID string) (*GetBRSKUBlockStatusResponse, error) {
+	q := map[string]string{"shop_sku_id": shopSKUID}
 	result := &GetBRSKUBlockStatusResponse{}
 	if err := s.client.DoGet(context.Background(), PathBRQuerySKUBlockStatus, q, result); err != nil {
 		return nil, err

@@ -33,7 +33,7 @@ type GetCurrentInventoryResponse struct {
 
 func (s *WHSService) GetCurrentInventory(warehouseID int64, skuList []string, pageSize, pageNumber int) (*GetCurrentInventoryResponse, error) {
 	q := map[string]string{
-		"warehouse_id": strconv.FormatInt(warehouseID, 10),
+		"whs_region": strconv.FormatInt(warehouseID, 10),
 		"page_size":    strconv.Itoa(pageSize),
 		"page_no":  strconv.Itoa(pageNumber),
 	}
@@ -69,7 +69,7 @@ type GetExpiryReportResponse struct {
 
 func (s *WHSService) GetExpiryReport(warehouseID int64, pageSize, pageNumber int) (*GetExpiryReportResponse, error) {
 	q := map[string]string{
-		"warehouse_id": strconv.FormatInt(warehouseID, 10),
+		"whs_region": strconv.FormatInt(warehouseID, 10),
 		"page_size":    strconv.Itoa(pageSize),
 		"page_no":  strconv.Itoa(pageNumber),
 	}
@@ -103,7 +103,7 @@ type GetStockAgingResponse struct {
 
 func (s *WHSService) GetStockAging(warehouseID int64, pageSize, pageNumber int) (*GetStockAgingResponse, error) {
 	q := map[string]string{
-		"warehouse_id": strconv.FormatInt(warehouseID, 10),
+		"whs_region": strconv.FormatInt(warehouseID, 10),
 		"page_size":    strconv.Itoa(pageSize),
 		"page_no":  strconv.Itoa(pageNumber),
 	}
@@ -137,7 +137,7 @@ type GetStockMovementResponse struct {
 
 func (s *WHSService) GetStockMovement(warehouseID int64, dateFrom, dateTo int64, pageSize, pageNumber int) (*GetStockMovementResponse, error) {
 	q := map[string]string{
-		"warehouse_id": strconv.FormatInt(warehouseID, 10),
+		"whs_region": strconv.FormatInt(warehouseID, 10),
 		"page_size":    strconv.Itoa(pageSize),
 		"page_no":  strconv.Itoa(pageNumber),
 	}

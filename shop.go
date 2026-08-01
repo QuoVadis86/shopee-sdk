@@ -431,8 +431,8 @@ func (s *ShopService) GetShopPerformance() (*GetShopPerformanceResponse, error) 
 	return result, nil
 }
 
-func (s *ShopService) GetMetricSourceDetail(metricName string) (*BaseResponse, error) {
-	q := map[string]string{"metric_name": metricName}
+func (s *ShopService) GetMetricSourceDetail(metricID int64) (*BaseResponse, error) {
+	q := map[string]string{"metric_id": strconv.FormatInt(metricID, 10)}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathShopGetMetricSourceDetail, q, result); err != nil {
 		return nil, err
@@ -468,9 +468,10 @@ func (s *ShopService) GetPenaltyPointHistory() (*GetPenaltyHistoryResponse, erro
 	return result, nil
 }
 
-func (s *ShopService) GetPunishmentHistory() (*BaseResponse, error) {
+func (s *ShopService) GetPunishmentHistory(punishmentStatus int32) (*BaseResponse, error) {
+	q := map[string]string{"punishment_status": strconv.Itoa(int(punishmentStatus))}
 	result := &BaseResponse{}
-	if err := s.client.DoGet(context.Background(), PathShopGetPunishmentHistory, map[string]string{}, result); err != nil {
+	if err := s.client.DoGet(context.Background(), PathShopGetPunishmentHistory, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {
