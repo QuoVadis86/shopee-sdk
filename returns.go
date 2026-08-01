@@ -211,3 +211,80 @@ func (s *ReturnsService) GetReverseTrackingInfo(returnSN string) (*GetReverseTra
 	}
 	return result, nil
 }
+
+func (s *ReturnsService) AcceptOffer(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathReturnsAcceptOffer, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ReturnsService) Confirm(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathReturnsConfirm, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ReturnsService) ConvertImage(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathReturnsConvertImage, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ReturnsService) Dispute(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathReturnsDispute, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ReturnsService) Offer(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathReturnsOffer, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ReturnsService) UploadProof(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathReturnsUploadProof, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ReturnsService) UploadShippingProof(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathReturnsUploadShippingProof, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}

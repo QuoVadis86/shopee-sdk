@@ -669,3 +669,42 @@ func (s *GlobalProductService) CancelVideoUpload(videoUploadID string) (*BaseRes
 	}
 	return result, nil
 }
+
+func (s *GlobalProductService) CategoryRecommend(globalitemname string) (*BaseResponse, error) {
+    q := map[string]string{
+		"global_item_name": globalitemname,
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathGlobalProductCategoryRecommend, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *GlobalProductService) InitTierVariation(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathGlobalProductInitTierVariation, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *GlobalProductService) SupportSizeChart(categoryid int64) (*BaseResponse, error) {
+    q := map[string]string{
+		"category_id": strconv.FormatInt(categoryid, 10),
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathGlobalProductSupportSizeChart, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}

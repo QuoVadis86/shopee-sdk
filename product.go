@@ -945,43 +945,8 @@ type GetSSPListResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetSSPList(offset, pageSize int) (*GetSSPListResponse, error) {
-	q := map[string]string{
-		"offset":    strconv.Itoa(offset),
-		"page_size": strconv.Itoa(pageSize),
-	}
-	result := &GetSSPListResponse{}
-	if err := s.client.DoGet(context.Background(), PathProductGetSSPList, q, result); err != nil {
-		return nil, err
-	}
-	if result.HasError() {
-		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
-	}
-	return result, nil
-}
 
-func (s *ProductService) GetSSPInfo(sspID int64) (*BaseResponse, error) {
-	q := map[string]string{"ssp_id": strconv.FormatInt(sspID, 10)}
-	result := &BaseResponse{}
-	if err := s.client.DoGet(context.Background(), PathProductGetSSPInfo, q, result); err != nil {
-		return nil, err
-	}
-	if result.HasError() {
-		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
-	}
-	return result, nil
-}
 
-func (s *ProductService) AddSSPItem(params any) (*BaseResponse, error) {
-	result := &BaseResponse{}
-	if err := s.client.DoPost(context.Background(), PathProductAddSSPItem, params, result); err != nil {
-		return nil, err
-	}
-	if result.HasError() {
-		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
-	}
-	return result, nil
-}
 
 func (s *ProductService) GetAItemByPItemID(pItemID int64) (*BaseResponse, error) {
 	q := map[string]string{"p_item_id": strconv.FormatInt(pItemID, 10)}
@@ -1213,6 +1178,137 @@ func (s *ProductService) UnlistItem(itemIDs []int64, unlist bool) (*UnlistItemRe
 	}
 	result := &UnlistItemResponse{}
 	if err := s.client.DoPost(context.Background(), PathProductUnlistItem, &UnlistItemParams{ItemList: list}, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}
+
+func (s *ProductService) BatchAddItem(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathProductBatchAddItem, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) BatchPublishItemToOutletShop(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathProductBatchPublishItemToOutletShop, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) BatchUpdateOutletPrice(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathProductBatchUpdateOutletPrice, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) BatchUpdateOutletStock(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathProductBatchUpdateOutletStock, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) CategoryRecommend(itemname string) (*BaseResponse, error) {
+    q := map[string]string{
+		"item_name": itemname,
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathProductCategoryRecommend, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) GenerateKitImage(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathProductGenerateKitImage, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) InitTierVariation(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathProductInitTierVariation, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) RegisterBrand(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathProductRegisterBrand, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) ReplyComment(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathProductReplyComment, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) SearchItem(pagesize int64) (*BaseResponse, error) {
+    q := map[string]string{
+		"page_size": strconv.FormatInt(pagesize, 10),
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathProductSearchItem, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *ProductService) GetBatchTaskResult(taskType string, taskID int64) (*BaseResponse, error) {
+	q := map[string]string{
+		"task_type": taskType,
+		"task_id":   strconv.FormatInt(taskID, 10),
+	}
+	result := &BaseResponse{}
+	if err := s.client.DoGet(context.Background(), PathProductGetBatchTaskResult, q, result); err != nil {
 		return nil, err
 	}
 	if result.HasError() {

@@ -418,3 +418,72 @@ func (s *OrderService) GetEstimateCancelValue(orderSN string, partialCancelItems
 	}
 	return result, nil
 }
+
+func (s *OrderService) DownloadFbsInvoices(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathOrderDownloadFbsInvoices, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *OrderService) DownloadInvoiceDoc(ordersn string) (*BaseResponse, error) {
+    q := map[string]string{
+		"order_sn": ordersn,
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathOrderDownloadInvoiceDoc, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *OrderService) GenerateFbsInvoices(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathOrderGenerateFbsInvoices, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *OrderService) HandleBuyerCancellation(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathOrderHandleBuyerCancellation, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *OrderService) HandlePrescriptionCheck(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathOrderHandlePrescriptionCheck, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *OrderService) UploadInvoiceDoc(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathOrderUploadInvoiceDoc, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}

@@ -779,22 +779,6 @@ func (s *AMSService) GetVideoPerformanceList(periodType, endDate, orderBy, sort 
 	return result, nil
 }
 
-func (s *AMSService) GetProductPerfList(periodType, endDate string, pageNum, pageSize int) (*BaseResponse, error) {
-	q := map[string]string{
-		"period_type": periodType,
-		"end_date":    endDate,
-		"page_num":    strconv.Itoa(pageNum),
-		"page_size":   strconv.Itoa(pageSize),
-	}
-	result := &BaseResponse{}
-	if err := s.client.DoGet(context.Background(), PathAMSGetProductPerfList, q, result); err != nil {
-		return nil, err
-	}
-	if result.HasError() {
-		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
-	}
-	return result, nil
-}
 
 func (s *AMSService) GetVideoDetailPerformance(postID string) (*BaseResponse, error) {
 	q := map[string]string{"post_id": postID}
@@ -849,4 +833,45 @@ func (s *AMSService) GetVideoDetailProductPerformance(postID string, pageNo, pag
 		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
 	}
 	return result, nil
+}
+
+func (s *AMSService) TerminateTargetedCampaign(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathAmsTerminateTargetedCampaign, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *AMSService) GetProdcutPerformanceList(pageno int64, pagesize int64, periodtype string, enddate string, orderby string, sort string) (*BaseResponse, error) {
+    q := map[string]string{
+		"page_no": strconv.FormatInt(pageno, 10),
+		"page_size": strconv.FormatInt(pagesize, 10),
+		"period_type": periodtype,
+		"end_date": enddate,
+		"order_by": orderby,
+		"sort": sort,
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathVideoGetProdcutPerformanceList, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *AMSService) PostVideo(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathVideoPostVideo, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
 }

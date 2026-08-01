@@ -520,3 +520,14 @@ func (s *ShopService) GetToggleInfo() (*BaseResponse, error) {
 	}
 	return result, nil
 }
+
+func (s *ShopService) GetAccountHealthShopPerformance() (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoGet(context.Background(), PathAccountHealthGetShopPerformance, map[string]string{}, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}

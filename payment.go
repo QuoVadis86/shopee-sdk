@@ -484,3 +484,34 @@ func (s *PaymentService) GetIncomeDetail(dateFrom, dateTo string, incomeStatus i
 	}
 	return result, nil
 }
+
+func (s *PaymentService) GenerateIncomeReport(releasetimefrom int64, releasetimeto int64) (*BaseResponse, error) {
+    q := map[string]string{
+		"release_time_from": strconv.FormatInt(releasetimefrom, 10),
+		"release_time_to": strconv.FormatInt(releasetimeto, 10),
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathPaymentGenerateIncomeReport, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *PaymentService) GenerateIncomeStatement(releasetimefrom int64, releasetimeto int64, statementtype int64) (*BaseResponse, error) {
+    q := map[string]string{
+		"release_time_from": strconv.FormatInt(releasetimefrom, 10),
+		"release_time_to": strconv.FormatInt(releasetimeto, 10),
+		"statement_type": strconv.FormatInt(statementtype, 10),
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathPaymentGenerateIncomeStatement, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}

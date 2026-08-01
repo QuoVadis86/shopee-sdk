@@ -459,3 +459,25 @@ func (s *AdsService) GetGMSItemPerformance(campaignID int64, dateFrom, dateTo in
 	}
 	return result, nil
 }
+
+func (s *AdsService) ListGmsUserDeletedItem(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathAdsListGmsUserDeletedItem, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *AdsService) GetTotalBalance() (*BaseResponse, error) {
+	result := &BaseResponse{}
+	if err := s.client.DoGet(context.Background(), PathAdsGetTotalBalance, map[string]string{}, result); err != nil {
+		return nil, err
+	}
+	if result.HasError() {
+		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+	}
+	return result, nil
+}

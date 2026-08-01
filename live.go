@@ -67,7 +67,7 @@ func (s *LiveService) GetSessionDetail(sessionID int64) (*GetSessionDetailRespon
 	return result, nil
 }
 
-func (s *LiveService) AddItemList(sessionID int64, itemIDs []int64) (*BaseResponse, error) {
+func (s *LiveService) LiveAddItemList(sessionID int64, itemIDs []int64) (*BaseResponse, error) {
 	payload := map[string]any{
 		"session_id":  sessionID,
 		"item_id_list": itemIDs,
@@ -376,4 +376,119 @@ func (s *LiveService) GetLatestCommentList(sessionID int64, pageSize, pageNumber
 		return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
 	}
 	return result, nil
+}
+
+func (s *LiveService) AddItemList(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamAddItemList, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) ApplyItemSet(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamApplyItemSet, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) BanUserComment(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamBanUserComment, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) LiveDeleteItemList(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamDeleteItemList, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) EndSession(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamEndSession, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) LiveGetItemList(sessionid int64, offset int64, pagesize int64) (*BaseResponse, error) {
+    q := map[string]string{
+		"session_id": strconv.FormatInt(sessionid, 10),
+		"offset": strconv.FormatInt(offset, 10),
+		"page_size": strconv.FormatInt(pagesize, 10),
+	}
+    result := &BaseResponse{}
+    if err := s.client.DoGet(context.Background(), PathLivestreamGetItemList, q, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) PostComment(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamPostComment, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) StartSession(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamStartSession, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) UnbanUserComment(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamUnbanUserComment, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
+}
+
+func (s *LiveService) UploadImage(params any) (*BaseResponse, error) {
+    result := &BaseResponse{}
+    if err := s.client.DoPost(context.Background(), PathLivestreamUploadImage, params, result); err != nil {
+    	return nil, err
+    }
+    if result.HasError() {
+    	return nil, &APIError{ErrorCode: result.Error, Message: result.Message, RequestID: result.RequestID}
+    }
+    return result, nil
 }
