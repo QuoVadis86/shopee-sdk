@@ -453,8 +453,8 @@ var (
 var (
 	PathPartnerGetShopsByPartner      = APIPath("public", "get_shops_by_partner")
 	PathPartnerGetMerchantsByPartner  = APIPath("public", "get_merchants_by_partner")
-	PathPartnerGetAccessToken         = APIPath("public", "get_access_token")
-	PathPartnerRefreshAccessToken     = APIPath("public", "refresh_access_token")
+	PathPartnerGetAccessToken         = APIPath("auth", "token/get")
+	PathPartnerRefreshAccessToken     = APIPath("auth", "access_token/get")
 	PathPartnerGetTokenByResendCode   = APIPath("public", "get_token_by_resend_code")
 	PathPartnerGetShopeeIPRanges      = APIPath("public", "get_shopee_ip_ranges")
 	PathPartnerSetAppPushConfig       = APIPath("push", "set_app_push_config")
