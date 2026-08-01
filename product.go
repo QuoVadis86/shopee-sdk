@@ -63,9 +63,13 @@ type GetAttributeTreeResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetAttributeTree(categoryID int64, language string) (*GetAttributeTreeResponse, error) {
+func (s *ProductService) GetAttributeTree(categoryIDs []int64, language string) (*GetAttributeTreeResponse, error) {
+	ids := make([]string, len(categoryIDs))
+	for i, id := range categoryIDs {
+		ids[i] = strconv.FormatInt(id, 10)
+	}
 	q := map[string]string{
-		"category_id": strconv.FormatInt(categoryID, 10),
+		"category_id_list": stringsJoin(ids, ","),
 	}
 	if language != "" {
 		q["language"] = language
@@ -93,17 +97,15 @@ type GetBrandListResponse struct {
 	} `json:"response"`
 }
 
-func (s *ProductService) GetBrandList(categoryID int64, language string, offset, pageSize int, status string) (*GetBrandListResponse, error) {
+func (s *ProductService) GetBrandList(categoryID int64, language string, offset, pageSize int, status int64) (*GetBrandListResponse, error) {
 	q := map[string]string{
 		"category_id": strconv.FormatInt(categoryID, 10),
 		"offset":      strconv.Itoa(offset),
 		"page_size":   strconv.Itoa(pageSize),
+		"status":      strconv.FormatInt(status, 10),
 	}
 	if language != "" {
 		q["language"] = language
-	}
-	if status != "" {
-		q["status"] = status
 	}
 	result := &GetBrandListResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetBrandList, q, result); err != nil {
