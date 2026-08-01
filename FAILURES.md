@@ -360,3 +360,22 @@
 - 🔒 shopee_product_get_mart_item_mapping_by_id
 - 🔒 shopee_product_get_weight_recommendation
 - 🔒 shopee_product_search_attribute_value_list
+## HTTP_404 判定（16 个）— Shopee 侧退役 API
+
+以下工具的路径已与官方文档逐一核对 **完全一致**，但 Shopee 服务器仍返回 404。
+**结论：Shopee 已退役/弃用这些 API（或需特殊权限），SDK 路径正确，无法通过代码修复。**
+
+| 服务 | 工具 |
+|---|---|
+| logistics | check_polygon_update_status, get_booking_shipping_document_* (3), get_shipping_document_* (3) |
+| order | get_buyer_invoice_info, get_estimate_cancel_value |
+| payment | get_item_installment_status |
+| product | get_direct_shop_recommended_price, get_mart_item_* (2), get_weight_recommendation, search_attribute_value_list |
+| first_mile | get_waybill |
+
+**建议**：从套餐解绑（避免用户踩 404），或保留在池中等 Shopee 恢复。
+
+## PERMISSION 判定（39 个）— Shopee app 权限
+
+全部为 AMS 全家（35 个）+ 少量其他（SIP discount/mart/chat），Shopee 返回 `error_api_permission`。
+**结论：需在 Shopee 开放平台给 app 开通对应权限，代码无法修复。**
