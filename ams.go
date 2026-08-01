@@ -676,10 +676,11 @@ func (s *AMSService) EditVideoInfo(params any) (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *AMSService) GetVideoList(pageNo, pageSize int) (*BaseResponse, error) {
+func (s *AMSService) GetVideoList(pageNo, pageSize int, listType string) (*BaseResponse, error) {
 	q := map[string]string{
 		"page_no":   strconv.Itoa(pageNo),
 		"page_size": strconv.Itoa(pageSize),
+		"list_type": listType,
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetVideoList, q, result); err != nil {
@@ -691,8 +692,8 @@ func (s *AMSService) GetVideoList(pageNo, pageSize int) (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *AMSService) GetVideoDetail(videoID string) (*BaseResponse, error) {
-	q := map[string]string{"video_id": videoID}
+func (s *AMSService) GetVideoDetail(postID string) (*BaseResponse, error) {
+	q := map[string]string{"post_id": postID}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetail, q, result); err != nil {
 		return nil, err
@@ -714,10 +715,10 @@ func (s *AMSService) DeleteVideo(params any) (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *AMSService) GetOverviewPerformance(dateFrom, dateTo int64) (*GetAMSShopPerformanceResponse, error) {
+func (s *AMSService) GetOverviewPerformance(periodType, endDate string) (*GetAMSShopPerformanceResponse, error) {
 	q := map[string]string{
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
+		"period_type": periodType,
+		"end_date":    endDate,
 	}
 	result := &GetAMSShopPerformanceResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetOverviewPerformance, q, result); err != nil {
@@ -729,11 +730,10 @@ func (s *AMSService) GetOverviewPerformance(dateFrom, dateTo int64) (*GetAMSShop
 	return result, nil
 }
 
-func (s *AMSService) GetMetricTrend(metric string, dateFrom, dateTo int64) (*BaseResponse, error) {
+func (s *AMSService) GetMetricTrend(periodType, endDate string) (*BaseResponse, error) {
 	q := map[string]string{
-		"metric":    metric,
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
+		"period_type": periodType,
+		"end_date":    endDate,
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetMetricTrend, q, result); err != nil {
@@ -745,10 +745,10 @@ func (s *AMSService) GetMetricTrend(metric string, dateFrom, dateTo int64) (*Bas
 	return result, nil
 }
 
-func (s *AMSService) GetUserDemographics(dateFrom, dateTo int64) (*BaseResponse, error) {
+func (s *AMSService) GetUserDemographics(periodType, endDate string) (*BaseResponse, error) {
 	q := map[string]string{
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
+		"period_type": periodType,
+		"end_date":    endDate,
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetUserDemographics, q, result); err != nil {
@@ -760,12 +760,14 @@ func (s *AMSService) GetUserDemographics(dateFrom, dateTo int64) (*BaseResponse,
 	return result, nil
 }
 
-func (s *AMSService) GetVideoPerformanceList(dateFrom, dateTo int64, pageNum, pageSize int) (*BaseResponse, error) {
+func (s *AMSService) GetVideoPerformanceList(periodType, endDate, orderBy, sort string, pageNo, pageSize int) (*BaseResponse, error) {
 	q := map[string]string{
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
-		"page_num":  strconv.Itoa(pageNum),
-		"page_size": strconv.Itoa(pageSize),
+		"period_type": periodType,
+		"end_date":    endDate,
+		"order_by":    orderBy,
+		"sort":        sort,
+		"page_no":     strconv.Itoa(pageNo),
+		"page_size":   strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetVideoPerfList, q, result); err != nil {
@@ -777,12 +779,12 @@ func (s *AMSService) GetVideoPerformanceList(dateFrom, dateTo int64, pageNum, pa
 	return result, nil
 }
 
-func (s *AMSService) GetProductPerfList(dateFrom, dateTo int64, pageNum, pageSize int) (*BaseResponse, error) {
+func (s *AMSService) GetProductPerfList(periodType, endDate string, pageNum, pageSize int) (*BaseResponse, error) {
 	q := map[string]string{
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
-		"page_num":  strconv.Itoa(pageNum),
-		"page_size": strconv.Itoa(pageSize),
+		"period_type": periodType,
+		"end_date":    endDate,
+		"page_num":    strconv.Itoa(pageNum),
+		"page_size":   strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetProductPerfList, q, result); err != nil {
@@ -794,12 +796,8 @@ func (s *AMSService) GetProductPerfList(dateFrom, dateTo int64, pageNum, pageSiz
 	return result, nil
 }
 
-func (s *AMSService) GetVideoDetailPerformance(videoID string, dateFrom, dateTo int64) (*BaseResponse, error) {
-	q := map[string]string{
-		"video_id":  videoID,
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
-	}
+func (s *AMSService) GetVideoDetailPerformance(postID string) (*BaseResponse, error) {
+	q := map[string]string{"post_id": postID}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetailPerf, q, result); err != nil {
 		return nil, err
@@ -810,12 +808,10 @@ func (s *AMSService) GetVideoDetailPerformance(videoID string, dateFrom, dateTo 
 	return result, nil
 }
 
-func (s *AMSService) GetVideoDetailMetricTrend(videoID, metric string, dateFrom, dateTo int64) (*BaseResponse, error) {
+func (s *AMSService) GetVideoDetailMetricTrend(postID, metricName string) (*BaseResponse, error) {
 	q := map[string]string{
-		"video_id":  videoID,
-		"metric":    metric,
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
+		"post_id":     postID,
+		"metric_name": metricName,
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetailMetricTrend, q, result); err != nil {
@@ -827,12 +823,8 @@ func (s *AMSService) GetVideoDetailMetricTrend(videoID, metric string, dateFrom,
 	return result, nil
 }
 
-func (s *AMSService) GetVideoDetailAudienceDistribution(videoID string, dateFrom, dateTo int64) (*BaseResponse, error) {
-	q := map[string]string{
-		"video_id":  videoID,
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
-	}
+func (s *AMSService) GetVideoDetailAudienceDistribution(postID string) (*BaseResponse, error) {
+	q := map[string]string{"post_id": postID}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetVideoDetailAudienceDist, q, result); err != nil {
 		return nil, err
@@ -843,12 +835,10 @@ func (s *AMSService) GetVideoDetailAudienceDistribution(videoID string, dateFrom
 	return result, nil
 }
 
-func (s *AMSService) GetVideoDetailProductPerformance(videoID string, dateFrom, dateTo int64, pageNum, pageSize int) (*BaseResponse, error) {
+func (s *AMSService) GetVideoDetailProductPerformance(postID string, pageNo, pageSize int) (*BaseResponse, error) {
 	q := map[string]string{
-		"video_id":  videoID,
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
-		"page_num":  strconv.Itoa(pageNum),
+		"post_id":   postID,
+		"page_no":   strconv.Itoa(pageNo),
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}
