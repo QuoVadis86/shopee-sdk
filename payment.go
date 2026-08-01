@@ -381,14 +381,9 @@ type GetIncomeStatementResponse struct {
 	} `json:"response"`
 }
 
-func (s *PaymentService) GetIncomeStatement(dateFrom, dateTo int64, pageSize int, cursor string) (*GetIncomeStatementResponse, error) {
+func (s *PaymentService) GetIncomeStatement(incomeStatementID int64) (*GetIncomeStatementResponse, error) {
 	q := map[string]string{
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
-		"page_size": strconv.Itoa(pageSize),
-	}
-	if cursor != "" {
-		q["cursor"] = cursor
+		"income_statement_id": strconv.FormatInt(incomeStatementID, 10),
 	}
 	result := &GetIncomeStatementResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetIncomeStatement, q, result); err != nil {
@@ -400,14 +395,9 @@ func (s *PaymentService) GetIncomeStatement(dateFrom, dateTo int64, pageSize int
 	return result, nil
 }
 
-func (s *PaymentService) GetIncomeReport(dateFrom, dateTo int64, pageSize int, cursor string) (*BaseResponse, error) {
+func (s *PaymentService) GetIncomeReport(incomeReportID int64) (*BaseResponse, error) {
 	q := map[string]string{
-		"date_from": strconv.FormatInt(dateFrom, 10),
-		"date_to":   strconv.FormatInt(dateTo, 10),
-		"page_size": strconv.Itoa(pageSize),
-	}
-	if cursor != "" {
-		q["cursor"] = cursor
+		"income_report_id": strconv.FormatInt(incomeReportID, 10),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathPaymentGetIncomeReport, q, result); err != nil {
