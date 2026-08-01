@@ -448,7 +448,7 @@ func (s *AdsService) GetGMSItemPerformance(campaignID int64, dateFrom, dateTo in
 		"date_from":   strconv.FormatInt(dateFrom, 10),
 		"date_to":     strconv.FormatInt(dateTo, 10),
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetGMSItemPerf, q, result); err != nil {

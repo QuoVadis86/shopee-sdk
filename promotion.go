@@ -274,7 +274,7 @@ type GetBundleDealListResponse struct {
 func (s *PromotionService) GetBundleDealList(pageSize, pageNumber int, status string) (*GetBundleDealListResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 	}
 	if status != "" {
 		q["status"] = status
@@ -452,7 +452,7 @@ type GetAddOnDealListResponse struct {
 func (s *PromotionService) GetAddOnDealList(pageSize, pageNumber int, promotionStatus string) (*GetAddOnDealListResponse, error) {
 	q := map[string]string{
 		"page_size":        strconv.Itoa(pageSize),
-		"page_number":      strconv.Itoa(pageNumber),
+		"page_no":      strconv.Itoa(pageNumber),
 		"promotion_status": promotionStatus,
 	}
 	result := &GetAddOnDealListResponse{}
@@ -635,7 +635,7 @@ type GetVoucherListResponse struct {
 func (s *PromotionService) GetVoucherList(pageSize, pageNumber int, status string) (*GetVoucherListResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 		"status":      status,
 	}
 	result := &GetVoucherListResponse{}
@@ -720,7 +720,7 @@ type GetFlashSaleListResponse struct {
 func (s *PromotionService) GetShopFlashSaleList(status string, pageSize, pageNumber int) (*GetFlashSaleListResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 	}
 	if status != "" {
 		q["status"] = status
@@ -854,7 +854,7 @@ func (s *PromotionService) GetFollowPrizeDetail(followPrizeID int64) (*BaseRespo
 func (s *PromotionService) GetFollowPrizeList(status string, pageSize, pageNumber int) (*BaseResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 		"status":      status,
 	}
 	result := &BaseResponse{}
@@ -996,7 +996,7 @@ func (s *PromotionService) GetShopCategoryItemList(categoryID int64, pageSize, p
 	q := map[string]string{
 		"category_id": strconv.FormatInt(categoryID, 10),
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathPromotionGetShopCategoryItemList, q, result); err != nil {

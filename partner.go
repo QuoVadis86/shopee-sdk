@@ -35,7 +35,7 @@ type GetShopsByPartnerResponse struct {
 func (s *PartnerService) GetShopsByPartner(pageSize, pageNumber int) (*GetShopsByPartnerResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 	}
 	result := &GetShopsByPartnerResponse{}
 	if err := s.client.DoGet(context.Background(), PathPartnerGetShopsByPartner, q, result); err != nil {

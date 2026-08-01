@@ -482,7 +482,7 @@ func (s *ShopService) GetPunishmentHistory() (*BaseResponse, error) {
 func (s *ShopService) GetListingsWithIssues(pageSize, pageNumber int) (*BaseResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathShopGetListingsWithIssues, q, result); err != nil {

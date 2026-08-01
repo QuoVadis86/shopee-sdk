@@ -58,7 +58,7 @@ func TestIntegrationProduct_GetItemList(t *testing.T) {
 
 	from := daysAgo(30)
 	to := nowUnix()
-	resp, err := s.GetItemList(0, 10, from, to, "")
+	resp, err := s.GetItemList(0, 10, from, to, nil)
 	if err != nil {
 		t.Logf("GetItemList (sandbox may have no items): %v", err)
 		return
@@ -387,7 +387,7 @@ func TestIntegrationReturns_GetReturnList(t *testing.T) {
 	c := getClient(t)
 	s := &ReturnsService{client: c}
 
-	resp, err := s.GetReturnList(10, "", 0, 0, "")
+	resp, err := s.GetReturnList(10, 0, 0, 0, "")
 	if err != nil {
 		t.Logf("GetReturnList: %v", err)
 		return

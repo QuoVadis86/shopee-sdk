@@ -589,7 +589,7 @@ type GetBoostedListResponse struct {
 func (s *ProductService) GetBoostedList(pageSize, pageNumber int) (*GetBoostedListResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 	}
 	result := &GetBoostedListResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductGetBoostedList, q, result); err != nil {
@@ -1104,7 +1104,7 @@ func (s *ProductService) GetMartItemMappingByID(martItemID int64) (*BaseResponse
 func (s *ProductService) SearchUnpackagedModelList(pageSize, pageNumber int) (*BaseResponse, error) {
 	q := map[string]string{
 		"page_size":   strconv.Itoa(pageSize),
-		"page_number": strconv.Itoa(pageNumber),
+		"page_no": strconv.Itoa(pageNumber),
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathProductSearchUnpackaged, q, result); err != nil {

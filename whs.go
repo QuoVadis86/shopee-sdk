@@ -35,7 +35,7 @@ func (s *WHSService) GetCurrentInventory(warehouseID int64, skuList []string, pa
 	q := map[string]string{
 		"warehouse_id": strconv.FormatInt(warehouseID, 10),
 		"page_size":    strconv.Itoa(pageSize),
-		"page_number":  strconv.Itoa(pageNumber),
+		"page_no":  strconv.Itoa(pageNumber),
 	}
 	if len(skuList) > 0 {
 		q["sku_list"] = stringsJoin(skuList, ",")
@@ -71,7 +71,7 @@ func (s *WHSService) GetExpiryReport(warehouseID int64, pageSize, pageNumber int
 	q := map[string]string{
 		"warehouse_id": strconv.FormatInt(warehouseID, 10),
 		"page_size":    strconv.Itoa(pageSize),
-		"page_number":  strconv.Itoa(pageNumber),
+		"page_no":  strconv.Itoa(pageNumber),
 	}
 	result := &GetExpiryReportResponse{}
 	if err := s.client.DoGet(context.Background(), PathWHSGetExpiryReport, q, result); err != nil {
@@ -105,7 +105,7 @@ func (s *WHSService) GetStockAging(warehouseID int64, pageSize, pageNumber int) 
 	q := map[string]string{
 		"warehouse_id": strconv.FormatInt(warehouseID, 10),
 		"page_size":    strconv.Itoa(pageSize),
-		"page_number":  strconv.Itoa(pageNumber),
+		"page_no":  strconv.Itoa(pageNumber),
 	}
 	result := &GetStockAgingResponse{}
 	if err := s.client.DoGet(context.Background(), PathWHSGetStockAging, q, result); err != nil {
@@ -139,7 +139,7 @@ func (s *WHSService) GetStockMovement(warehouseID int64, dateFrom, dateTo int64,
 	q := map[string]string{
 		"warehouse_id": strconv.FormatInt(warehouseID, 10),
 		"page_size":    strconv.Itoa(pageSize),
-		"page_number":  strconv.Itoa(pageNumber),
+		"page_no":  strconv.Itoa(pageNumber),
 	}
 	if dateFrom > 0 {
 		q["date_from"] = strconv.FormatInt(dateFrom, 10)
