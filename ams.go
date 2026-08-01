@@ -651,10 +651,9 @@ func (s *AMSService) GetValidationReport(validationID string) (*BaseResponse, er
 	return result, nil
 }
 
-func (s *AMSService) GetCoverList(pageNum, pageSize int) (*BaseResponse, error) {
+func (s *AMSService) GetCoverList(videoUploadID string) (*BaseResponse, error) {
 	q := map[string]string{
-		"page_num":  strconv.Itoa(pageNum),
-		"page_size": strconv.Itoa(pageSize),
+		"video_upload_id": videoUploadID,
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAMSGetCoverList, q, result); err != nil {
@@ -677,9 +676,9 @@ func (s *AMSService) EditVideoInfo(params any) (*BaseResponse, error) {
 	return result, nil
 }
 
-func (s *AMSService) GetVideoList(pageNum, pageSize int) (*BaseResponse, error) {
+func (s *AMSService) GetVideoList(pageNo, pageSize int) (*BaseResponse, error) {
 	q := map[string]string{
-		"page_num":  strconv.Itoa(pageNum),
+		"page_no":   strconv.Itoa(pageNo),
 		"page_size": strconv.Itoa(pageSize),
 	}
 	result := &BaseResponse{}

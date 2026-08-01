@@ -186,10 +186,14 @@ func (s *AdsService) GetProductCampaignDailyPerformance(
 	return result, nil
 }
 
-func (s *AdsService) GetProductCampaignHourlyPerformance(campaignID int64, date int64) (*BaseResponse, error) {
+func (s *AdsService) GetProductCampaignHourlyPerformance(campaignIDs []int64, performanceDate string) (*BaseResponse, error) {
+	ids := make([]string, len(campaignIDs))
+	for i, id := range campaignIDs {
+		ids[i] = strconv.FormatInt(id, 10)
+	}
 	q := map[string]string{
-		"campaign_id": strconv.FormatInt(campaignID, 10),
-		"date":        strconv.FormatInt(date, 10),
+		"campaign_id_list": stringsJoin(ids, ","),
+		"performance_date": performanceDate,
 	}
 	result := &BaseResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetProductCampaignHourlyPerf, q, result); err != nil {
@@ -242,8 +246,15 @@ type GetProductLevelCampaignSettingResponse struct {
 	Response *CampaignSettingInfo `json:"response,omitempty"`
 }
 
-func (s *AdsService) GetProductLevelCampaignSetting(campaignID int64) (*GetProductLevelCampaignSettingResponse, error) {
-	q := map[string]string{"campaign_id": strconv.FormatInt(campaignID, 10)}
+func (s *AdsService) GetProductLevelCampaignSetting(campaignIDs []int64, infoTypeList string) (*GetProductLevelCampaignSettingResponse, error) {
+	ids := make([]string, len(campaignIDs))
+	for i, id := range campaignIDs {
+		ids[i] = strconv.FormatInt(id, 10)
+	}
+	q := map[string]string{
+		"campaign_id_list": stringsJoin(ids, ","),
+		"info_type_list":   infoTypeList,
+	}
 	result := &GetProductLevelCampaignSettingResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetProductLevelCampaignSetting, q, result); err != nil {
 		return nil, err
@@ -298,8 +309,12 @@ type GetCreateAdBudgetSuggestionResponse struct {
 	Response *BudgetSuggestion `json:"response,omitempty"`
 }
 
-func (s *AdsService) GetCreateAdBudgetSuggestion(campaignID int64) (*GetCreateAdBudgetSuggestionResponse, error) {
-	q := map[string]string{"campaign_id": strconv.FormatInt(campaignID, 10)}
+func (s *AdsService) GetCreateAdBudgetSuggestion(campaignID int64, biddingMethod, campaignPlacement string) (*GetCreateAdBudgetSuggestionResponse, error) {
+	q := map[string]string{
+		"campaign_id":        strconv.FormatInt(campaignID, 10),
+		"bidding_method":     biddingMethod,
+		"campaign_placement": campaignPlacement,
+	}
 	result := &GetCreateAdBudgetSuggestionResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetCreateAdBudgetSuggestion, q, result); err != nil {
 		return nil, err
@@ -321,8 +336,11 @@ type GetRecommendedROITargetResponse struct {
 	Response *ROITargetInfo `json:"response,omitempty"`
 }
 
-func (s *AdsService) GetRecommendedROITarget(campaignID int64) (*GetRecommendedROITargetResponse, error) {
-	q := map[string]string{"campaign_id": strconv.FormatInt(campaignID, 10)}
+func (s *AdsService) GetRecommendedROITarget(itemID, referenceID int64) (*GetRecommendedROITargetResponse, error) {
+	q := map[string]string{
+		"item_id":      strconv.FormatInt(itemID, 10),
+		"reference_id": strconv.FormatInt(referenceID, 10),
+	}
 	result := &GetRecommendedROITargetResponse{}
 	if err := s.client.DoGet(context.Background(), PathAdsGetRecommendedROITarget, q, result); err != nil {
 		return nil, err
