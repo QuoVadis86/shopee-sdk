@@ -131,6 +131,10 @@ func (c *Client) baseQuery(timestamp int64) url.Values {
 
 func (c *Client) generateSign(apiPath string, timestamp int64) string {
 	accessToken, shopID, merchantID := c.authSnapshot()
+	if merchantID > 0 && strings.HasPrefix(apiPath, "/api/v2/merchant/") {
+		// Merchant API: sign = partner_id + path + timestamp + access_token + merchant_id
+		return GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, timestamp, accessToken, 0, merchantID)
+	}
 	return GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, timestamp, accessToken, shopID, merchantID)
 }
 
