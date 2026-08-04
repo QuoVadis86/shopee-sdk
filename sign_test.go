@@ -93,3 +93,54 @@ func TestGenerateSignatureConsistency(t *testing.T) {
 		t.Fatal("signature is not deterministic")
 	}
 }
+
+func TestIsMerchantAPI(t *testing.T) {
+	merchant := []string{
+		"/api/v2/merchant/get_merchant_info",
+		"/api/v2/global_product/get_category",
+		"/api/v2/first_mile/get_courier_delivery_detail",
+	}
+	shop := []string{
+		"/api/v2/shop/get_shop_info",
+		"/api/v2/product/get_item_list",
+		"/api/v2/order/get_order_list",
+		"/api/v2/media/upload_image",
+		"/api/v2/auth/token/get",
+	}
+	for _, p := range merchant {
+		if !isMerchantAPI(p) {
+			t.Errorf("isMerchantAPI(%q) = false, want true", p)
+		}
+	}
+	for _, p := range shop {
+		if isMerchantAPI(p) {
+			t.Errorf("isMerchantAPI(%q) = true, want false", p)
+		}
+	}
+}
+
+func TestBaseQueryDomain(t *testing.T) {
+	c := &Client{
+		PartnerID:  12345,
+		PartnerKey: "test-key",
+		AccessToken: "token",
+		ShopID:     67890,
+		MerchantID: 11111,
+	}
+
+	shopQ := c.baseQuery("/api/v2/shop/get_shop_info", 1700000000)
+	if shopQ.Get("shop_id") != "67890" {
+		t.Errorf("shop query missing shop_id: %v", shopQ)
+	}
+	if shopQ.Get("merchant_id") != "" {
+		t.Errorf("shop query must not carry merchant_id: %v", shopQ)
+	}
+
+	merQ := c.baseQuery("/api/v2/global_product/get_category", 1700000000)
+	if merQ.Get("merchant_id") != "11111" {
+		t.Errorf("merchant query missing merchant_id: %v", merQ)
+	}
+	if merQ.Get("shop_id") != "" {
+		t.Errorf("merchant query must not carry shop_id: %v", merQ)
+	}
+}

@@ -109,7 +109,19 @@ func (c *Client) authSnapshot() (accessToken string, shopID, merchantID int64) {
 	return c.AccessToken, c.ShopID, c.MerchantID
 }
 
-func (c *Client) baseQuery(timestamp int64) url.Values {
+// isMerchantAPI reports whether the path belongs to a Merchant-domain API
+// (merchant / global_product / first_mile). These are only used by
+// cross-border sellers and sign with merchant_id instead of shop_id.
+func isMerchantAPI(apiPath string) bool {
+	return strings.HasPrefix(apiPath, "/api/v2/merchant/") ||
+		strings.HasPrefix(apiPath, "/api/v2/global_product/") ||
+		strings.HasPrefix(apiPath, "/api/v2/first_mile/")
+}
+
+// baseQuery builds the common query parameters. Merchant-domain APIs carry
+// merchant_id; all other seller APIs carry shop_id. Never both (Shopee
+// rejects a request whose query mixes the two: "Wrong sign").
+func (c *Client) baseQuery(apiPath string, timestamp int64) url.Values {
 	accessToken, shopID, merchantID := c.authSnapshot()
 	q := url.Values{}
 	q.Set("partner_id", strconv.FormatInt(c.PartnerID, 10))
@@ -117,21 +129,19 @@ func (c *Client) baseQuery(timestamp int64) url.Values {
 	if accessToken != "" {
 		q.Set("access_token", accessToken)
 	}
-	if shopID > 0 {
-		// Shop-level APIs always need shop_id in the query.
+	if isMerchantAPI(apiPath) {
+		if merchantID > 0 {
+			q.Set("merchant_id", strconv.FormatInt(merchantID, 10))
+		}
+	} else if shopID > 0 {
 		q.Set("shop_id", strconv.FormatInt(shopID, 10))
-	}
-	if merchantID > 0 {
-		// Include merchant_id for cross-border (CB) shops that need
-		// it alongside shop_id for item/order scope resolution.
-		q.Set("merchant_id", strconv.FormatInt(merchantID, 10))
 	}
 	return q
 }
 
 func (c *Client) generateSign(apiPath string, timestamp int64) string {
 	accessToken, shopID, merchantID := c.authSnapshot()
-	if merchantID > 0 && strings.HasPrefix(apiPath, "/api/v2/merchant/") {
+	if isMerchantAPI(apiPath) {
 		// Merchant API: sign = partner_id + path + timestamp + access_token + merchant_id
 		return GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, timestamp, accessToken, 0, merchantID)
 	}
@@ -141,7 +151,7 @@ func (c *Client) generateSign(apiPath string, timestamp int64) string {
 // DoGet performs a GET request with context support.
 func (c *Client) DoGet(ctx context.Context, apiPath string, queryParams map[string]string, result any) error {
 	ts := time.Now().Unix()
-	q := c.baseQuery(ts)
+	q := c.baseQuery(apiPath, ts)
 	for k, v := range queryParams {
 		if v != "" {
 			q.Set(k, v)
@@ -163,7 +173,7 @@ func (c *Client) DoGet(ctx context.Context, apiPath string, queryParams map[stri
 // for the same query parameter key (e.g. item_status=NORMAL&item_status=UNLIST).
 func (c *Client) DoGetMulti(ctx context.Context, apiPath string, queryParams url.Values, result any) error {
 	ts := time.Now().Unix()
-	q := c.baseQuery(ts)
+	q := c.baseQuery(apiPath, ts)
 	for k, vs := range queryParams {
 		for _, v := range vs {
 			if v != "" {
@@ -196,7 +206,7 @@ func (c *Client) DoPost(ctx context.Context, apiPath string, bodyPayload any, re
 		}
 	}
 
-	q := c.baseQuery(ts)
+	q := c.baseQuery(apiPath, ts)
 	sign := c.generateSign(apiPath, ts)
 	q.Set("sign", sign)
 
@@ -237,7 +247,7 @@ func sniffImageMeta(data []byte) (string, string) {
 
 func (c *Client) DoPostMulti(ctx context.Context, apiPath string, fields map[string]string, files map[string][][]byte, result any) error {
 	ts := time.Now().Unix()
-	q := c.baseQuery(ts)
+	q := c.baseQuery(apiPath, ts)
 	sign := c.generateSign(apiPath, ts)
 	q.Set("sign", sign)
 
@@ -323,7 +333,7 @@ func (c *Client) doRequest(req *http.Request, result any) error {
 
 // DoGetWithTimestamp performs a GET request with a custom timestamp (for testing).
 func (c *Client) DoGetWithTimestamp(ctx context.Context, apiPath string, queryParams map[string]string, timestamp int64, result any) error {
-	q := c.baseQuery(timestamp)
+	q := c.baseQuery(apiPath, timestamp)
 	for k, v := range queryParams {
 		if v != "" {
 			q.Set(k, v)

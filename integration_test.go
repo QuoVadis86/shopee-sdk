@@ -359,7 +359,7 @@ func TestIntegrationPromotion_GetShopCategoryList(t *testing.T) {
 	c := getClient(t)
 	s := &PromotionService{client: c}
 
-	resp, err := s.GetShopCategoryList()
+	resp, err := s.GetShopCategoryList(1, 10)
 	if err != nil {
 		t.Logf("GetShopCategoryList: %v", err)
 		return
@@ -375,7 +375,7 @@ func TestIntegrationReturns_GetShippingCarrier(t *testing.T) {
 	c := getClient(t)
 	s := &ReturnsService{client: c}
 
-	resp, err := s.GetShippingCarrier()
+	resp, err := s.GetShippingCarrier("RETSN-0001")
 	if err != nil {
 		t.Logf("GetShippingCarrier: %v", err)
 		return
