@@ -112,7 +112,7 @@ func (c *Client) authSnapshot() (accessToken string, shopID, merchantID int64) {
 // isMerchantAPI reports whether the path belongs to a Merchant-domain API
 // (merchant / global_product / first_mile). These are only used by
 // cross-border sellers and sign with merchant_id instead of shop_id.
-func isMerchantAPI(apiPath string) bool {
+func IsMerchantAPI(apiPath string) bool {
 	return strings.HasPrefix(apiPath, "/api/v2/merchant/") ||
 		strings.HasPrefix(apiPath, "/api/v2/global_product/") ||
 		strings.HasPrefix(apiPath, "/api/v2/first_mile/")
@@ -129,7 +129,7 @@ func (c *Client) baseQuery(apiPath string, timestamp int64) url.Values {
 	if accessToken != "" {
 		q.Set("access_token", accessToken)
 	}
-	if isMerchantAPI(apiPath) {
+	if IsMerchantAPI(apiPath) {
 		if merchantID > 0 {
 			q.Set("merchant_id", strconv.FormatInt(merchantID, 10))
 		}
@@ -141,7 +141,7 @@ func (c *Client) baseQuery(apiPath string, timestamp int64) url.Values {
 
 func (c *Client) generateSign(apiPath string, timestamp int64) string {
 	accessToken, shopID, merchantID := c.authSnapshot()
-	if isMerchantAPI(apiPath) {
+	if IsMerchantAPI(apiPath) {
 		// Merchant API: sign = partner_id + path + timestamp + access_token + merchant_id
 		return GenerateSignature(c.PartnerKey, c.PartnerID, apiPath, timestamp, accessToken, 0, merchantID)
 	}

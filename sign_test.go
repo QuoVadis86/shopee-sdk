@@ -108,12 +108,12 @@ func TestIsMerchantAPI(t *testing.T) {
 		"/api/v2/auth/token/get",
 	}
 	for _, p := range merchant {
-		if !isMerchantAPI(p) {
+		if !IsMerchantAPI(p) {
 			t.Errorf("isMerchantAPI(%q) = false, want true", p)
 		}
 	}
 	for _, p := range shop {
-		if isMerchantAPI(p) {
+		if IsMerchantAPI(p) {
 			t.Errorf("isMerchantAPI(%q) = true, want false", p)
 		}
 	}
