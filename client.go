@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
+	"net/textproto"
 	"net/url"
 	"strconv"
 	"strings"
@@ -205,6 +207,69 @@ func (c *Client) DoPost(ctx context.Context, apiPath string, bodyPayload any, re
 		req.Header.Set("Content-Type", "application/json")
 	}
 
+	return c.doRequest(req, result)
+}
+
+// DoPostMulti sends a multipart/form-data POST request (used by Shopee media
+// upload endpoints like media/upload_image, which reject JSON bodies with
+// "Content-Type must be multipart/form-data"). fields holds form fields;
+// files maps field name -> list of file byte slices (multiple files per field).
+// sniffImageMeta returns a proper filename and Content-Type for the uploaded
+// bytes by inspecting magic bytes. Shopee rejects file parts whose filename
+// lacks a JPG/JPEG/PNG extension or whose part Content-Type is not an image
+// type ("Some images are not in JPG, JPEG, PNG format").
+func sniffImageMeta(data []byte) (string, string) {
+	switch {
+	case len(data) >= 8 && string(data[:8]) == "\x89PNG\r\n\x1a\n":
+		return "image.png", "image/png"
+	case len(data) >= 3 && data[0] == 0xFF && data[1] == 0xD8 && data[2] == 0xFF:
+		return "image.jpg", "image/jpeg"
+	case len(data) >= 6 && (string(data[:6]) == "GIF87a" || string(data[:6]) == "GIF89a"):
+		return "image.gif", "image/gif"
+	default:
+		return "image.bin", "application/octet-stream"
+	}
+}
+
+func (c *Client) DoPostMulti(ctx context.Context, apiPath string, fields map[string]string, files map[string][][]byte, result any) error {
+	ts := time.Now().Unix()
+	q := c.baseQuery(ts)
+	sign := c.generateSign(apiPath, ts)
+	q.Set("sign", sign)
+
+	var buf bytes.Buffer
+	mw := multipart.NewWriter(&buf)
+	for k, v := range fields {
+		if err := mw.WriteField(k, v); err != nil {
+			return fmt.Errorf("write multipart field %s: %w", k, err)
+		}
+	}
+	for k, dataList := range files {
+		for _, data := range dataList {
+			fname, ctype := sniffImageMeta(data)
+			h := textproto.MIMEHeader{}
+			h.Set("Content-Disposition",
+				fmt.Sprintf(`form-data; name="%s"; filename="%s"`, k, fname))
+			h.Set("Content-Type", ctype)
+			fw, err := mw.CreatePart(h)
+			if err != nil {
+				return fmt.Errorf("create form file %s: %w", k, err)
+			}
+			if _, err := fw.Write(data); err != nil {
+				return fmt.Errorf("write form file %s: %w", k, err)
+			}
+		}
+	}
+	if err := mw.Close(); err != nil {
+		return fmt.Errorf("close multipart: %w", err)
+	}
+
+	reqURL := fmt.Sprintf("%s%s?%s", c.BaseURL, apiPath, q.Encode())
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, &buf)
+	if err != nil {
+		return fmt.Errorf("create request: %w", err)
+	}
+	req.Header.Set("Content-Type", mw.FormDataContentType())
 	return c.doRequest(req, result)
 }
 
